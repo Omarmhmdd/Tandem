@@ -23,7 +23,7 @@ class Household extends Model
         ];
     }
 
-    // Relationships
+
     public function members()
     {
         return $this->hasMany(HouseholdMember::class);
@@ -38,6 +38,63 @@ class Household extends Model
     {
         return $this->hasOne(HouseholdMember::class)->where('role', 'partner');
     }
+    public function pantryItems()
+    {
+        return $this->hasMany(PantryItem::class);
+    }
 
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class);
+    }
 
+    public function mealPlans()
+    {
+        return $this->hasMany(MealPlan::class);
+    }
+
+    public function shoppingLists()
+    {
+        return $this->hasMany(ShoppingList::class);
+    }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
+
+    public function budgets()
+    {
+        return $this->hasMany(Budget::class);
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function moodAnnotations()
+    {
+        return $this->hasMany(MoodAnnotation::class);
+    }
+
+    public function weeklySummaries()
+    {
+        return $this->hasMany(WeeklySummary::class);
+    }
+
+    public function aiCoachConversations()
+    {
+        return $this->hasMany(AiCoachConversation::class);
+    }
+
+    public function dateNightSuggestions()
+    {
+        return $this->hasMany(DateNightSuggestion::class);
+    }
 }
+
+
+
+
+

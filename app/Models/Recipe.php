@@ -53,6 +53,10 @@ class Recipe extends Model
     {
         return $this->hasMany(RecipeTag::class);
     }
+    public function mealPlans()
+    {
+        return $this->hasMany(MealPlan::class);
+    }
 
     public function createdBy()
     {

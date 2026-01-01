@@ -52,6 +52,10 @@ class PantryItem extends Model
     {
         return $this->hasMany(RecipeIngredientPantryLink::class);
     }
+    public function shoppingListItems()
+    {
+        return $this->hasMany(ShoppingListItem::class);
+    }
 
     public function getDaysUntilExpiryAttribute()
     {
