@@ -8,6 +8,8 @@ use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\AuthenticateJwt;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
+use App\Http\Middleware\RequireHousehold;
+use App\Http\Middleware\RequirePrimaryRole;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'jwt.auth' => AuthenticateJwt::class,
+            'require.household' =>RequireHousehold::class,
+            'require.primary' => RequirePrimaryRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
