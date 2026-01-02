@@ -6,22 +6,13 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
-use App\Models\HouseholdMember;
+use App\Http\Traits\HasActiveHouseholdMember;
 
 class RequirePrimaryRole
 {
+    use HasActiveHouseholdMember;
+
     protected $user;
-
-    protected function getActiveHouseholdMember()
-    {
-        if (!$this->user) {
-            return null;
-        }
-
-        return HouseholdMember::where('user_id', $this->user->id)
-            ->where('status', 'active')
-            ->first();
-    }
 
     public function handle(Request $request, Closure $next): Response
     {
