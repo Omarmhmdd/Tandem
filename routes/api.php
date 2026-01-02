@@ -1,2 +1,37 @@
 <?php 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HouseholdController;
+Route::group(['prefix' => 'v0.1'], function () {
+    
+    // Unauthenticated routes
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+
+    // Protected routes
+    Route::group(['middleware' => 'auth:api'], function () {
+        
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('/logout', [AuthController::class, 'logout']);
+            Route::get('/me', [AuthController::class, 'me']);
+        });
+
+          // HOUSEHOLD MANAGEMENT - No household required (user needs to create/join)
+        Route::group(['prefix' => 'household'], function () {
+            Route::post('/create/{name}', [HouseholdController::class, 'create']);
+            Route::get('/getAll/{household_id?}', [HouseholdController::class, 'getAllByUserId']);
+            Route::post('/join/{code}', [HouseholdController::class, 'join']);
+            
+            // These require household (user must be in a household to access)
+            Route::group(['middleware' => 'require.household'], function () {
+                Route::get('/{household_id}/invite-code', [HouseholdController::class, 'getInviteCode']);
+                Route::post('/{household_id}/regenerate-invite-code', [HouseholdController::class, 'regenerateInviteCode'])->middleware('require.primary');
+                Route::get('/{household_id}/members', [HouseholdController::class, 'getMembers']);
+                Route::post('/{household_id}/leave', [HouseholdController::class, 'leaveHousehold']);
+                Route::post('/{household_id}/transfer-ownership', [HouseholdController::class, 'transferOwnership'])->middleware('require.primary');
+                Route::post('/{household_id}/delete', [HouseholdController::class, 'deleteHousehold'])->middleware('require.primary');
+            });
+        });
+
+    });
+});
