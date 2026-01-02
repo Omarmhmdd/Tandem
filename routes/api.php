@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HabitsController;
-
+use App\Http\Controllers\HealthLogController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -36,7 +36,7 @@ Route::group(['prefix' => 'v0.1'], function () {
             });
         });
 
-                    // HABITS
+             // HABITS
             Route::group(['prefix' => 'habits'], function () {
                 Route::get('/', [HabitsController::class, 'index']);
                 Route::post('/', [HabitsController::class, 'store']);
@@ -44,6 +44,14 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/{id}/delete', [HabitsController::class, 'destroy']);
                 Route::post('/{id}/completions', [HabitsController::class, 'markCompletion']);
             });
+
+            // HEALTH LOGS
+            Route::group(['prefix' => 'health'], function () {
+                Route::get('/logs', [HealthLogController::class, 'index']);
+                Route::post('/logs', [HealthLogController::class, 'store']);
+                Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
+            });
+
 
     });
 });
