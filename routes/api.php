@@ -2,6 +2,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdController;
+use App\Http\Controllers\HabitsController;
+
+
 Route::group(['prefix' => 'v0.1'], function () {
     
     // Unauthenticated routes
@@ -16,7 +19,7 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::get('/me', [AuthController::class, 'me']);
         });
 
-          // HOUSEHOLD MANAGEMENT - No household required (user needs to create/join)
+          // HOUSEHOLD MANAGEMENT 
         Route::group(['prefix' => 'household'], function () {
             Route::post('/create/{name}', [HouseholdController::class, 'create']);
             Route::get('/getAll/{household_id?}', [HouseholdController::class, 'getAllByUserId']);
@@ -32,6 +35,15 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/{household_id}/delete', [HouseholdController::class, 'deleteHousehold'])->middleware('require.primary');
             });
         });
+
+                    // HABITS
+            Route::group(['prefix' => 'habits'], function () {
+                Route::get('/', [HabitsController::class, 'index']);
+                Route::post('/', [HabitsController::class, 'store']);
+                Route::post('/{id}/update', [HabitsController::class, 'update']);
+                Route::post('/{id}/delete', [HabitsController::class, 'destroy']);
+                Route::post('/{id}/completions', [HabitsController::class, 'markCompletion']);
+            });
 
     });
 });
