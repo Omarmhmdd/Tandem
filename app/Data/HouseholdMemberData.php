@@ -17,5 +17,15 @@ class HouseholdMemberData
             'joined_at' => now(),
         ];
     }
+    public static function forPartner(User $user, Household $household): array
+{
+    return [
+        'household_id' => $household->id,
+        'user_id' => $user->id,
+        'role' => 'partner',
+        'status' => 'active',
+        'joined_at' => now(),
+    ];
+}
 }
 

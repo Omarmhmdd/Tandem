@@ -12,6 +12,7 @@ class Household extends Model
 
     protected $fillable = [
         'name',
+        'invite_code',
     ];
 
     protected function casts(): array
