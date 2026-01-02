@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HabitsController;
 use App\Http\Controllers\HealthLogController;
+use App\Http\Controllers\NutritionTargetController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -50,6 +51,13 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/logs', [HealthLogController::class, 'index']);
                 Route::post('/logs', [HealthLogController::class, 'store']);
                 Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
+            });
+
+
+            // NUTRITION TARGET 
+            Route::group(['prefix' => 'nutrition-target'], function () {
+                Route::get('/', [NutritionTargetController::class, 'getTarget']);
+                Route::post('/', [NutritionTargetController::class, 'updateTarget']);
             });
 
 
