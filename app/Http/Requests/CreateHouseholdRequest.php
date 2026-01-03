@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use InvalidArgumentException;
 
 class CreateHouseholdRequest extends FormRequest
 {
@@ -36,7 +37,7 @@ class CreateHouseholdRequest extends FormRequest
         $name = $this->route('name');
         
         if (!$name) {
-            throw new \InvalidArgumentException('Household name is required');
+            throw new InvalidArgumentException('Household name is required');
         }
         
         return urldecode($name);

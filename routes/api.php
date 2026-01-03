@@ -6,6 +6,7 @@ use App\Http\Controllers\HabitsController;
 use App\Http\Controllers\HealthLogController;
 use App\Http\Controllers\NutritionTargetController;
 use App\Http\Controllers\GoalsController;
+use App\Http\Controllers\BudgetController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -71,6 +72,16 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/{id}/milestones', [GoalsController::class, 'createMilestone']);
                 Route::post('/{id}/milestones/{milestoneId}/update', [GoalsController::class, 'updateMilestone']);
                 Route::post('/{id}/milestones/{milestoneId}/delete', [GoalsController::class, 'deleteMilestone']);
+            });
+
+                        // BUDGET & EXPENSES
+            Route::group(['prefix' => 'budget'], function () {
+                Route::post('/', [BudgetController::class, 'createOrUpdateBudget']);
+                Route::get('/expenses', [BudgetController::class, 'getExpenses']);
+                Route::post('/expenses', [BudgetController::class, 'createExpense']);
+                Route::post('/expenses/{id}/update', [BudgetController::class, 'updateExpense']);
+                Route::post('/expenses/{id}/delete', [BudgetController::class, 'deleteExpense']);
+                Route::get('/summary', [BudgetController::class, 'getSummary']);
             });
 
 

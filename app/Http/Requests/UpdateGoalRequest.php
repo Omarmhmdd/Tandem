@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Goal;
 
 class UpdateGoalRequest extends FormRequest
 {
@@ -24,9 +25,38 @@ class UpdateGoalRequest extends FormRequest
         ];
     }
 
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if (!$this->has('current')) {
+                return; // No current being updated, skip validation
+            }
+
+            $goalId = $this->route('id');
+            $goal = Goal::find($goalId);
+            
+            if (!$goal) {
+                return;
+            }
+
+            // Use new target if provided, otherwise use existing target
+            $target = $this->has('target') ? (float) $this->target : (float) $goal->target;
+            $current = (float) $this->current;
+
+            if ($current > $target) {
+                $unit = $this->has('unit') ? $this->unit : $goal->unit;
+                $validator->errors()->add(
+                    'current',
+                    "Goal progress cannot exceed target ({$target} {$unit}). Maximum allowed: {$target}."
+                );
+            }
+        });
+    }
+
     public function getGoalData(): array
     {
         $data = [];
+
         $user = Auth::user();
 
         if ($this->has('title')) $data['title'] = $this->title;
@@ -41,4 +71,3 @@ class UpdateGoalRequest extends FormRequest
         return $data;
     }
 }
-
