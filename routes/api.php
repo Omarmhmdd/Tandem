@@ -7,6 +7,7 @@ use App\Http\Controllers\HealthLogController;
 use App\Http\Controllers\NutritionTargetController;
 use App\Http\Controllers\GoalsController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\MoodController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -83,6 +84,15 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/expenses/{id}/delete', [BudgetController::class, 'deleteExpense']);
                 Route::get('/summary', [BudgetController::class, 'getSummary']);
             });
+
+            
+             // MOOD
+            Route::group(['prefix' => 'mood'], function () {
+                Route::get('/timeline', [MoodController::class, 'getTimeline']);
+                Route::get('/comparison', [MoodController::class, 'getComparison']);
+                Route::post('/entries', [MoodController::class, 'createEntry']);
+            });
+
 
 
     });
