@@ -14,6 +14,7 @@ use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\PantryController;
 use App\Http\Controllers\ShoppingListController;
+use App\Http\Controllers\AnalyticsController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -102,6 +103,14 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
             });
+
+                    // ANALYTICS
+        Route::group(['prefix' => 'analytics'], function () {
+            Route::get('/weekly', [AnalyticsController::class, 'getWeekly']);
+            Route::get('/monthly-mood', [AnalyticsController::class, 'getMonthlyMood']);
+            Route::get('/pantry-waste', [AnalyticsController::class, 'getPantryWaste']);
+            Route::get('/budget-categories', [AnalyticsController::class, 'getBudgetCategories']);
+        });
 
             // RECIPES
             Route::group(['prefix' => 'recipes'], function () {
