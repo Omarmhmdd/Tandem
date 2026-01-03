@@ -9,6 +9,8 @@ use App\Http\Controllers\GoalsController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\MoodController;
 use App\Http\Controllers\WeeklySummaryController;
+use App\Http\Controllers\RecipesController;
+use App\Http\Controllers\MealPlannerController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -97,6 +99,26 @@ Route::group(['prefix' => 'v0.1'], function () {
             // WEEKLY SUMMARIES
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
+            });
+
+            // RECIPES
+            Route::group(['prefix' => 'recipes'], function () {
+                Route::get('/', [RecipesController::class, 'index']);
+                Route::post('/', [RecipesController::class, 'store']);
+                Route::get('/{id}', [RecipesController::class, 'show']);
+                Route::post('/{id}/update', [RecipesController::class, 'update']);
+                Route::post('/{id}/delete', [RecipesController::class, 'destroy']);
+                Route::post('/{id}/link-pantry', [RecipesController::class, 'linkPantry']);
+            });
+
+                        // MEAL PLANNER
+            Route::group(['prefix' => 'meals'], function () {
+                Route::get('/plan', [MealPlannerController::class, 'getWeeklyPlan']);
+                Route::post('/plan', [MealPlannerController::class, 'store']);
+                Route::post('/plan/{id}/update', [MealPlannerController::class, 'update']);
+                Route::post('/plan/{id}/delete', [MealPlannerController::class, 'destroy']);
+                Route::post('/match-meal', [MealPlannerController::class, 'createMatchMeal']);
+                Route::post('/match-meal/{id}/respond', [MealPlannerController::class, 'respondToMatchMeal']);
             });
 
 

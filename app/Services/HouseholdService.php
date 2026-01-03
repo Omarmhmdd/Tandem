@@ -53,7 +53,7 @@ class HouseholdService
 
         return $householdMembers->map(function ($member) {
             return $member->household;
-        });
+        })->filter();
     }
 
     public function join(string $code): array
