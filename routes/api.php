@@ -13,6 +13,7 @@ use App\Http\Controllers\WeeklySummaryController;
 use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\PantryController;
+use App\Http\Controllers\ShoppingListController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -120,6 +121,7 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/plan/{id}/delete', [MealPlannerController::class, 'destroy']);
                 Route::post('/match-meal', [MealPlannerController::class, 'createMatchMeal']);
                 Route::post('/match-meal/{id}/respond', [MealPlannerController::class, 'respondToMatchMeal']);
+                Route::post('/shopping-list/{planId}', [ShoppingListController::class, 'generate']);
             });
 
             // PANTRY
