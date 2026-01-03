@@ -10,6 +10,7 @@ use App\Http\Traits\HasAuthenticatedUser;
 use App\Http\Traits\HasDatabaseTransactions;
 use Illuminate\Support\Str;
 use Exception;
+use Illuminate\Support\Collection;
 
 class HouseholdService
 {
@@ -31,7 +32,7 @@ class HouseholdService
         });
     }
 
-    public function getAllByUserId(?int $householdId = null): \Illuminate\Support\Collection
+    public function getAllByUserId(?int $householdId = null): Collection
     {
         $user = $this->getAuthenticatedUser();
 
@@ -154,7 +155,7 @@ class HouseholdService
     });
 }
 
-    public function getMembers(int $householdId): \Illuminate\Support\Collection
+    public function getMembers(int $householdId): Collection
 {
     $user = $this->getAuthenticatedUser();
 
@@ -262,7 +263,7 @@ class HouseholdService
     }
 
     //for admin
-    public function getAllHouseholds(): \Illuminate\Support\Collection
+    public function getAllHouseholds(): Collection
     {
         return Household::with(['members.user'])->get();
     }

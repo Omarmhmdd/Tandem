@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HabitsController;
 use App\Http\Controllers\HealthLogController;
+use App\Http\Controllers\NutritionTargetController;
+use App\Http\Controllers\GoalsController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -50,6 +52,25 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/logs', [HealthLogController::class, 'index']);
                 Route::post('/logs', [HealthLogController::class, 'store']);
                 Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
+            });
+
+
+            // NUTRITION TARGET 
+            Route::group(['prefix' => 'nutrition-target'], function () {
+                Route::get('/', [NutritionTargetController::class, 'getTarget']);
+                Route::post('/', [NutritionTargetController::class, 'updateTarget']);
+            });
+
+                        // GOALS
+            Route::group(['prefix' => 'goals'], function () {
+                Route::get('/', [GoalsController::class, 'index']);
+                Route::post('/', [GoalsController::class, 'store']);
+                Route::post('/{id}/update', [GoalsController::class, 'update']);
+                Route::post('/{id}/delete', [GoalsController::class, 'destroy']);
+                Route::post('/{id}/progress', [GoalsController::class, 'updateProgress']);
+                Route::post('/{id}/milestones', [GoalsController::class, 'createMilestone']);
+                Route::post('/{id}/milestones/{milestoneId}/update', [GoalsController::class, 'updateMilestone']);
+                Route::post('/{id}/milestones/{milestoneId}/delete', [GoalsController::class, 'deleteMilestone']);
             });
 
 
