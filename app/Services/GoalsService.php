@@ -40,15 +40,17 @@ class GoalsService
     }
 
     public function update(int $id, array $goalData): Goal
-    {
-        $goal = $this->findGoalForUser($id);
-        $wasCompleted = $goal->completed_at !== null;
-        
-        $goal->update($goalData);
-        $this->updateCompletionStatus($goal, $wasCompleted);
-
-        return $goal->fresh()->load('milestones');
+{
+    $goal = $this->findGoalForUser($id);
+    $wasCompleted = $goal->completed_at !== null;
+    if (isset($goalData['current'])) {
+        $target = (float) $goal->target;
+        $goalData['current'] = min((float) $goalData['current'], $target);
     }
+    $goal->update($goalData);
+    $this->updateCompletionStatus($goal, $wasCompleted);
+    return $goal->fresh()->load('milestones');
+}
 
     public function delete(int $id): void
     {
@@ -57,19 +59,21 @@ class GoalsService
     }
 
     public function updateProgress(int $id, float $current): Goal
-    {
-        $goal = $this->findGoalForUser($id);
-        $wasCompleted = $goal->completed_at !== null;
-        
-        $goal->update([
-            'current' => $current,
-            'updated_by_user_id' => $this->getAuthenticatedUser()->id,
-        ]);
-        
-        $this->updateCompletionStatus($goal, $wasCompleted);
-
-        return $goal->fresh()->load('milestones');
-    }
+{
+    $goal = $this->findGoalForUser($id);
+    $wasCompleted = $goal->completed_at !== null;
+    
+    $target = (float) $goal->target;
+    $cappedCurrent = min($current, $target);
+    
+    $goal->update([
+        'current' => $cappedCurrent,
+        'updated_by_user_id' => $this->getAuthenticatedUser()->id,
+    ]);
+    
+    $this->updateCompletionStatus($goal, $wasCompleted);
+    return $goal->fresh()->load('milestones');
+}
 
     public function createMilestone(int $goalId, array $milestoneData): GoalMilestone
     {
