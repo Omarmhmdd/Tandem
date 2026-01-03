@@ -9,6 +9,9 @@ use App\Http\Controllers\GoalsController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\MoodController;
 use App\Http\Controllers\WeeklySummaryController;
+use App\Http\Controllers\RecipesController;
+
+
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -97,6 +100,16 @@ Route::group(['prefix' => 'v0.1'], function () {
             // WEEKLY SUMMARIES
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
+            });
+
+            // RECIPES
+            Route::group(['prefix' => 'recipes'], function () {
+                Route::get('/', [RecipesController::class, 'index']);
+                Route::post('/', [RecipesController::class, 'store']);
+                Route::get('/{id}', [RecipesController::class, 'show']);
+                Route::post('/{id}/update', [RecipesController::class, 'update']);
+                Route::post('/{id}/delete', [RecipesController::class, 'destroy']);
+                Route::post('/{id}/link-pantry', [RecipesController::class, 'linkPantry']);
             });
 
 
