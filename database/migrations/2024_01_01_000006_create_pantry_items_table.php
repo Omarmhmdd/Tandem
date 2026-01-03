@@ -32,8 +32,7 @@ return new class extends Migration
             $table->fullText('name');
         });
         
-        // Add virtual column for days_until_expiry
-        DB::statement('ALTER TABLE pantry_items ADD COLUMN days_until_expiry INT GENERATED ALWAYS AS (CASE WHEN expiry_date IS NOT NULL THEN DATEDIFF(expiry_date, CURDATE()) ELSE NULL END) VIRTUAL');
+    
     }
 
     public function down(): void
