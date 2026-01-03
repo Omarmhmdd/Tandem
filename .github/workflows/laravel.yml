@@ -1,5 +1,5 @@
 name: Laravel CI
- # CI workflow for Laravel testing and linting
+
 on:
   push:
     branches: [ main, develop ]
@@ -34,9 +34,6 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-
-      - name: Validate .env.example exists
-        run: test -f .env.example || (echo "Error: .env.example not found" && exit 1)
 
       - name: Copy .env
         run: cp .env.example .env
