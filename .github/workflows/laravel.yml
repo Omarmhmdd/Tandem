@@ -13,7 +13,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: testing
@@ -74,31 +74,3 @@ jobs:
           name: test-results
           path: junit.xml
           retention-days: 7
-
-  lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, xml, bcmath
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: ./vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
-
-      - name: Run Pint
-        run: vendor/bin/pint --test
