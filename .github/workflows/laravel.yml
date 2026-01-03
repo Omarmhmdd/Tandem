@@ -1,5 +1,5 @@
 name: Laravel CI
-
+ # CI workflow for Laravel testing and linting
 on:
   push:
     branches: [ main, develop ]
