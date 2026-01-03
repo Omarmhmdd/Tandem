@@ -8,6 +8,7 @@ use App\Http\Controllers\NutritionTargetController;
 use App\Http\Controllers\GoalsController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\MoodController;
+use App\Http\Controllers\WeeklySummaryController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     
@@ -85,12 +86,17 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/summary', [BudgetController::class, 'getSummary']);
             });
 
-            
+
              // MOOD
             Route::group(['prefix' => 'mood'], function () {
                 Route::get('/timeline', [MoodController::class, 'getTimeline']);
                 Route::get('/comparison', [MoodController::class, 'getComparison']);
                 Route::post('/entries', [MoodController::class, 'createEntry']);
+            });
+
+            // WEEKLY SUMMARIES
+            Route::group(['prefix' => 'weekly-summaries'], function () {
+                Route::get('/', [WeeklySummaryController::class, 'index']);
             });
 
 
