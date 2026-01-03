@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HouseholdController;
@@ -11,22 +12,22 @@ use App\Http\Controllers\MoodController;
 use App\Http\Controllers\WeeklySummaryController;
 use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\MealPlannerController;
+use App\Http\Controllers\PantryController;
 
 Route::group(['prefix' => 'v0.1'], function () {
-    
     // Unauthenticated routes
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
     // Protected routes
     Route::group(['middleware' => 'auth:api'], function () {
-        
+        // AUTH - No household required
         Route::group(['prefix' => 'auth'], function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);
         });
 
-          // HOUSEHOLD MANAGEMENT 
+        // HOUSEHOLD MANAGEMENT - No household required (user needs to create/join)
         Route::group(['prefix' => 'household'], function () {
             Route::post('/create/{name}', [HouseholdController::class, 'create']);
             Route::get('/getAll/{household_id?}', [HouseholdController::class, 'getAllByUserId']);
@@ -43,30 +44,31 @@ Route::group(['prefix' => 'v0.1'], function () {
             });
         });
 
-             // HABITS
-            Route::group(['prefix' => 'habits'], function () {
-                Route::get('/', [HabitsController::class, 'index']);
-                Route::post('/', [HabitsController::class, 'store']);
-                Route::post('/{id}/update', [HabitsController::class, 'update']);
-                Route::post('/{id}/delete', [HabitsController::class, 'destroy']);
-                Route::post('/{id}/completions', [HabitsController::class, 'markCompletion']);
-            });
+        // HABITS - User-specific, no household required
+        Route::group(['prefix' => 'habits'], function () {
+            Route::get('/', [HabitsController::class, 'index']);
+            Route::post('/', [HabitsController::class, 'store']);
+            Route::post('/{id}/update', [HabitsController::class, 'update']);
+            Route::post('/{id}/delete', [HabitsController::class, 'destroy']);
+            Route::post('/{id}/completions', [HabitsController::class, 'markCompletion']);
+        });
 
-            // HEALTH LOGS
-            Route::group(['prefix' => 'health'], function () {
-                Route::get('/logs', [HealthLogController::class, 'index']);
-                Route::post('/logs', [HealthLogController::class, 'store']);
-                Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
-            });
+        // HEALTH LOGS - User-specific, no household required
+        Route::group(['prefix' => 'health'], function () {
+            Route::get('/logs', [HealthLogController::class, 'index']);
+            Route::post('/logs', [HealthLogController::class, 'store']);
+            Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
+        });
 
+        // NUTRITION TARGET - User-specific, no household required
+        Route::group(['prefix' => 'nutrition-target'], function () {
+            Route::get('/', [NutritionTargetController::class, 'getTarget']);
+            Route::post('/', [NutritionTargetController::class, 'updateTarget']);
+        });
 
-            // NUTRITION TARGET 
-            Route::group(['prefix' => 'nutrition-target'], function () {
-                Route::get('/', [NutritionTargetController::class, 'getTarget']);
-                Route::post('/', [NutritionTargetController::class, 'updateTarget']);
-            });
-
-                        // GOALS
+        // ALL OTHER ROUTES - Require household
+        Route::group(['middleware' => 'require.household'], function () {
+            // GOALS
             Route::group(['prefix' => 'goals'], function () {
                 Route::get('/', [GoalsController::class, 'index']);
                 Route::post('/', [GoalsController::class, 'store']);
@@ -78,7 +80,7 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/{id}/milestones/{milestoneId}/delete', [GoalsController::class, 'deleteMilestone']);
             });
 
-                        // BUDGET & EXPENSES
+            // BUDGET & EXPENSES
             Route::group(['prefix' => 'budget'], function () {
                 Route::post('/', [BudgetController::class, 'createOrUpdateBudget']);
                 Route::get('/expenses', [BudgetController::class, 'getExpenses']);
@@ -88,8 +90,7 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/summary', [BudgetController::class, 'getSummary']);
             });
 
-
-             // MOOD
+            // MOOD TRACKING
             Route::group(['prefix' => 'mood'], function () {
                 Route::get('/timeline', [MoodController::class, 'getTimeline']);
                 Route::get('/comparison', [MoodController::class, 'getComparison']);
@@ -111,7 +112,7 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/{id}/link-pantry', [RecipesController::class, 'linkPantry']);
             });
 
-                        // MEAL PLANNER
+            // MEAL PLANNER
             Route::group(['prefix' => 'meals'], function () {
                 Route::get('/plan', [MealPlannerController::class, 'getWeeklyPlan']);
                 Route::post('/plan', [MealPlannerController::class, 'store']);
@@ -121,7 +122,13 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/match-meal/{id}/respond', [MealPlannerController::class, 'respondToMatchMeal']);
             });
 
-
-
+            // PANTRY
+            Route::group(['prefix' => 'pantry'], function () {
+                Route::get('/', [PantryController::class, 'index']);
+                Route::post('/', [PantryController::class, 'store']);
+                Route::post('/{id}/update', [PantryController::class, 'update']);
+                Route::post('/{id}/delete', [PantryController::class, 'destroy']);
+            });
+        });
     });
 });
