@@ -105,6 +105,7 @@ Route::group(['prefix' => 'v0.1'], function () {
             // WEEKLY SUMMARIES
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
+                Route::post('/', [WeeklySummaryController::class, 'generate']);
             });
 
                     // ANALYTICS
