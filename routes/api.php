@@ -14,8 +14,8 @@ use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\PantryController;
 use App\Http\Controllers\ShoppingListController;
-use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AutoOrderController;
+use App\Http\Controllers\AnalyticsController;
 
 
 Route::group(['prefix' => 'v0.1'], function () {
@@ -61,6 +61,7 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'health'], function () {
             Route::get('/logs', [HealthLogController::class, 'index']);
             Route::post('/logs', [HealthLogController::class, 'store']);
+            Route::post('/logs/parse', [HealthLogController::class, 'parse']);
             Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
         });
 

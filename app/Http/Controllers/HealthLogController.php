@@ -8,8 +8,7 @@ use App\Http\Requests\CreateHealthLogRequest;
 use App\Http\Resources\HealthLogResource;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-
-
+use App\Http\Requests\ParseHealthLogRequest;
 
 class HealthLogController extends Controller
 {
@@ -46,5 +45,17 @@ class HealthLogController extends Controller
 
         return $this->success(null, 'Health log deleted successfully');
     }
+
+    public function parse(ParseHealthLogRequest $request): JsonResponse
+{
+    $parsed = $this->healthLogService->parseText(
+        $request->getText(),
+        $request->getMood()
+    );
+
+    return $this->success([
+        'parsed' => $parsed,
+    ], 'Text parsed successfully');
+}
 }
 

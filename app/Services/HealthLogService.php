@@ -6,10 +6,18 @@ use App\Models\HealthLog;
 use App\Models\MoodEntry;
 use App\Data\MoodEntryData;
 use App\Http\Traits\HasAuthenticatedUser;
+use App\Services\LlmOnlyService;
+use App\Services\Prompts\HealthLogParsingPrompt;
+use App\Validators\HealthLogParsedDataValidator;
+use App\Constants\LlmConstants;
 
 class HealthLogService
 {
     use HasAuthenticatedUser;
+
+    public function __construct(
+    private LlmOnlyService $llmService
+) {}
 
     public function getAll(?string $startDate = null, ?string $endDate = null): \Illuminate\Support\Collection
     {
@@ -71,4 +79,15 @@ class HealthLogService
             MoodEntryData::getUpdateData($healthLogData)
         );
     }
+
+    public function parseText(string $text, ?string $userMood = null): array
+{
+    $systemPrompt = HealthLogParsingPrompt::getSystemPrompt();
+    $userPrompt = HealthLogParsingPrompt::buildUserPrompt($text, $userMood);
+
+    $result = $this->llmService->generateJson($systemPrompt,$userPrompt,  [ 'temperature' => LlmConstants::TEMPERATURE_CALCULATION,]
+    );
+    return HealthLogParsedDataValidator::validateAndSanitize($result);
+}
+
 }
