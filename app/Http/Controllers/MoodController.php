@@ -8,7 +8,7 @@ use App\Http\Requests\CreateMoodEntryRequest;
 use App\Http\Resources\MoodEntryResource;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-
+use App\Http\Resources\MoodAnnotationResource;
 class MoodController extends Controller
 {
     use ApiResponse;
@@ -50,4 +50,16 @@ class MoodController extends Controller
             'entry' => new MoodEntryResource($entry),
         ], 'Mood entry created successfully');
     }
+
+    public function autoAnnotate(DateRangeRequest $request): JsonResponse
+{
+    $annotations = $this->moodService->autoAnnotate(
+        $request->getStartDate(),
+        $request->getEndDate()
+    );
+
+    return $this->success([
+        'annotations' => MoodAnnotationResource::collection($annotations),
+    ], 'Annotations generated successfully');
+}
 }

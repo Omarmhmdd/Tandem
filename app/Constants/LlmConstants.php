@@ -18,4 +18,6 @@ class LlmConstants
     public const TEMPERATURE_ANALYSIS = 0.7;
     public const TEMPERATURE_CREATIVE = 0.8;
     public const TEMPERATURE_VARIETY = 1.0;
+
+     public const MOOD_ANNOTATION_DAYS = 30;
 }

@@ -100,6 +100,7 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/timeline', [MoodController::class, 'getTimeline']);
                 Route::get('/comparison', [MoodController::class, 'getComparison']);
                 Route::post('/entries', [MoodController::class, 'createEntry']);
+                Route::post('/annotations', [MoodController::class, 'autoAnnotate']);
             });
 
             // WEEKLY SUMMARIES
