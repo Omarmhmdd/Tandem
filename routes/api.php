@@ -17,6 +17,7 @@ use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\AutoOrderController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DateNightController;
+use App\Http\Controllers\NutritionController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -115,6 +116,8 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/', [DateNightController::class, 'generate']);
                 Route::post('/{id}/accept', [DateNightController::class, 'accept']);
             });
+
+            Route::post('/nutrition/recommendations', [NutritionController::class, 'recommendations']);
 
                     // ANALYTICS
         Route::group(['prefix' => 'analytics'], function () {
