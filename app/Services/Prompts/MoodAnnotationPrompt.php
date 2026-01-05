@@ -46,13 +46,7 @@ Only create annotations when you find something meaningful. Empty array if nothi
 PROMPT;
 }
 
-    public static function buildUserPrompt(
-        array $moodEntries,
-        array $healthLogs,
-        array $expenses,
-        ?string $startDate = null,
-        ?string $endDate = null
-    ): string {
+    public static function buildUserPrompt(array $moodEntries,array $healthLogs,array $expenses,?string $startDate = null,?string $endDate = null ): string {
         $dateRange = $startDate && $endDate 
             ? "from {$startDate} to {$endDate}"
             : "recently";

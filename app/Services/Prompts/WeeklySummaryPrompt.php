@@ -54,15 +54,7 @@ Guidelines:
 PROMPT;
 }
 
-    public static function buildUserPrompt(
-        array $healthLogs,
-        array $pantryItems,
-        array $recipes,
-        array $goals,
-        array $moodData,
-        array $budgetData,
-        string $weekStart
-    ): string {
+    public static function buildUserPrompt(array $healthLogs,array $pantryItems,array $recipes,array $goals,array $moodData,array $budgetData,string $weekStart): string {
         $healthSummary = self::formatHealthLogs($healthLogs);
         $pantrySummary = self::formatPantryItems($pantryItems);
         $recipesSummary = self::formatRecipes($recipes);

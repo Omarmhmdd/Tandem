@@ -16,7 +16,7 @@ use App\Http\Controllers\PantryController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\AutoOrderController;
 use App\Http\Controllers\AnalyticsController;
-
+use App\Http\Controllers\DateNightController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -107,6 +107,13 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
                 Route::post('/', [WeeklySummaryController::class, 'generate']);
+            });
+
+            // DATE NIGHT PLANNER
+            Route::group(['prefix' => 'date-night'], function () {
+                Route::get('/', [DateNightController::class, 'index']);
+                Route::post('/', [DateNightController::class, 'generate']);
+                Route::post('/{id}/accept', [DateNightController::class, 'accept']);
             });
 
                     // ANALYTICS

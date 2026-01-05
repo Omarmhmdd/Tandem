@@ -149,14 +149,7 @@ class AnalyticsService
         });
     }
 
-    protected function buildWeeklyData(
-        string $startDate,
-        string $endDate,
-        $userLogs,
-        $partnerLogs,
-        $userMoods,
-        $partnerMoods
-    ): array {
+    protected function buildWeeklyData(string $startDate,string $endDate,$userLogs,$partnerLogs,$userMoods,$partnerMoods ): array {
         $result = WeeklyAnalyticsData::empty();
 
         $currentDate = Carbon::parse($startDate);
@@ -166,13 +159,7 @@ class AnalyticsService
             $dateStr = $currentDate->format('Y-m-d');
             $dayName = AnalyticsConstants::DAY_NAMES[$currentDate->format('N') - 1];
 
-            $dayData = $this->buildWeeklyDayData(
-                $dayName,
-                $dateStr,
-                $userLogs,
-                $partnerLogs,
-                $userMoods,
-                $partnerMoods
+            $dayData = $this->buildWeeklyDayData($dayName,$dateStr,$userLogs,$partnerLogs,$userMoods,$partnerMoods
             );
 
             $result['steps'][] = $dayData['steps'];
@@ -188,14 +175,7 @@ class AnalyticsService
         return $result;
     }
 
-    protected function buildWeeklyDayData(
-        string $dayName,
-        string $dateStr,
-        $userLogs,
-        $partnerLogs,
-        $userMoods,
-        $partnerMoods
-    ): array {
+    protected function buildWeeklyDayData( string $dayName, string $dateStr, $userLogs, $partnerLogs, $userMoods, $partnerMoods): array {
         // Get all mood entries for this date
         $dayUserMoods = $this->filterMoodsByDate($userMoods, $dateStr);
         $dayPartnerMoods = $partnerMoods->isNotEmpty() ? $this->filterMoodsByDate($partnerMoods, $dateStr) : collect([]);
@@ -333,4 +313,4 @@ class AnalyticsService
 
         return $result;
     }
-}
+} 

@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class DateNightSuggestion extends Model
 {
-    use HasFactory;
+        use HasFactory;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_DECLINED = 'declined';
 
     public $timestamps = false;
     protected $fillable = [

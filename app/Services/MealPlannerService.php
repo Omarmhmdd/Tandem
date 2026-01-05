@@ -56,6 +56,37 @@ class MealPlannerService
         $mealPlan->delete();
     }
 
+     protected function findMealPlanForHousehold(int $id, int $householdId): MealPlan
+    {
+        return MealPlan::where('id', $id)
+            ->where('household_id', $householdId)
+            ->firstOrFail();
+    }
+
+    protected function findMatchMealForUser(int $matchMealId, int $userId): MatchMeal
+    {
+        return MatchMeal::where('id', $matchMealId)
+            ->where('invited_to_user_id', $userId)
+            ->where('status', 'pending')
+            ->with('mealPlan')
+            ->firstOrFail();
+    }
+
+
+    protected function verifyMatchMealHousehold(MatchMeal $matchMeal, int $householdId): void
+    {
+        if ($matchMeal->mealPlan->household_id !== $householdId) {
+            abort(403, 'You do not have permission to respond to this match meal');
+        }
+    }
+
+    protected function validateMatchMealStatus(string $status): void
+    {
+        if (!in_array($status, ['accepted', 'declined'])) {
+            abort(400, 'Invalid status. Must be "accepted" or "declined"');
+        }
+    }
+
     public function createMatchMeal(array $matchMealData): MatchMeal
     {
         $householdMember = $this->getActiveHouseholdMember();
@@ -106,34 +137,5 @@ class MealPlannerService
     }
 
 
-    protected function findMealPlanForHousehold(int $id, int $householdId): MealPlan
-    {
-        return MealPlan::where('id', $id)
-            ->where('household_id', $householdId)
-            ->firstOrFail();
-    }
-
-    protected function findMatchMealForUser(int $matchMealId, int $userId): MatchMeal
-    {
-        return MatchMeal::where('id', $matchMealId)
-            ->where('invited_to_user_id', $userId)
-            ->where('status', 'pending')
-            ->with('mealPlan')
-            ->firstOrFail();
-    }
-
-
-    protected function verifyMatchMealHousehold(MatchMeal $matchMeal, int $householdId): void
-    {
-        if ($matchMeal->mealPlan->household_id !== $householdId) {
-            abort(403, 'You do not have permission to respond to this match meal');
-        }
-    }
-
-    protected function validateMatchMealStatus(string $status): void
-    {
-        if (!in_array($status, ['accepted', 'declined'])) {
-            abort(400, 'Invalid status. Must be "accepted" or "declined"');
-        }
-    }
+   
 }

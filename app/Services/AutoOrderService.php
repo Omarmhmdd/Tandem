@@ -9,7 +9,7 @@ use App\Data\PartnerData;
 use App\Data\PantryItemData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Http\Traits\HasDatabaseTransactions;
-
+use Exception;
 class AutoOrderService
 {
     use VerifiesResourceOwnership, HasDatabaseTransactions;
@@ -27,7 +27,7 @@ class AutoOrderService
         $neededItems = $this->filterNeededItems($shoppingListItems);
 
         if (empty($neededItems)) {
-            throw new \Exception('No items to order');
+            throw new Exception('No items to order');
         }
 
         $orderId = $this->generateOrderId();
@@ -60,13 +60,7 @@ class AutoOrderService
         });
     }
 
-  protected function findOrCreatePantryItem(
-    string $itemName,
-    float $quantity,
-    string $unit,
-    int $householdId,
-    int $userId
-): void {
+  protected function findOrCreatePantryItem( string $itemName, float $quantity, string $unit, int $householdId, int $userId): void {
     $existingItem = $this->findPantryItemByName($itemName, $householdId);
 
     if ($existingItem) {
@@ -99,7 +93,7 @@ class AutoOrderService
     {
         try {
             return app(\App\Services\PantryService::class)->categorizeItem($itemName);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'category' => AutoOrderConstants::DEFAULT_CATEGORY,
                 'location' => AutoOrderConstants::DEFAULT_LOCATION,

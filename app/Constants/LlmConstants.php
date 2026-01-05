@@ -18,6 +18,9 @@ class LlmConstants
     public const TEMPERATURE_ANALYSIS = 0.7;
     public const TEMPERATURE_CREATIVE = 0.8;
     public const TEMPERATURE_VARIETY = 1.0;
+    public const MOOD_ANNOTATION_DAYS = 30;
 
-     public const MOOD_ANNOTATION_DAYS = 30;
+    public const DATE_NIGHT_MIN_BUDGET = 10.0;
+    public const DATE_NIGHT_DEFAULT_BUDGET = 50.0;
+    public const DATE_NIGHT_FALLBACK_BUDGET = 100.0;
 }
