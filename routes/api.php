@@ -14,9 +14,10 @@ use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\MealPlannerController;
 use App\Http\Controllers\PantryController;
 use App\Http\Controllers\ShoppingListController;
-use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AutoOrderController;
-
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\DateNightController;
+use App\Http\Controllers\NutritionController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -61,6 +62,7 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'health'], function () {
             Route::get('/logs', [HealthLogController::class, 'index']);
             Route::post('/logs', [HealthLogController::class, 'store']);
+            Route::post('/logs/parse', [HealthLogController::class, 'parse']);
             Route::post('/logs/{id}/delete', [HealthLogController::class, 'destroy']);
         });
 
@@ -99,12 +101,23 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::get('/timeline', [MoodController::class, 'getTimeline']);
                 Route::get('/comparison', [MoodController::class, 'getComparison']);
                 Route::post('/entries', [MoodController::class, 'createEntry']);
+                Route::post('/annotations', [MoodController::class, 'autoAnnotate']);
             });
 
             // WEEKLY SUMMARIES
             Route::group(['prefix' => 'weekly-summaries'], function () {
                 Route::get('/', [WeeklySummaryController::class, 'index']);
+                Route::post('/', [WeeklySummaryController::class, 'generate']);
             });
+
+            // DATE NIGHT PLANNER
+            Route::group(['prefix' => 'date-night'], function () {
+                Route::get('/', [DateNightController::class, 'index']);
+                Route::post('/', [DateNightController::class, 'generate']);
+                Route::post('/{id}/accept', [DateNightController::class, 'accept']);
+            });
+
+            Route::post('/nutrition/recommendations', [NutritionController::class, 'recommendations']);
 
                     // ANALYTICS
         Route::group(['prefix' => 'analytics'], function () {

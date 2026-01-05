@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Data;
-
+use App\Constants\AnalyticsConstants;
 class PantryWasteData
 {
     public static function empty(): array
@@ -15,8 +15,8 @@ class PantryWasteData
 
     public static function calculate(int $totalExpired): array
     {
-        $wasted = (int) ($totalExpired * \App\Constants\AnalyticsConstants::PANTRY_WASTE_PERCENTAGE);
-        $donated = (int) ($totalExpired * \App\Constants\AnalyticsConstants::PANTRY_DONATED_PERCENTAGE);
+        $wasted = (int) ($totalExpired * AnalyticsConstants::PANTRY_WASTE_PERCENTAGE);
+        $donated = (int) ($totalExpired * AnalyticsConstants::PANTRY_DONATED_PERCENTAGE);
         $used = $totalExpired - $wasted - $donated;
 
         return [
