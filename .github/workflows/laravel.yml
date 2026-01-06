@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Laravel PHP tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: TandemServer
+    timeout-minutes: 15
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ./TandemServer/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('TandemServer/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Copy .env
+        working-directory: ./TandemServer
+        run: cp .env.example .env
+
+      - name: Install Dependencies
+        working-directory: ./TandemServer
+        run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Generate key
+        working-directory: ./TandemServer
+        run: php artisan key:generate
+
+      - name: Directory Permissions
+        working-directory: ./TandemServer
+        run: chmod -R 775 storage bootstrap/cache
+
+      - name: Run Migrations
+        working-directory: ./TandemServer
+        run: php artisan migrate --force
+
+      - name: Execute tests
+        working-directory: ./TandemServer
+        run: vendor/bin/phpunit --log-junit junit.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: TandemServer/junit.xml
+          retention-days: 7
+
+  frontend:
+    name: Frontend (React build and tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: TandemClient
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('TandemClient/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: ./TandemClient
+        run: npm install
+
+      - name: Build project
+        working-directory: ./TandemClient
+        run: npm run build
+
+      - name: Upload Frontend Build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: TandemClient/dist
+          if-no-files-found: ignore
