@@ -73,49 +73,26 @@ class HealthLogParsedDataValidator
     }
     private static function isGibberish(string $text): bool
     {
-        if (empty($text) || strlen($text) < 3) {
-            return false;
-        }
-
-        $keyboardPatterns = [
-            '/^[qwertyuiop]+$/i',
-            '/^[asdfghjkl]+$/i',
-            '/^[zxcvbnm]+$/i',
-            '/^[qwerty]+$/i',
-            '/^[asdf]+$/i',
-        ];
-
-        foreach ($keyboardPatterns as $pattern) {
-            if (preg_match($pattern, $text)) {
-                return true;
-            }
-        }
-
-
-        $charCounts = count_chars(strtolower($text), 1);
-        $maxCharCount = max($charCounts);
-        $textLength = strlen($text);
-        
-        if ($maxCharCount / $textLength > 0.4 && $textLength > 5) {
-            return true;
-        }
-
-        if (strlen($text) > 15 && !preg_match('/\s/', $text)) {
-            // Check if it contains mostly consonants or random patterns
-            $consonantRatio = preg_match_all('/[bcdfghjklmnpqrstvwxyz]/i', $text) / strlen($text);
-            if ($consonantRatio > 0.7) {
-                return true;
-            }
-        }
-
-
-        $vowelCount = preg_match_all('/[aeiou]/i', $text);
-        $textLength = strlen($text);
-        if ($textLength > 20 && $vowelCount / $textLength < 0.15) {
-            return true;
-        }
-
+       if (empty($text) || strlen($text) < 3) {
         return false;
+    }
+
+    // Keyboard mashing
+    if (preg_match('/^(qwert|asdf|zxcv|hjkl)+$/i', $text)) {
+        return true;
+    }
+
+    // Same char repeated (aaaaa, 11111)
+    if (preg_match('/^(.)\1{4,}$/', $text)) {
+        return true;
+    }
+
+    // No vowels at all in words 5+ chars
+    if (strlen($text) > 5 && !preg_match('/[aeiou]/i', $text)) {
+        return true;
+    }
+
+    return false;
     }
 
     private static function sanitizeArray(?array $items): array
