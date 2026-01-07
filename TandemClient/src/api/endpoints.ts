@@ -6,7 +6,7 @@ export const ENDPOINTS = {
   REGISTER: '/register',
   LOGOUT: '/auth/logout',
   ME: '/auth/me',
-  NUTRITION_TARGET: '/auth/nutrition-target',
+  NUTRITION_TARGET: '/nutrition-target',
 
   // Household
   HOUSEHOLD_CREATE: (name: string) => `/household/create/${name}`,
@@ -72,7 +72,7 @@ export const ENDPOINTS = {
 
   // AI Coach
   AI_COACH_QUERY: '/ai/coach/query',
-  AI_COACH_NUTRITION: '/ai/coach/nutrition',
+  AI_COACH_NUTRITION: '/nutrition/recommendations',  // ← CHANGE THIS
 
   // Weekly Summary
   WEEKLY_SUMMARIES: '/weekly-summaries',

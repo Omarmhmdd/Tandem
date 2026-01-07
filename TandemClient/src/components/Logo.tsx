@@ -1,11 +1,6 @@
 import React from 'react';
+import type { LogoProps } from '../types/component.types';
 
-interface LogoProps {
-  size?: 'sm' | 'md' | 'lg';
-  showText?: boolean;
-  className?: string;
-  variant?: 'light' | 'dark';  // Add this line
-}
 export const Logo: React.FC<LogoProps> = ({ 
   size = 'md', 
   showText = true,

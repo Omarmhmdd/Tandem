@@ -20,19 +20,7 @@ export interface SuccessResponse<T> {
 }
 
 // Goals API Responses - Backend returns { message?, data }
-export interface GoalsResponse {
-  data: {
-    goals: any[];
-  };
-  message?: string;
-}
 
-export interface SingleGoalResponse {
-  data: {
-    goal: any;
-  };
-  message?: string;
-}
 
 // Recipes API Responses
 export interface RecipesResponse {
@@ -49,20 +37,7 @@ export interface SingleRecipeResponse {
   message?: string;
 }
 
-// Pantry API Responses
-export interface PantryResponse {
-  data: {
-    items: any[];
-  };
-  message?: string;
-}
 
-export interface SinglePantryResponse {
-  data: {
-    item: any;
-  };
-  message?: string;
-}
 
 // Budget API Responses
 export interface ExpensesResponse {
@@ -88,20 +63,7 @@ export interface BudgetSummaryResponse {
   message?: string;
 }
 
-// Health Logs API Responses
-export interface HealthLogsResponse {
-  data: {
-    logs: any[];
-  };
-  message?: string;
-}
 
-export interface SingleHealthLogResponse {
-  data: {
-    log: any;
-  };
-  message?: string;
-}
 
 export interface ParseHealthLogResponse {
   data: {
@@ -135,20 +97,7 @@ export interface SingleHabitResponse {
   message?: string;
 }
 
-// Meal Plans API Responses
-export interface MealPlansResponse {
-  data: {
-    plans: any[];
-  };
-  message?: string;
-}
 
-export interface SingleMealPlanResponse {
-  data: {
-    plan: any;
-  };
-  message?: string;
-}
 
 export interface ShoppingListResponse {
   data: {
@@ -214,38 +163,51 @@ export interface AiCoachQueryResponse {
 
 export interface NutritionResponse {
   data: {
-    partnersIntake: any[];
-    recommendations: string[];
-    suggestedMeals: any[];
-    targets?: {
-      user: {
-        calories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
-      } | null;
-      partner: {
-        calories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
-      } | null;
+    nutrition: {  // ← Add this wrapper to match actual API response
+      partnersIntake: any[];
+      recommendations: string[];
+      suggestedMeals: any[];
+      targets?: {
+        user: {
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+        } | null;
+        partner: {
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+        } | null;
+      };
     };
   };
   message?: string;
 }
 
-// Weekly Summary API Responses
-export interface WeeklySummariesResponse {
+
+
+
+// Household API Responses
+export interface HouseholdsResponse {
   data: {
-    summaries: any[];
+    households: any[]; // BackendHousehold[] - but using any to match pattern
   };
   message?: string;
 }
 
-export interface SingleWeeklySummaryResponse {
+export interface SingleHouseholdResponse {
   data: {
-    summary: any;
+    household: any; // BackendHousehold - but using any to match pattern
+    invite_code?: string;
+  };
+  message?: string;
+}
+
+export interface HouseholdMembersResponse {
+  data: {
+    members: any[]; // BackendHouseholdMember[] - but using any to match pattern
   };
   message?: string;
 }

@@ -1,12 +1,5 @@
 import React from 'react';
-
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
-  onClick?: () => void;
-}
+import type { CardProps, CardHeaderProps, CardTitleProps, CardContentProps } from '../../types/component.types';
 
 export const Card: React.FC<CardProps> = ({
   children,
@@ -38,32 +31,17 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
-interface CardHeaderProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '' }) => (
   <div className={`mb-4 ${className}`}>
     {children}
   </div>
 );
 
-interface CardTitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }) => (
   <h3 className={`text-lg font-semibold text-gray-900 ${className}`}>
     {children}
   </h3>
 );
-
-interface CardContentProps {
-  children: React.ReactNode;
-  className?: string;
-}
 
 export const CardContent: React.FC<CardContentProps> = ({ children, className = '' }) => (
   <div className={className}>
