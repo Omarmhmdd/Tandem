@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: rgb(249 250 251);
+    color: rgb(17 24 39);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    background-color: rgb(255 255 255 / 0.8);
+    backdrop-filter: blur(12px);
+  }
+  
+  .shadow-brand {
+    box-shadow: 0 4px 14px 0 rgba(83, 56, 158, 0.15);
+  }
+  
+  .gradient-brand {
+    background: linear-gradient(135deg, #53389E 0%, #9E77ED 100%);
+  }
+  
+  .gradient-brand-light {
+    background: linear-gradient(135deg, #9E77ED 0%, #D6BBFB 100%);
+  }
+}
