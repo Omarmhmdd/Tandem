@@ -29,18 +29,33 @@ const calculateStreakFromCompletions = (completions: HabitCompletion[]): number 
   
   if (sorted.length === 0) return 0;
   
-  let streak = 0;
   const today = getTodayNormalized();
+  const mostRecent = sorted[0];
+  const mostRecentDate = normalizeDate(mostRecent.date);
   
-  for (let i = 0; i < sorted.length; i++) {
-    const completionDate = normalizeDate(sorted[i].date);
-    const expectedDate = new Date(today);
-    expectedDate.setDate(today.getDate() - i);
-    expectedDate.setHours(0, 0, 0, 0);
+  // If the most recent completion is not today or yesterday, streak is 0
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+  
+  const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // If most recent completion is more than 1 day ago, streak is broken
+  if (daysDiff > 1) return 0;
+  
+  // Start counting from the most recent completion date
+  let streak = 0;
+  let currentDate = new Date(mostRecentDate);
+  
+  for (const completion of sorted) {
+    const completionDate = normalizeDate(completion.date);
     
-    if (completionDate.getTime() === expectedDate.getTime()) {
+    if (completionDate.getTime() === currentDate.getTime()) {
       streak++;
+      // Move to the previous day
+      currentDate.setDate(currentDate.getDate() - 1);
     } else {
+      // If dates don't match consecutively, break the streak
       break;
     }
   }
@@ -100,7 +115,10 @@ export const findCompletionByDate = (habit: Habit, date: string): HabitCompletio
 
 export const shouldCompleteHabit = (habit: Habit, date: string): boolean => {
   const existing = findCompletionByDate(habit, date);
-  return !existing;
+  // If no completion exists, we should complete it
+  // If completion exists but is not completed, we should complete it
+  // If completion exists and is completed, we should uncomplete it (return false)
+  return !existing || !existing.completed;
 };
 
 export const formatStreakMessage = (habitName: string, streak: number): string => {
@@ -114,7 +132,8 @@ export const getMonthlyCompletions = (habit: Habit): number => {
   const now = new Date();
   return habit.completions.filter((c: HabitCompletion) => {
     const compDate = new Date(c.date);
-    return compDate.getMonth() === now.getMonth() && 
+    return c.completed && 
+           compDate.getMonth() === now.getMonth() && 
            compDate.getFullYear() === now.getFullYear();
   }).length;
 };
