@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Constants\LlmConstants;
+use Config\LlmConstants;
 use OpenAI\Laravel\Facades\OpenAI;
 use Exception;
 class LlmOnlyService

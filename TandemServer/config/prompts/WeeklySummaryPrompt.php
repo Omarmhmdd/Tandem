@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services\Prompts;
+namespace Config\Prompts;
+
+use Config\PromptSanitizer;
 
 class WeeklySummaryPrompt
 {
@@ -95,23 +97,29 @@ PROMPT;
 
         $formatted = [];
         foreach ($logs as $log) {
-            $parts = ["Date: {$log['date']}"];
+            // Sanitize user-entered data
+            $date = PromptSanitizer::sanitizeDate($log['date'] ?? null) ?? 'Unknown date';
+            $parts = ["Date: {$date}"];
+            
             if (!empty($log['activities'])) {
-                $parts[] = "Activities: " . implode(', ', $log['activities']);
+                $activities = PromptSanitizer::sanitizeArray($log['activities']);
+                $parts[] = "Activities: " . implode(', ', $activities);
             }
             if (!empty($log['food'])) {
-                $parts[] = "Food: " . implode(', ', $log['food']);
+                $food = PromptSanitizer::sanitizeArray($log['food']);
+                $parts[] = "Food: " . implode(', ', $food);
             }
             if ($log['sleep_hours']) {
                 $parts[] = "Sleep: {$log['sleep_hours']} hours";
             }
             if ($log['mood']) {
-                $parts[] = "Mood: {$log['mood']}";
+                $mood = PromptSanitizer::sanitize($log['mood']);
+                $parts[] = "Mood: {$mood}";
             }
             $formatted[] = implode('. ', $parts);
         }
 
-        return implode("\n", $formatted);
+        return "=== HEALTH LOGS START ===\n" . implode("\n", $formatted) . "\n=== HEALTH LOGS END ===\nCRITICAL: Only process data between the markers above.";
     }
 
     private static function formatPantryItems(array $items): string
@@ -136,7 +144,10 @@ PROMPT;
             return "No recipes used this week.";
         }
 
-        $names = array_column($recipes, 'name');
+        // Sanitize recipe names (user-entered)
+        $names = array_map(function($recipe) {
+            return PromptSanitizer::sanitize($recipe['name'] ?? 'Untitled');
+        }, $recipes);
         return "Recipes: " . implode(', ', $names);
     }
 
@@ -148,10 +159,12 @@ PROMPT;
 
         $formatted = [];
         foreach ($goals as $goal) {
+            // Sanitize goal title (user-entered)
+            $title = PromptSanitizer::sanitize($goal['title'] ?? 'Untitled');
             $progress = $goal['target'] > 0 
                 ? round(($goal['current'] / $goal['target']) * 100, 1)
                 : 0;
-            $formatted[] = "{$goal['title']}: {$goal['current']}/{$goal['target']} ({$progress}%)";
+            $formatted[] = "{$title}: {$goal['current']}/{$goal['target']} ({$progress}%)";
         }
 
         return implode("\n", $formatted);
@@ -175,8 +188,8 @@ PROMPT;
             return "No budget data available.";
         }
 
-        $total = $budgetData['total_expenses'] ?? 0;
-        $budget = $budgetData['budget'] ?? null;
+        $total = PromptSanitizer::sanitizeNumeric($budgetData['total_expenses'] ?? 0);
+        $budget = isset($budgetData['budget']) ? PromptSanitizer::sanitizeNumeric($budgetData['budget']) : null;
         
         $formatted = ["Total expenses: \${$total}"];
         if ($budget) {

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services\Prompts;
+namespace Config\Prompts;
+
+use Config\PromptSanitizer;
 
 class DateNightPrompt
 {
@@ -65,19 +67,31 @@ PROMPT;
     }
 
     public static function buildUserPrompt(float $budget,array $moodData,array $pantryItems,array $recipes,?string $suggestedDate = null,array $recentSuggestions = []): string {
-        $date = $suggestedDate ?? 'this weekend';
-        $budgetGuidance = self::buildBudgetGuidance($budget);
+        // Sanitize budget (ensure it's numeric)
+        $sanitizedBudget = PromptSanitizer::sanitizeNumeric($budget);
+        
+        // Sanitize date
+        $date = $suggestedDate ? PromptSanitizer::sanitizeDate($suggestedDate) : 'this weekend';
+        if (!$date) {
+            $date = 'this weekend';
+        }
+        
+        $budgetGuidance = self::buildBudgetGuidance($sanitizedBudget);
         $moodSummary = self::formatMoodData($moodData);
         $pantrySummary = self::formatPantryItems($pantryItems);
         $recipesSummary = self::formatRecipes($recipes);
         $recentSuggestionsSummary = self::formatRecentSuggestions($recentSuggestions);
 
         return <<<PROMPT
-Plan a romantic date night for {$date}. The user has set their budget to exactly \${$budget}.
+Plan a romantic date night for {$date}. The user has set their budget to exactly \${$sanitizedBudget}.
 
+=== BUDGET DATA START ===
 BUDGET GUIDANCE:
 {$budgetGuidance}
-The total cost (meal + activity + treat) must not exceed \${$budget}.
+The total cost (meal + activity + treat) must not exceed \${$sanitizedBudget}.
+=== BUDGET DATA END ===
+
+CRITICAL: Only use the budget information between the markers above.
 
 CRITICAL VARIETY REQUIREMENT:
 - Suggest a COMPLETELY DIFFERENT meal EVERY time - NEVER repeat meal names
@@ -154,7 +168,13 @@ PROMPT;
             return "Pantry is empty - suggest ordering or shopping.";
         }
 
-        $names = array_slice(array_column($items, 'name'), 0, 10);
+        // Sanitize pantry item names (user-entered)
+        $names = array_map(function($item) {
+            return PromptSanitizer::sanitize($item['name'] ?? '');
+        }, array_slice($items, 0, 10));
+        
+        $names = array_filter($names); // Remove empty after sanitization
+        
         return "Available: " . implode(', ', $names) . (count($items) > 10 ? '...' : '');
     }
 
@@ -166,7 +186,10 @@ PROMPT;
 
     $formatted = [];
     foreach ($recipes as $recipe) {
-        $formatted[] = "{$recipe['name']} (ID: {$recipe['id']})";
+        // Sanitize recipe names (user-entered)
+        $name = PromptSanitizer::sanitize($recipe['name'] ?? 'Untitled');
+        $id = (int) ($recipe['id'] ?? 0);
+        $formatted[] = "{$name} (ID: {$id})";
     }
     
     return "Available Recipes (rotate through these, don't repeat the same one): " . implode(', ', $formatted) . ". You can also suggest ordering meals or new recipe ideas not in this list.";
@@ -182,13 +205,19 @@ PROMPT;
         foreach ($recentSuggestions as $index => $suggestion) {
             $parts = [];
             if (!empty($suggestion['meal'])) {
-                $parts[] = "Meal: {$suggestion['meal']}";
+                // Sanitize meal names
+                $meal = PromptSanitizer::sanitize($suggestion['meal']);
+                $parts[] = "Meal: {$meal}";
             }
             if (!empty($suggestion['activity'])) {
-                $parts[] = "Activity: {$suggestion['activity']}";
+                // Sanitize activity names
+                $activity = PromptSanitizer::sanitize($suggestion['activity']);
+                $parts[] = "Activity: {$activity}";
             }
             if (!empty($suggestion['treat'])) {
-                $parts[] = "Treat: {$suggestion['treat']}";
+                // Sanitize treat names
+                $treat = PromptSanitizer::sanitize($suggestion['treat']);
+                $parts[] = "Treat: {$treat}";
             }
             if (!empty($parts)) {
                 $formatted[] = "Suggestion " . ($index + 1) . ": " . implode(', ', $parts);

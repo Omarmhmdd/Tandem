@@ -7,9 +7,9 @@ use App\Models\MoodEntry;
 use App\Data\MoodEntryData;
 use App\Http\Traits\HasAuthenticatedUser;
 use App\Services\LlmOnlyService;
-use App\Services\Prompts\HealthLogParsingPrompt;
+use Config\Prompts\HealthLogParsingPrompt;
 use App\Validators\HealthLogParsedDataValidator;
-use App\Constants\LlmConstants;
+use Config\LlmConstants;
 
 class HealthLogService
 {

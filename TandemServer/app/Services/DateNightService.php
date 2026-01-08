@@ -8,11 +8,11 @@ use App\Models\Expense;
 use App\Models\MealPlan;
 use App\Models\Recipe;
 use App\Constants\DefaultValues;
-use App\Constants\LlmConstants;
+use Config\LlmConstants;
 use App\Data\DateNightData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Services\LlmOnlyService;
-use App\Services\Prompts\DateNightPrompt;
+use Config\Prompts\DateNightPrompt;
 use App\Validators\DateNightSuggestionValidator;
 
 class DateNightService
