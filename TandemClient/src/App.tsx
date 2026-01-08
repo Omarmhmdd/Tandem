@@ -6,7 +6,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
-import { HealthLogger } from './pages/HealthLogger'; // ← add this
+import { HealthLogger } from './pages/HealthLogger';
+import { Habits } from './pages/Habits'; // ← ADD THIS
 
 function App() {
   return (
@@ -30,7 +31,8 @@ function App() {
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
-                          <Route path="/health" element={<HealthLogger />} /> {/* ← add this */}
+                          <Route path="/health" element={<HealthLogger />} />
+                          <Route path="/habits" element={<Habits />} /> {/* ← ADD THIS */}
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>
