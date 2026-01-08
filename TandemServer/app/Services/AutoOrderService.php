@@ -10,6 +10,7 @@ use App\Data\PantryItemData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Http\Traits\HasDatabaseTransactions;
 use Exception;
+use App\Services\PantryService;
 class AutoOrderService
 {
     use VerifiesResourceOwnership, HasDatabaseTransactions;
@@ -70,16 +71,7 @@ class AutoOrderService
     } else {
         $categorization = $this->categorizeItemForPantry($itemName);
         
-        PantryItem::create(
-            PantryItemData::forAutoOrder(
-                $itemName,
-                $quantity,
-                $unit,
-                $categorization,
-                $householdId,
-                $userId
-            )
-        );
+        PantryItem::create(PantryItemData::forAutoOrder($itemName,$quantity,$unit,$categorization,$householdId,$userId));
     }
 }
     protected function findPantryItemByName(string $itemName, int $householdId): ?PantryItem
@@ -92,7 +84,7 @@ class AutoOrderService
     protected function categorizeItemForPantry(string $itemName): array
     {
         try {
-            return app(\App\Services\PantryService::class)->categorizeItem($itemName);
+            return app(PantryService::class)->categorizeItem($itemName);
         } catch (Exception $e) {
             return [
                 'category' => AutoOrderConstants::DEFAULT_CATEGORY,
