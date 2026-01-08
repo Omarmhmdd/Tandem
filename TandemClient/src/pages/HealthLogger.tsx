@@ -1,4 +1,4 @@
-    import React from 'react';
+    import React, { useState, useMemo } from 'react';
     import { HealthLogger as HealthLoggerComponent } from '../components/HealthLogger';
     import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
     import { Button } from '../components/ui/Button';
@@ -6,10 +6,12 @@
     import { Breadcrumbs } from '../components/ui/Breadcrumbs';
     import { EmptyState } from '../components/ui/EmptyState';
     import { PageHeader } from '../components/shared/PageHeader';
-    import { Calendar, Clock, Activity, Coffee, Moon, Trash2, FileText } from 'lucide-react';
+    import { Calendar, Clock, Activity, Coffee, Moon, Trash2, FileText, ChevronDown } from 'lucide-react';
     import { useHealthPage } from '../hooks/useHealth';
     import { useConfirmDialog } from '../hooks/useConfirmDialog';
     import type { LogEntry } from '../types/health.types';
+
+    const INITIAL_ENTRIES_TO_SHOW = 10;
 
     export const HealthLogger: React.FC = () => {
     const {
@@ -22,7 +24,14 @@
         getMoodEmoji,
     } = useHealthPage();
 
+    const [showAll, setShowAll] = useState(false);
     const deleteConfirm = useConfirmDialog();
+
+    const displayedEntries = useMemo(() => {
+        return showAll ? entries : entries.slice(0, INITIAL_ENTRIES_TO_SHOW);
+    }, [entries, showAll]);
+
+    const hasMoreEntries = entries.length > INITIAL_ENTRIES_TO_SHOW;
 
     const handleSaveEntry = async (entry: Omit<LogEntry, 'id'>) => {
         await saveEntry(entry);
@@ -101,7 +110,7 @@
         {/* All Entries */}
         <Card>
             <CardHeader>
-            <CardTitle>All Entries</CardTitle>
+            <CardTitle>All Entries {entries.length > 0 && `(${entries.length})`}</CardTitle>
             </CardHeader>
             <CardContent>
             {entries.length === 0 ? (
@@ -111,8 +120,9 @@
                 description="Start logging your daily activities, food, sleep, and mood to track your wellness journey."
                 />
             ) : (
+                <>
                 <div className="space-y-4">
-                {entries.map((entry: LogEntry) => (
+                {displayedEntries.map((entry: LogEntry) => (
                     <div
                     key={entry.id}
                     className="p-4 border border-gray-200 rounded-lg hover:border-brand-light hover:shadow-sm transition-all"
@@ -195,6 +205,21 @@
                     </div>
                 ))}
                 </div>
+                
+                {hasMoreEntries && (
+                    <div className="mt-6 flex justify-center">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowAll(!showAll)}
+                        icon={ChevronDown}
+                    >
+                        {showAll 
+                        ? `Show Less` 
+                        : `View All (${entries.length - INITIAL_ENTRIES_TO_SHOW} more)`}
+                    </Button>
+                    </div>
+                )}
+                </>
             )}
             </CardContent>
         </Card>

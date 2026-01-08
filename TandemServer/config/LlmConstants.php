@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Constants;
+namespace Config;
 
 class LlmConstants
 {
@@ -24,3 +24,4 @@ class LlmConstants
     public const DATE_NIGHT_DEFAULT_BUDGET = 50.0;
     public const DATE_NIGHT_FALLBACK_BUDGET = 100.0;
 }
+

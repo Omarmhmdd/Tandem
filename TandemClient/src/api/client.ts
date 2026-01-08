@@ -58,6 +58,17 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 
   // Handle error responses
     if (!response.ok) {
+        // Handle 401 Unauthorized (token expired)
+        if (response.status === 401) {
+        // Clear user data from localStorage
+        localStorage.removeItem('tandem_user');
+        // Redirect to login page
+        if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+        }
+        throw new Error('Session expired. Please login again.');
+        }
+        
         // Handle validation errors (422)
         if (response.status === 422 && errorData?.errors) {
         const validationErrors = Object.entries(errorData.errors)

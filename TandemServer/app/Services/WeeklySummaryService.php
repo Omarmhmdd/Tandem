@@ -13,9 +13,9 @@ use App\Models\MoodEntry;
 use App\Models\Expense;
 use App\Models\Budget;
 use App\Services\LlmOnlyService;
-use App\Services\Prompts\WeeklySummaryPrompt;
+use Config\Prompts\WeeklySummaryPrompt;
 use App\Validators\WeeklySummaryValidator;
-use App\Constants\LlmConstants;
+use Config\LlmConstants;
 use Exception;
 use App\Models\Household;
 class WeeklySummaryService

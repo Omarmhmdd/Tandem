@@ -8,8 +8,8 @@ use App\Models\MoodAnnotation;
 use App\Models\HealthLog;
 use App\Constants\DefaultValues;
 use App\Services\LlmOnlyService;
-use App\Constants\LlmConstants;
-use App\Services\Prompts\MoodAnnotationPrompt;
+use Config\LlmConstants;
+use Config\Prompts\MoodAnnotationPrompt;
 use App\Validators\MoodAnnotationValidator;
 class MoodService
 {

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Constants\LlmConstants;
+use Config\LlmConstants;
 use App\Data\NutritionData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Services\LlmOnlyService;
-use App\Services\Prompts\NutritionCalculationPrompt;
+use Config\Prompts\NutritionCalculationPrompt;
 use App\Validators\NutritionCalculationValidator;
 
 class NutritionService
