@@ -64,3 +64,10 @@ export interface ParseHealthLogResponse {
   };
   message?: string;
 }
+
+export interface HealthLoggerProps {
+  onSave?: (entry: Omit<LogEntry, 'id'> & { confidence?: number; originalText?: string }) => void;
+}
+export interface UseHealthLogParserOptions {
+  selectedMood?: string;
+}

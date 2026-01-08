@@ -4,21 +4,18 @@ namespace App\Services;
 
 use App\Constants\LlmConstants;
 use OpenAI\Laravel\Facades\OpenAI;
-
+use Exception;
 class LlmOnlyService
 {
-    public function generate(
-        string $systemPrompt,
-        string $userPrompt,
-        array $options = []
-    ): array {
+    public function generate(string $systemPrompt,string $userPrompt,array $options = []): array {
         return retry(LlmConstants::MAX_RETRIES, function () use ($systemPrompt, $userPrompt, $options) {
+
             $requestOptions = $this->buildRequestOptions($systemPrompt, $userPrompt, $options);
             $response = OpenAI::chat()->create($requestOptions);
 
-            // Validate response structure
+
             if (!isset($response->choices[0]->message->content)) {
-                throw new \Exception('Invalid OpenAI response structure');
+                throw new Exception('Invalid OpenAI response structure');
             }
 
             return [
@@ -32,12 +29,8 @@ class LlmOnlyService
         }, LlmConstants::RETRY_DELAY_MS);
     }
 
-    public function generateJson(
-        string $systemPrompt,
-        string $userPrompt,
-        array $options = []
-    ): array {
-        // Create copy of options to avoid mutating original array
+    public function generateJson(string $systemPrompt,string $userPrompt,array $options = []): array {
+    
         $jsonOptions = array_merge($options, [
             'response_format' => ['type' => 'json_object'],
         ]);
@@ -46,7 +39,7 @@ class LlmOnlyService
         $json = json_decode($result['content'], true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('LLM returned invalid JSON: ' . json_last_error_msg());
+            throw new Exception('LLM returned invalid JSON: ' . json_last_error_msg());
         }
 
         return $json;

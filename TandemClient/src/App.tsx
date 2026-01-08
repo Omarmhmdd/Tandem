@@ -6,7 +6,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
-// Add other route imports as needed
+import { HealthLogger } from './pages/HealthLogger';
+import { Habits } from './pages/Habits'; // ← ADD THIS
 
 function App() {
   return (
@@ -15,8 +16,8 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        {/* Protected routes - require authentication */}
+
+        {/* Protected routes */}
         <Route
           path="/*"
           element={
@@ -24,14 +25,14 @@ function App() {
               <HouseholdGuard>
                 <div className="min-h-screen bg-gray-50">
                   <Header />
-                  
                   <div className="flex">
                     <Sidebar />
                     <main className="flex-1 lg:ml-0">
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
-                          {/* Add other routes here */}
+                          <Route path="/health" element={<HealthLogger />} />
+                          <Route path="/habits" element={<Habits />} /> {/* ← ADD THIS */}
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>
