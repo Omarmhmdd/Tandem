@@ -8,7 +8,8 @@ import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { HealthLogger } from './pages/HealthLogger';
 import { Habits } from './pages/Habits';
-import { Pantry } from './pages/Pantry'; 
+import { Pantry } from './pages/Pantry';
+import { MealPlanner } from './pages/MealPlanner'; 
 
 function App() {
   return (
@@ -34,7 +35,8 @@ function App() {
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/health" element={<HealthLogger />} />
                           <Route path="/habits" element={<Habits />} />
-                          <Route path="/pantry" element={<Pantry />} /> 
+                          <Route path="/pantry" element={<Pantry />} />
+                          <Route path="/meals" element={<MealPlanner />} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>

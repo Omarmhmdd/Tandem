@@ -26,7 +26,6 @@ export const ENDPOINTS = {
   PANTRY: '/pantry',
   PANTRY_UPDATE: (id: string) => `/pantry/${id}/update`,
   PANTRY_DELETE: (id: string) => `/pantry/${id}/delete`,
-  PANTRY_CATEGORIZE: '/pantry/categorize',
 
   // Recipes
   RECIPES: '/recipes',

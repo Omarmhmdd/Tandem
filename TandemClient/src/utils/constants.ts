@@ -7,6 +7,9 @@ export const EXPIRY_WARNING_DAYS = 3;
 export const GOAL_COMPLETION_THRESHOLD = 100;
 export const RECENT_LOGS_COUNT = 3;
 
+export const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // Monday to Sunday for meal planner
+
 
 //Pantry 
 export const PANTRY_CATEGORIES = ['all', 'Meat', 'Dairy', 'Vegetables', 'Grains', 'Fruits', 'Other'];
@@ -21,3 +24,6 @@ export const VALIDATION_LIMITS = {
   carbs: { min: 0, max: 1000 },
   fat: { min: 0, max: 1000 },
 } as const;
+
+// Meal types for meal planner
+export const MEAL_TYPES = ['breakfast', 'lunch', 'dinner'] as const;

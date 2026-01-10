@@ -53,18 +53,3 @@
         },
     });
     };
-
-    export const useCategorizePantryItem = () => {
-    return useMutation<{ category: string; location: string }, Error, string>({
-        mutationFn: async (itemName: string) => {
-        const response = await apiClient.post<{ 
-            data: { category: string; location: string };
-            message?: string;
-        }>(
-            ENDPOINTS.PANTRY_CATEGORIZE,
-            { name: itemName }
-        );
-        return response.data;  
-        },
-    });
-    };

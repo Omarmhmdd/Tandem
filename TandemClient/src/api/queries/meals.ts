@@ -4,8 +4,7 @@
     import { ENDPOINTS } from '../endpoints';
     import { useHasHousehold } from '../../hooks/useHasHousehold';
     import { STALE_TIME_2_MIN, STALE_TIME_5_MIN } from '../../utils/constants';
-    import { transformMealPlan, buildWeekStartQuery } from '../../utils/transforms/mealTransforms';
-
+    import { transformMealPlan, transformMealPlanToBackend, buildWeekStartQuery } from '../../utils/transforms/mealTransforms';
 
     export const useMealPlans = (weekStart?: string) => {
     const hasHousehold = useHasHousehold();
@@ -25,18 +24,12 @@
     });
     };
 
-
     export const useMealPlanMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation<MealSlot, Error, { meal: MealSlot; isUpdate: boolean }>({
         mutationFn: async ({ meal, isUpdate }) => {
-        const backendData = {
-            date: meal.date,
-            meal_type: meal.meal,
-            recipe_id: meal.recipeId ? parseInt(meal.recipeId) : null,
-            is_match_meal: meal.isMatchMeal || false,
-        };
+        const backendData = transformMealPlanToBackend(meal);
 
         const endpoint = isUpdate 
             ? ENDPOINTS.MEAL_PLAN_UPDATE(meal.id)
@@ -50,7 +43,6 @@
         },
     });
     };
-
 
     export const useDeleteMeal = () => {
     const queryClient = useQueryClient();
@@ -66,7 +58,6 @@
     });
     };
 
-
     export const useShoppingList = (planId: string) => {
     return useQuery<ShoppingListItem[]>({
         queryKey: ['shoppingList', planId],
@@ -81,17 +72,24 @@
     });
     };
 
-
     export const useCreateMatchMeal = () => {
     const queryClient = useQueryClient();
 
     return useMutation<MatchMeal, Error, { mealPlanId: number; invitedToUserId: number }>({
         mutationFn: async ({ mealPlanId, invitedToUserId }) => {
+        // Ensure both IDs are integers (backend expects integers)
+        const mealPlanIdInt = Math.floor(Number(mealPlanId));
+        const invitedToUserIdInt = Math.floor(Number(invitedToUserId));
+
+        if (isNaN(mealPlanIdInt) || isNaN(invitedToUserIdInt) || mealPlanIdInt <= 0 || invitedToUserIdInt <= 0) {
+            throw new Error('Invalid meal plan ID or invited user ID');
+        }
+
         const response = await apiClient.post<MatchMealResponse>(
             ENDPOINTS.MATCH_MEALS,
             {
-            meal_plan_id: mealPlanId,
-            invited_to_user_id: invitedToUserId,
+            meal_plan_id: mealPlanIdInt,
+            invited_to_user_id: invitedToUserIdInt,
             }
         );
         return response.data.match_meal;

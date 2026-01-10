@@ -1,9 +1,7 @@
 import type React from 'react';
 import type { LucideProps, LucideIcon } from 'lucide-react';
 
-/**
- * UI Component prop types
- */
+
 
 // Toast Component
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -97,4 +95,3 @@ export interface ProtectedRouteProps {
 export interface HouseholdGuardProps {
   children: React.ReactNode;
 }
-

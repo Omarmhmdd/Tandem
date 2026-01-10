@@ -25,14 +25,33 @@ export interface SuccessResponse<T> {
 // Recipes API Responses
 export interface RecipesResponse {
   data: {
-    recipes: any[];
+    recipes: import('./meal.types').BackendRecipe[];
   };
   message?: string;
 }
 
 export interface SingleRecipeResponse {
   data: {
-    recipe: any;
+    recipe: import('./meal.types').BackendRecipe;
+  };
+  message?: string;
+}
+
+// Auto-Order API Responses
+export interface GroceryPartnersResponse {
+  data: {
+    partners: import('./meal.types').BackendGroceryPartner[];
+  };
+  message?: string;
+}
+
+export interface AutoOrderResponse {
+  data: {
+    orderId: string;
+    status: string;
+    partnerId: string;
+    itemsCount: number;
+    message?: string;
   };
   message?: string;
 }
