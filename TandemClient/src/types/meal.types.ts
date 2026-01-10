@@ -1,3 +1,72 @@
+import type { PantryItem } from './pantry.types';
+
+// Recipe type for meal planner 
+export interface Recipe {
+  id: string | number;
+  name: string;
+  description?: string;
+  prepTime?: number; 
+  cookTime?: number; 
+  totalTime?: number; 
+  servings?: number;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  rating?: number | null; 
+  ingredients: string[]; 
+  instructions: string[]; 
+  tags: string[]; 
+  pantryLinked?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Backend Recipe types 
+export interface BackendRecipeIngredient {
+  id?: number | string;
+  recipe_id?: number | string;
+  ingredient_name: string;
+  quantity?: number | null;
+  unit?: string | null;
+  order?: number;
+}
+
+export interface BackendRecipeInstruction {
+  id?: number | string;
+  recipe_id?: number | string;
+  step_number: number;
+  instruction: string;
+}
+
+export interface BackendRecipeTag {
+  id?: number | string;
+  recipe_id?: number | string;
+  tag: string;
+}
+
+export interface BackendRecipe {
+  id: number | string;
+  household_id?: number | string;
+  name: string;
+  description?: string | null;
+  prep_time: number;
+  cook_time: number;
+  total_time?: number;
+  servings: number;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  rating?: number | null;
+  ingredients?: BackendRecipeIngredient[];
+  instructions?: BackendRecipeInstruction[];
+  tags?: BackendRecipeTag[];
+  pantry_linked?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Week date structure
+export interface WeekDate {
+  date: string; // YYYY-MM-DD
+  day: string; // Day name (Mon, Tue, etc.)
+}
+
 export interface MealSlot {
   id: string;
   date: string; // YYYY-MM-DD
@@ -67,4 +136,66 @@ export interface MatchMealResponse {
     match_meal: MatchMeal;
   };
   message?: string;
+}
+
+// Parsed ingredient from recipe strings
+export interface ParsedIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
+// useShoppingList hook types
+export interface UseShoppingListProps {
+  meals: MealSlot[];
+  recipes: Recipe[];
+  pantryItems: PantryItem[];
+}
+
+export interface UseShoppingListReturn {
+  shoppingList: ShoppingListItem[];
+  updateShoppingList: (items: ShoppingListItem[]) => void;
+  handleOrderComplete: (orderedItems: ShoppingListItem[]) => void;
+}
+
+// useWeekNavigation hook types
+export interface UseWeekNavigationProps {
+  initialWeekStart?: string;
+}
+
+export interface UseWeekNavigationReturn {
+  currentWeekStart: string;
+  normalizedWeekStart: string;
+  weekDates: WeekDate[];
+  goToPreviousWeek: () => void;
+  goToNextWeek: () => void;
+  goToCurrentWeek: () => void;
+}
+
+// Grocery partner for auto-order (frontend)
+export interface GroceryPartner {
+  id: string;
+  name: string;
+  logo?: string;
+  deliveryFee?: number;
+  minOrder?: number;
+  estimatedDelivery?: string;
+}
+
+// Backend grocery partner (snake_case from API)
+export interface BackendGroceryPartner {
+  id: string;
+  name: string;
+  logo?: string;
+  delivery_fee?: number;
+  min_order?: number;
+  estimated_delivery?: string;
+}
+
+// AutoOrder component props
+export interface AutoOrderProps {
+  shoppingList: ShoppingListItem[];
+  onClose?: () => void;
+  onOrderComplete?: (orderedItems: ShoppingListItem[]) => void;
+  onAddToPantry?: (items: ShoppingListItem[]) => void;
 }

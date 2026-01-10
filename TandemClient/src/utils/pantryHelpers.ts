@@ -35,6 +35,49 @@ export const filterPantryItems = (items: PantryItem[],searchQuery: string,catego
   });
 };
 
+export const validatePantryForm = (formData: { name: string; expiry: string; quantity: number }): string | null => {
+  if (!formData.name || formData.name.trim() === '') {
+    return 'Please enter an item name';
+  }
+
+  if (!formData.expiry || formData.expiry.trim() === '') {
+    return 'Please select an expiry date';
+  }
+
+  if (formData.quantity <= 0) {
+    return 'Quantity must be greater than 0';
+  }
+
+  // Validate date format
+  const date = new Date(formData.expiry);
+  if (isNaN(date.getTime())) {
+    return 'Please enter a valid expiry date';
+  }
+
+  return null;
+};
+
+export const createPantryItemData = (
+  formData: { name: string; quantity: number; unit: string; expiry: string; location: string; category: string },
+  existingId?: string
+): { id?: string; name: string; quantity: number; unit: string; expiry: string; location: string; category: string } => {
+  const itemData = {
+    name: formData.name.trim(),
+    quantity: formData.quantity,
+    unit: formData.unit,
+    expiry: formData.expiry,
+    location: formData.location,
+    category: formData.category,
+  };
+
+  // Only include ID if editing existing item
+  if (existingId) {
+    return { ...itemData, id: existingId };
+  }
+
+  return itemData;
+};
+
 export const AUTO_ORDER_DEFAULT_EXPIRY_DAYS = 7;
 
 

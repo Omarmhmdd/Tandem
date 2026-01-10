@@ -48,13 +48,15 @@ class AutoOrderService
     {
         $this->transaction(function () use ($items, $householdId, $userId) {
             foreach ($items as $item) {
-                $itemName = $item['name'] ?? '';
+                $itemName = $this->cleanItemName($item['name'] ?? '');
                 if (empty($itemName)) {
                     continue;
                 }
 
-                $quantity = $this->parseQuantity($item['quantity'] ?? null);
-                $unit = $item['unit'] ?? AutoOrderConstants::DEFAULT_UNIT;
+                // Parse quantity and unit from the quantity string (e.g., "500 g" or "12 pieces")
+                $quantityStr = $item['quantity'] ?? '';
+                $quantity = $this->parseQuantity($quantityStr);
+                $unit = $this->parseUnit($quantityStr, $item['unit'] ?? null);
 
                 $this->findOrCreatePantryItem($itemName, $quantity, $unit, $householdId, $userId);
             }
@@ -62,16 +64,26 @@ class AutoOrderService
     }
 
   protected function findOrCreatePantryItem( string $itemName, float $quantity, string $unit, int $householdId, int $userId): void {
-    $existingItem = $this->findPantryItemByName($itemName, $householdId);
+    // Item name is already cleaned in addItemsToPantry, but ensure it's cleaned for safety
+    $cleanedName = $this->cleanItemName($itemName);
+    $existingItem = $this->findPantryItemByName($cleanedName, $householdId);
 
     if ($existingItem) {
+        // Item exists - increment quantity and update
         $existingItem->increment('quantity', $quantity);
         $existingItem->updated_by_user_id = $userId;
+        
+        // Update expiry date if it's null (for items that were added before default expiry was implemented)
+        if ($existingItem->expiry_date === null) {
+            $existingItem->expiry_date = now()->addDays(AutoOrderConstants::DEFAULT_EXPIRY_DAYS);
+        }
+        
         $existingItem->save();
     } else {
-        $categorization = $this->categorizeItemForPantry($itemName);
+        // New item - create with cleaned name
+        $categorization = $this->categorizeItemForPantry($cleanedName);
         
-        PantryItem::create(PantryItemData::forAutoOrder($itemName,$quantity,$unit,$categorization,$householdId,$userId));
+        PantryItem::create(PantryItemData::forAutoOrder($cleanedName, $quantity, $unit, $categorization, $householdId, $userId));
     }
 }
     protected function findPantryItemByName(string $itemName, int $householdId): ?PantryItem
@@ -93,18 +105,45 @@ class AutoOrderService
         }
     }
 
+    protected function cleanItemName(string $itemName): string
+    {
+        // Remove "updated" prefix (case-insensitive) from the beginning of the name
+        $cleaned = preg_replace('/^updated\s+/i', '', trim($itemName));
+        return $cleaned ?: $itemName; // Return original if cleaned is empty
+    }
+
     protected function parseQuantity(?string $quantityStr): float
     {
         if (empty($quantityStr)) {
             return AutoOrderConstants::DEFAULT_QUANTITY;
         }
 
+        // Extract numeric value from strings like "500 g", "12 pieces", "1.5 kg"
         if (preg_match('/(\d+\.?\d*)/', $quantityStr, $matches)) {
             $quantity = (float) $matches[1];
             return max(AutoOrderConstants::MIN_QUANTITY, $quantity);
         }
 
         return AutoOrderConstants::DEFAULT_QUANTITY;
+    }
+
+    protected function parseUnit(?string $quantityStr, ?string $fallbackUnit): string
+    {
+        // First, try to extract unit from quantity string (e.g., "500 g" -> "g", "12 pieces" -> "pieces")
+        if (!empty($quantityStr)) {
+            // Match pattern: number followed by space(s) and unit (e.g., "500 g", "12 pieces", "1.5 kg")
+            // The unit can be a single word or multiple words (e.g., "pieces", "fluid ounces")
+            if (preg_match('/\d+\.?\d*\s+(.+)$/', trim($quantityStr), $matches)) {
+                $extractedUnit = trim($matches[1]);
+                // Only return if unit is not empty (avoid cases like "500 " with trailing space)
+                if (!empty($extractedUnit)) {
+                    return $extractedUnit;
+                }
+            }
+        }
+
+        // Fallback to provided unit or default
+        return !empty($fallbackUnit) ? $fallbackUnit : AutoOrderConstants::DEFAULT_UNIT;
     }
 
     protected function generateOrderId(): string
