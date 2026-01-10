@@ -5,7 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Services\Rag\DocumentType;
+use App\Jobs\EmbedDocumentJob;
+use App\Services\Rag\VectorDbService;
+use App\Models\HouseholdMember;
 class Goal extends Model
 {
     use HasFactory, SoftDeletes;
@@ -82,6 +85,55 @@ class Goal extends Model
             'unit' => 'required|string|max:50',
             'deadline' => 'nullable|date|after_or_equal:today',
         ];
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($goal) {
+            $householdId = $goal->household_id;
+            if (!$householdId && $goal->user_id) {
+                $householdMember = HouseholdMember::where('user_id', $goal->user_id)
+                    ->where('status', 'active')
+                    ->first();
+                $householdId = $householdMember?->household_id;
+            }
+
+            if ($householdId) {
+                EmbedDocumentJob::dispatch(
+                    DocumentType::GOAL,
+                    $goal->id,
+                    $householdId,
+                    $goal->user_id
+                );
+            }
+        });
+
+        static::updated(function ($goal) {
+            $householdId = $goal->household_id;
+            if (!$householdId && $goal->user_id) {
+                $householdMember = HouseholdMember::where('user_id', $goal->user_id)
+                    ->where('status', 'active')
+                    ->first();
+                $householdId = $householdMember?->household_id;
+            }
+
+            if ($householdId) {
+                EmbedDocumentJob::dispatch(
+                    DocumentType::GOAL,
+                    $goal->id,
+                    $householdId,
+                    $goal->user_id
+                );
+            }
+        });
+
+        static::deleted(function ($goal) {
+            $vectorDbService = app(VectorDbService::class);
+            $vectorDbService->deleteByFilter([
+                'document_type' => DocumentType::GOAL,
+                'source_id' => $goal->id,
+            ]);
+        });
     }
 }
 

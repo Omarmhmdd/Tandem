@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Services\Rag\DocumentType;
+use App\Jobs\EmbedDocumentJob;
+use App\Services\Rag\VectorDbService;
 class HealthLog extends Model
 {
     use HasFactory, SoftDeletes;
@@ -86,4 +88,42 @@ class HealthLog extends Model
             'confidence' => 'required|numeric|min:0|max:1',
         ];
     }
+  protected static function booted()
+    {
+        static::created(function ($healthLog) {
+            $healthLog->load('user.householdMembers');
+            $householdMember = $healthLog->user->householdMembers()->where('status', 'active')->first();
+            if ($householdMember) {
+                EmbedDocumentJob::dispatch(
+                    DocumentType::HEALTH_LOG,
+                    $healthLog->id,
+                    $householdMember->household_id,
+                    $healthLog->user_id
+                );
+            }
+        });
+
+        static::updated(function ($healthLog) {
+            $healthLog->load('user.householdMembers');
+            $householdMember = $healthLog->user->householdMembers()->where('status', 'active')->first();
+            if ($householdMember) {
+                EmbedDocumentJob::dispatch(
+                    DocumentType::HEALTH_LOG,
+                    $healthLog->id,
+                    $householdMember->household_id,
+                    $healthLog->user_id
+                );
+            }
+        });
+
+        static::deleted(function ($healthLog) {
+            $vectorDbService = app(VectorDbService::class);
+            $vectorDbService->deleteByFilter([
+                'document_type' => DocumentType::HEALTH_LOG,
+                'source_id' => $healthLog->id,
+            ]);
+        });
+    }
 }
+
+
