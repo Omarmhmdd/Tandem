@@ -7,6 +7,13 @@ export const EXPIRY_WARNING_DAYS = 3;
 export const GOAL_COMPLETION_THRESHOLD = 100;
 export const RECENT_LOGS_COUNT = 3;
 
+
+//Pantry 
+export const PANTRY_CATEGORIES = ['all', 'Meat', 'Dairy', 'Vegetables', 'Grains', 'Fruits', 'Other'];
+
+export const PANTRY_LOCATIONS = ['Fridge', 'Freezer', 'Pantry', 'Counter', 'Other'];
+
+
 // Nutrition target validation constants
 export const VALIDATION_LIMITS = {
   calories: { min: 1, max: 10000 },

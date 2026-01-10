@@ -7,7 +7,8 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { HealthLogger } from './pages/HealthLogger';
-import { Habits } from './pages/Habits'; // ← ADD THIS
+import { Habits } from './pages/Habits';
+import { Pantry } from './pages/Pantry'; 
 
 function App() {
   return (
@@ -16,8 +17,8 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Protected routes */}
+        
+        {/* Protected routes - require authentication */}
         <Route
           path="/*"
           element={
@@ -32,7 +33,8 @@ function App() {
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
                           <Route path="/health" element={<HealthLogger />} />
-                          <Route path="/habits" element={<Habits />} /> {/* ← ADD THIS */}
+                          <Route path="/habits" element={<Habits />} />
+                          <Route path="/pantry" element={<Pantry />} /> 
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>

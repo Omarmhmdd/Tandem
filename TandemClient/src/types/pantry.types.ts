@@ -1,25 +1,3 @@
-
-    export interface PantryItem {
-    id: string;
-    name: string;
-    quantity: number;
-    unit: string;
-    expiry: string;
-    location: string;
-    category: string;
-    }
-
-    export interface PantryFormData {
-    name: string;
-    quantity: number;
-    unit: string;
-    expiry: string;
-    location: string;
-    category: string;
-    }
-
-
-
     // Frontend types (camelCase)
     export interface PantryItem {
     id: string;

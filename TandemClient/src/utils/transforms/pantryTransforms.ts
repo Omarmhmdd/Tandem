@@ -18,3 +18,7 @@ export const transformToBackend = (item: PantryItem): Omit<BackendPantryItem, 'i
   };
 };
 
+
+export const transformPantryItems = (items: BackendPantryItem[]): PantryItem[] => {
+  return items.map(transformPantryItem);
+};
