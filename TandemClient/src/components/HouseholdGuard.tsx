@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useHousehold } from '../contexts/HouseholdContext';
@@ -9,11 +9,27 @@ export const HouseholdGuard: React.FC<HouseholdGuardProps> = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const { household, isLoading: householdLoading } = useHousehold();
-  // Only fetch households if authenticated
+  
+  // Fetch households if authenticated - React Query handles caching
   const { data: households, isLoading: householdsLoading } = useHouseholds();
 
-  const isLoading = householdLoading || (isAuthenticated && householdsLoading);
-  const isOnSetupPage = location.pathname === '/household-setup';
+  // Memoize computed values to prevent unnecessary re-renders
+  const isLoading = useMemo(() => {
+    if (!isAuthenticated) return false;
+    return householdLoading || householdsLoading;
+  }, [isAuthenticated, householdLoading, householdsLoading]);
+
+  const isOnSetupPage = useMemo(() => {
+    return location.pathname === '/household-setup' || location.pathname === '/householdsetup';
+  }, [location.pathname]);
+
+  // Determine if user has no household - only recalculate when loading is done
+  const hasNoHousehold = useMemo(() => {
+    if (!isAuthenticated || isLoading) return false;
+    const noHouseholdInContext = !household;
+    const noHouseholdsFromAPI = !households || households.length === 0;
+    return noHouseholdInContext && noHouseholdsFromAPI;
+  }, [isAuthenticated, isLoading, household, households]);
 
   // If not authenticated, let ProtectedRoute handle it
   if (!isAuthenticated) {
@@ -37,8 +53,8 @@ export const HouseholdGuard: React.FC<HouseholdGuardProps> = ({ children }) => {
   }
 
   // If no household in context and no households from API, redirect to setup
-  if (!household && (!households || households.length === 0)) {
-    return <Navigate to="/household-setup" replace />;
+  if (hasNoHousehold) {
+    return <Navigate to="/householdsetup" replace />;
   }
 
   return <>{children}</>;

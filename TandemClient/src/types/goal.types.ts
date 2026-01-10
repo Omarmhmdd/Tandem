@@ -43,9 +43,11 @@ export interface GoalCompletionStatus {
 // Backend types (snake_case from API)
 export interface BackendMilestone {
   id: number | string;
+  goal_id?: number | string;
   title: string;
   completed: boolean;
   deadline?: string;
+  order?: number;
 }
 
 export interface BackendGoal {
@@ -71,6 +73,14 @@ export interface GoalsResponse {
 export interface SingleGoalResponse {
   data: {
     goal: BackendGoal;
+  };
+  message?: string;
+}
+
+// Milestone API Response types
+export interface MilestoneResponse {
+  data: {
+    milestone: BackendMilestone;
   };
   message?: string;
 }

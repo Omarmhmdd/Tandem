@@ -29,3 +29,10 @@ export const VALIDATION_LIMITS = {
 
 // Meal types for meal planner
 export const MEAL_TYPES = ['breakfast', 'lunch', 'dinner'] as const;
+
+// Goal quick add suggestions
+export const QUICK_ADD_AMOUNTS = {
+  dollar: [10, 25, 50, 100, 500, 1000] as const,
+  steps: [1000, 2000, 5000, 10000] as const,
+  defaultPercentages: [0.1, 0.25, 0.5] as const,
+} as const;

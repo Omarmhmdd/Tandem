@@ -24,7 +24,13 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       <Button variant={variant} size={size} onClick={onEdit} icon={Edit}>
         {editLabel}
       </Button>
-      <Button variant={variant} size={size} onClick={onDelete} icon={Trash2}>
+      <Button 
+        variant={variant} 
+        size={size} 
+        onClick={onDelete} 
+        icon={Trash2}
+        className={variant === 'ghost' ? 'text-red-600 hover:text-red-700 hover:bg-red-50' : variant === 'outline' ? 'text-red-600 hover:text-red-700 hover:border-red-300 hover:bg-red-50' : ''}
+      >
         {deleteLabel}
       </Button>
     </div>

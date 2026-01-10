@@ -14,6 +14,7 @@ const getToken = (): string | null => {
 };
 
 export const useHouseholds = (householdId?: string) => {
+  const token = getToken();
   return useQuery<Household[]>({
     queryKey: ['households', householdId],
     queryFn: async () => {
@@ -22,8 +23,9 @@ export const useHouseholds = (householdId?: string) => {
       );
       return (response.data.households || []).map(transformHousehold);
     },
-    enabled: !!getToken(),
-    staleTime: STALE_TIME_5_MIN,  
+    enabled: !!token,
+    staleTime: STALE_TIME_5_MIN,
+    retry: 1,
   });
 };
 
@@ -87,7 +89,7 @@ export const useHouseholdInviteCode = (householdId: string) => {
       return response.data.invite_code;
     },
     enabled: !!householdId,
-    staleTime: STALE_TIME_5_MIN,  // ← Use constant
+    staleTime: STALE_TIME_5_MIN,  //  Use constant
   });
 };
 
