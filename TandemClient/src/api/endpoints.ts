@@ -32,7 +32,6 @@ export const ENDPOINTS = {
   RECIPE: (id: string) => `/recipes/${id}`,
   RECIPE_UPDATE: (id: string) => `/recipes/${id}/update`,
   RECIPE_DELETE: (id: string) => `/recipes/${id}/delete`,
-  RECIPE_LINK_PANTRY: (id: string) => `/recipes/${id}/link-pantry`,
 
   // Goals
   GOALS: '/goals',

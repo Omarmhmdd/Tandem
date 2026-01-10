@@ -16,6 +16,8 @@ export const PANTRY_CATEGORIES = ['all', 'Meat', 'Dairy', 'Vegetables', 'Grains'
 
 export const PANTRY_LOCATIONS = ['Fridge', 'Freezer', 'Pantry', 'Counter', 'Other'];
 
+//Recipe
+export const RECIPE_DIFFICULTIES: ('Easy' | 'Medium' | 'Hard')[] = ['Easy', 'Medium', 'Hard'];
 
 // Nutrition target validation constants
 export const VALIDATION_LIMITS = {

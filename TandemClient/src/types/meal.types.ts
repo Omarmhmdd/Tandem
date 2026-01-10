@@ -14,7 +14,6 @@ export interface Recipe {
   ingredients: string[]; 
   instructions: string[]; 
   tags: string[]; 
-  pantryLinked?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -56,7 +55,6 @@ export interface BackendRecipe {
   ingredients?: BackendRecipeIngredient[];
   instructions?: BackendRecipeInstruction[];
   tags?: BackendRecipeTag[];
-  pantry_linked?: boolean;
   created_at?: string;
   updated_at?: string;
 }

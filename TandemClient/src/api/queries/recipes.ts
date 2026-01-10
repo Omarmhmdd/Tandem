@@ -22,6 +22,21 @@ export const useRecipes = () => {
   });
 };
 
+export const useRecipe = (id: string | number | null) => {
+  const hasHousehold = useHasHousehold();
+  
+  return useQuery<Recipe | null>({
+    queryKey: ['recipe', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const response = await apiClient.get<SingleRecipeResponse>(ENDPOINTS.RECIPE(String(id)));
+      return transformRecipe(response.data.recipe);
+    },
+    enabled: hasHousehold && !!id,
+    staleTime: STALE_TIME_5_MIN,
+  });
+};
+
 export const useRecipeMutation = () => {
   const queryClient = useQueryClient();
 
