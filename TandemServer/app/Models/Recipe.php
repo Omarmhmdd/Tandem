@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\RecipeIngredientPantryLink;
-
+use App\Services\Rag\DocumentType;
+use App\Jobs\EmbedDocumentJob;
+use App\Services\Rag\VectorDbService;
 class Recipe extends Model
 {
     use HasFactory, SoftDeletes;
@@ -95,4 +97,23 @@ class Recipe extends Model
             'rating' => 'nullable|numeric|min:0|max:5',
         ];
     }
+
+        protected static function booted()
+    {
+        static::created(function ($recipe) {
+            $recipe->load(['ingredients', 'instructions']);
+            EmbedDocumentJob::dispatch(DocumentType::RECIPE,$recipe->id,$recipe->household_id,null);
+        });
+
+        static::updated(function ($recipe) {
+            $recipe->load(['ingredients', 'instructions']);
+            EmbedDocumentJob::dispatch(DocumentType::RECIPE,$recipe->id,$recipe->household_id,null);
+        });
+
+        static::deleted(function ($recipe) {
+            $vectorDbService = app(VectorDbService::class);
+            $vectorDbService->deleteByFilter(['document_type' =>DocumentType::RECIPE,'source_id' => $recipe->id,]);
+        });
+    }
 }
+

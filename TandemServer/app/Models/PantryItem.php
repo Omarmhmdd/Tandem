@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Services\Rag\DocumentType;
+use App\Jobs\EmbedDocumentJob;
+use App\Services\Rag\VectorDbService;
 class PantryItem extends Model
 {
     use HasFactory, SoftDeletes;
@@ -78,4 +80,33 @@ class PantryItem extends Model
         ];
     }
 
+    protected static function booted()
+    {
+        static::created(function ($item) {
+            EmbedDocumentJob::dispatch(
+                DocumentType::PANTRY_ITEM,
+                $item->id,
+                $item->household_id,
+                null
+            );
+        });
+
+        static::updated(function ($item) {
+                EmbedDocumentJob::dispatch(
+                DocumentType::PANTRY_ITEM,
+                $item->id,
+                $item->household_id,
+                null
+            );
+        });
+
+        static::deleted(function ($item) {
+            $vectorDbService = app(VectorDbService::class);
+            $vectorDbService->deleteByFilter([
+                'document_type' =>DocumentType::PANTRY_ITEM,
+                'source_id' => $item->id,
+            ]);
+        });
+    }
 }
+

@@ -18,6 +18,7 @@ use App\Http\Controllers\AutoOrderController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DateNightController;
 use App\Http\Controllers\NutritionController;
+use App\Http\Controllers\AiCoachController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -152,6 +153,14 @@ Route::group(['prefix' => 'v0.1'], function () {
                 Route::post('/match-meal', [MealPlannerController::class, 'createMatchMeal']);
                 Route::post('/match-meal/{id}/respond', [MealPlannerController::class, 'respondToMatchMeal']);
                 Route::post('/shopping-list/{planId}', [ShoppingListController::class, 'generate']);
+            });
+            
+            
+            // AI COACH
+            Route::group(['prefix' => 'ai'], function () {
+                Route::group(['prefix' => 'coach'], function () {
+                    Route::post('/query', [AiCoachController::class, 'query']);
+                });
             });
 
             // PANTRY
