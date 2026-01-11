@@ -162,10 +162,10 @@ export const Pantry: React.FC = () => {
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={`
-                    px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors
+                    px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition-all border-2
                     ${selectedCategory === cat
-                      ? 'bg-brand-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-[#53389E] text-white border-[#53389E] shadow-md shadow-purple-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-transparent hover:border-gray-300'
                     }
                   `}
                 >
@@ -194,12 +194,14 @@ export const Pantry: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-gray-900 mb-1">{item.name}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <span className="px-2 py-0.5 bg-brand-light/30 text-brand-primary rounded text-xs font-medium">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
+                      <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-medium border border-purple-200">
                         {item.category}
                       </span>
                       <span>•</span>
-                      <span>{item.location}</span>
+                      <span className="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs font-medium border border-purple-100">
+                        {item.location}
+                      </span>
                     </div>
                   </div>
                   {isExpiringSoon && (
@@ -225,7 +227,8 @@ export const Pantry: React.FC = () => {
                 <ActionButtons
                   onEdit={() => handleOpenEdit(item)}
                   onDelete={() => handleDelete(item.id)}
-                  variant="outline"
+                  variant="ghost"
+                  size="sm"
                 />
               </CardContent>
             </Card>

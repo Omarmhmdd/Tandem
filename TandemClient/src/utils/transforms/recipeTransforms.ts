@@ -53,7 +53,6 @@ export const transformRecipe = (backendRecipe: BackendRecipe): Recipe => {
     ingredients,
     instructions,
     tags,
-    pantryLinked: backendRecipe.pantry_linked || false,
     createdAt: backendRecipe.created_at,
     updatedAt: backendRecipe.updated_at,
   };

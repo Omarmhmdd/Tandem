@@ -1,15 +1,13 @@
 import type { Goal } from '../types/goal.types';
 import type { LogEntry } from '../types/health.types';
 import type { HouseholdMember } from '../types/household.type';
+import { getGoalCompletionStatus } from './goalHelpers';
 import { GOAL_COMPLETION_THRESHOLD } from './constants';
 
 
 export const isGoalCompleted = (goal: Goal): boolean => {
-  const progress = (goal.current / goal.target) * 100;
-  const hasMilestones = goal.milestones && goal.milestones.length > 0;
-  const allMilestonesComplete = !hasMilestones || 
-    goal.milestones.every(m => m.completed);
-  return progress >= GOAL_COMPLETION_THRESHOLD && allMilestonesComplete;
+  const status = getGoalCompletionStatus(goal);
+  return status.isComplete && status.progress >= GOAL_COMPLETION_THRESHOLD;
 };
 
 

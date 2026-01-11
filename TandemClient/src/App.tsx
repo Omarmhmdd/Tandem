@@ -9,7 +9,11 @@ import { Dashboard } from './pages/Dashboard';
 import { HealthLogger } from './pages/HealthLogger';
 import { Habits } from './pages/Habits';
 import { Pantry } from './pages/Pantry';
-import { MealPlanner } from './pages/MealPlanner'; 
+import { MealPlanner } from './pages/MealPlanner';
+import { Recipes } from './pages/Recipes';
+import { Goals } from './pages/Goals'; 
+import { Settings } from './pages/Settings';
+import{HouseholdSetup} from './pages/HouseholdSetup';
 
 function App() {
   return (
@@ -37,6 +41,11 @@ function App() {
                           <Route path="/habits" element={<Habits />} />
                           <Route path="/pantry" element={<Pantry />} />
                           <Route path="/meals" element={<MealPlanner />} />
+                          <Route path="/recipes" element={<Recipes />} />
+                          <Route path="/goals" element={<Goals />} />
+                          <Route path="/settings" element={<Settings/>} />
+                          <Route path="/householdsetup" element={<HouseholdSetup/>} />
+                          <Route path="/household-setup" element={<HouseholdSetup/>} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </div>

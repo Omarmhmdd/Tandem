@@ -6,17 +6,18 @@ import { STALE_TIME_5_MIN } from '../../utils/constants';
 import type { BackendNutritionTarget, NutritionTargetResponse } from '../../types/nutrition.types';
 
 export const useNutritionTarget = (enabled: boolean = false) => { 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const userId = user?.id || null;
   
   return useQuery<BackendNutritionTarget | null>({
-    queryKey: ['nutritionTarget'],
+    queryKey: ['nutritionTarget', userId],
     queryFn: async () => {
       const response = await apiClient.get<NutritionTargetResponse>(
         ENDPOINTS.NUTRITION_TARGET
       );
       return response.data.target;
     },
-    enabled: enabled && isAuthenticated,  // Only run if explicitly enabled AND authenticated
+    enabled: enabled && isAuthenticated && !!userId,  // Only run if explicitly enabled AND authenticated AND has user ID
     staleTime: STALE_TIME_5_MIN,
     retry: 1,
   });
@@ -24,6 +25,8 @@ export const useNutritionTarget = (enabled: boolean = false) => {
 
 export const useUpdateNutritionTarget = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id || null;
 
   return useMutation({
     mutationFn: async (target: Partial<BackendNutritionTarget>) => {
@@ -34,7 +37,11 @@ export const useUpdateNutritionTarget = () => {
       return response.data.target;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nutritionTarget'] });
+      // Invalidate user-specific queries
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ['nutritionTarget', userId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['nutritionTarget'] }); // Also invalidate general for backward compatibility
       queryClient.invalidateQueries({ queryKey: ['nutritionRecommendations'] });
     },
   });

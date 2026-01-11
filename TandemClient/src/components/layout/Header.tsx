@@ -60,38 +60,46 @@
                 {/* Settings */}
                 <button 
                     onClick={() => navigate('/settings')}
-                    className="hidden sm:block p-2 text-gray-600 hover:text-brand-primary hover:bg-brand-light/20 rounded-lg transition-colors"
+                    className="hidden sm:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-[#53389E] hover:bg-purple-50 rounded-lg transition-all border border-transparent hover:border-purple-200"
                     aria-label="Settings"
                 >
-                    <Settings className="w-5 h-5" />
+                    <Settings className="w-5 h-5 stroke-[1.5]" />
+                    <span className="text-sm font-medium">Settings</span>
                 </button>
 
                 {/* User Avatar */}
                 <div className="relative" ref={userMenuRef}>
                     <button 
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-brand-light/20 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all border border-transparent hover:border-purple-200"
                     aria-label="User menu"
                     >
-                    <div className="w-8 h-8 bg-gradient-brand rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-9 h-9 bg-gradient-to-br from-[#53389E] to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
                         {user?.firstName?.[0]?.toUpperCase() || <User className="w-4 h-4" />}
                     </div>
                     {user && (
-                        <span className="hidden sm:block text-sm font-semibold text-[#53389E]">
-                        {user.firstName}
-                        </span>
+                        <div className="hidden sm:flex flex-col items-start">
+                            <span className="text-sm font-bold text-gray-900 leading-tight">
+                                {user.firstName}
+                            </span>
+                            {user.lastName && (
+                                <span className="text-xs text-gray-500 leading-tight">
+                                    {user.lastName}
+                                </span>
+                            )}
+                        </div>
                     )}
                     </button>
                     
                     {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                        <div className="px-4 py-2 border-b border-gray-200">
-                        <p className="text-sm font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                        <div className="px-4 py-3 border-b border-gray-200">
+                        <p className="text-sm font-bold text-gray-900">{user?.firstName} {user?.lastName}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
                         </div>
                         <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 transition-colors"
                         >
                         <LogOut className="w-4 h-4" />
                         Logout
