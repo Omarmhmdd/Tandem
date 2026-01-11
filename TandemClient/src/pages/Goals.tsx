@@ -243,7 +243,7 @@ export const Goals: React.FC = () => {
     updateProgress(goalId, cappedValue);
   };
 
-  const handleProgressInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, goalId: string) => {
+  const handleProgressInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
@@ -490,7 +490,7 @@ export const Goals: React.FC = () => {
                             value={progressInputs[goal.id] ?? goal.current.toString()}
                             onChange={(e) => handleProgressInputChange(goal.id, e.target.value)}
                             onBlur={() => handleProgressInputBlur(goal.id)}
-                            onKeyDown={(e) => handleProgressInputKeyDown(e, goal.id)}
+                            onKeyDown={handleProgressInputKeyDown}
                             className="w-full px-4 py-3 rounded-lg border-2 border-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none text-gray-900 font-semibold text-lg transition-all"
                             placeholder="0"
                             maxLength={15}

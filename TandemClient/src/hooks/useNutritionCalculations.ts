@@ -2,14 +2,12 @@ import { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { useHouseholdMembers } from '../api/queries/household';
-import type { PartnerIntake, NutritionTargets } from '../types/nutrition.types';
+import type { PartnerIntake, } from '../types/nutrition.types';
 
-/**
- * Hook to calculate nutrition statistics from partners data
- */
+
 export const useNutritionCalculations = (
   partnersIntake: PartnerIntake[],
-  targets: NutritionTargets
+
 ) => {
   const { user } = useAuth();
   const { members, household } = useHousehold();
