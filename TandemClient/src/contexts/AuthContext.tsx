@@ -66,12 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ): Promise<AuthResult> => {
+  const register = async (email: string,password: string,firstName: string,lastName: string): Promise<AuthResult> => {
     try {
       const response = await apiClient.post<AuthResponse>(ENDPOINTS.REGISTER, {
         email,

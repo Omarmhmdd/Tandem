@@ -59,23 +59,47 @@ export interface AutoOrderResponse {
 
 
 // Budget API Responses
+// Backend expense structure (snake_case)
+export interface BackendExpense {
+  id: number | string;
+  household_id?: number;
+  user_id?: number | string;
+  date: string;
+  amount: number | string;
+  description: string;
+  category: 'groceries' | 'dining' | 'wedding' | 'health' | 'big-ticket' | 'other';
+  auto_tagged?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface ExpensesResponse {
   data: {
-    expenses: any[];
+    expenses: BackendExpense[];
   };
   message?: string;
 }
 
 export interface SingleExpenseResponse {
   data: {
-    expense: any;
+    expense: BackendExpense;
   };
   message?: string;
 }
 
+export interface BackendBudget {
+  id?: number | string;
+  household_id?: number;
+  year?: number;
+  month?: number;
+  monthly_budget: number | string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface BudgetSummaryResponse {
   data: {
-    budget: any;
+    budget: BackendBudget | null;
     total_expenses: number;
     remaining: number | null;
   };
@@ -182,7 +206,7 @@ export interface AiCoachQueryResponse {
 
 export interface NutritionResponse {
   data: {
-    nutrition: {  // ← Add this wrapper to match actual API response
+    nutrition: {  
       partnersIntake: any[];
       recommendations: string[];
       suggestedMeals: any[];
