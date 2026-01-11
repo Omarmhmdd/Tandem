@@ -62,7 +62,7 @@ export const AINutritionCoach: React.FC = () => {
     loadNutritionData();
   });
 
-  const { uniquePartnersIntake } = useNutritionCalculations(partnersIntake, targets);
+    const { uniquePartnersIntake } = useNutritionCalculations(partnersIntake);
 
   // Get current user's intake and target (not combined with partner)
   const currentUserIntake = useMemo(() => {
