@@ -1,18 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import  type { Expense } from '../../types/budget.types';
-import  type{ ExpensesResponse, SingleExpenseResponse, BudgetSummaryResponse } from '../../types/api.types';
+import type { Expense } from '../../types/budget.types';
+import type { ExpensesResponse, SingleExpenseResponse, BudgetSummaryResponse } from '../../types/api.types';
 import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
 import { useHasHousehold } from '../../hooks/useHasHousehold';
+import { transformExpense, transformExpenseToBackend } from '../../utils/transforms/budgetTransforms';
 
 export const useExpenses = () => {
   const hasHousehold = useHasHousehold();
   
-  return useQuery({
+  return useQuery<Expense[]>({
     queryKey: ['expenses'],
     queryFn: async () => {
       const response = await apiClient.get<ExpensesResponse>(ENDPOINTS.EXPENSES);
-      return response.data.expenses || [];
+      const backendExpenses = response.data.expenses || [];
+      return backendExpenses.map(transformExpense);
     },
     enabled: hasHousehold, // Only fetch if household exists
     staleTime: 1000 * 60 * 5,
@@ -22,21 +24,15 @@ export const useExpenses = () => {
 export const useExpenseMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ expense, isUpdate }: { expense: Expense; isUpdate: boolean }) => {
-      if (isUpdate) {
-        const response = await apiClient.post<SingleExpenseResponse>(
-          ENDPOINTS.EXPENSE_UPDATE(expense.id),
-          expense
-        );
-        return response.data.expense;
-      } else {
-        const response = await apiClient.post<SingleExpenseResponse>(
-          ENDPOINTS.EXPENSES,
-          expense
-        );
-        return response.data.expense;
-      }
+  return useMutation<Expense, Error, { expense: Expense; isUpdate: boolean }>({
+    mutationFn: async ({ expense, isUpdate }) => {
+      const backendData = transformExpenseToBackend(expense);
+      const endpoint = isUpdate 
+        ? ENDPOINTS.EXPENSE_UPDATE(expense.id)
+        : ENDPOINTS.EXPENSES;
+      
+      const response = await apiClient.post<SingleExpenseResponse>(endpoint, backendData);
+      return transformExpense(response.data.expense);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
@@ -63,7 +59,7 @@ export const useDeleteExpense = () => {
 export const useBudgetSummary = (year?: number, month?: number) => {
   const hasHousehold = useHasHousehold();
   
-  return useQuery({
+  return useQuery<BudgetSummaryResponse['data']>({
     queryKey: ['budgetSummary', year, month],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -73,11 +69,7 @@ export const useBudgetSummary = (year?: number, month?: number) => {
       const response = await apiClient.get<BudgetSummaryResponse>(
         `${ENDPOINTS.BUDGET_SUMMARY}${query ? `?${query}` : ''}`
       );
-      // Backend returns: { data: { budget: {...}, total_expenses: ..., remaining: ... } }
-      // apiClient returns the full JSON response
-      const data = response?.data || response?.data || {};
-      console.log('Budget summary API response:', { response, extractedData: data });
-      return data;
+      return response.data;
     },
     enabled: hasHousehold, // Only fetch if household exists
     staleTime: 1000 * 60 * 5,

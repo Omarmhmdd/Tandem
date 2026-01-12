@@ -36,3 +36,14 @@ export const QUICK_ADD_AMOUNTS = {
   steps: [1000, 2000, 5000, 10000] as const,
   defaultPercentages: [0.1, 0.25, 0.5] as const,
 } as const;
+
+
+export const EXPENSE_CATEGORIES: ('groceries' | 'dining' | 'wedding' | 'health' | 'big-ticket' | 'other')[] = [
+  'groceries',
+  'dining',
+  'wedding',
+  'health',
+  'big-ticket',
+  'other',
+];
+

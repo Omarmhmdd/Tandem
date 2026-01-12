@@ -59,23 +59,47 @@ export interface AutoOrderResponse {
 
 
 // Budget API Responses
+// Backend expense structure (snake_case)
+export interface BackendExpense {
+  id: number | string;
+  household_id?: number;
+  user_id?: number | string;
+  date: string;
+  amount: number | string;
+  description: string;
+  category: 'groceries' | 'dining' | 'wedding' | 'health' | 'big-ticket' | 'other';
+  auto_tagged?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface ExpensesResponse {
   data: {
-    expenses: any[];
+    expenses: BackendExpense[];
   };
   message?: string;
 }
 
 export interface SingleExpenseResponse {
   data: {
-    expense: any;
+    expense: BackendExpense;
   };
   message?: string;
 }
 
+export interface BackendBudget {
+  id?: number | string;
+  household_id?: number;
+  year?: number;
+  month?: number;
+  monthly_budget: number | string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface BudgetSummaryResponse {
   data: {
-    budget: any;
+    budget: BackendBudget | null;
     total_expenses: number;
     remaining: number | null;
   };
@@ -126,31 +150,53 @@ export interface ShoppingListResponse {
 }
 
 // Mood API Responses
+// Backend mood entry structure (snake_case)
+export interface BackendMoodEntry {
+  id: number | string;
+  user_id?: number | string;
+  user_name?: string | null;
+  date: string;
+  time?: string | null;
+  mood: 'happy' | 'calm' | 'tired' | 'anxious' | 'sad' | 'energized';
+  notes?: string | null;
+  created_at?: string;
+}
+
+// Backend mood annotation structure (snake_case)
+export interface BackendAnnotation {
+  id: number | string;
+  household_id?: number;
+  date: string;
+  type: 'call' | 'trip' | 'purchase' | 'event';
+  title: string;
+  description: string;
+}
+
 export interface MoodTimelineResponse {
   data: {
-    entries: any[];
+    entries: BackendMoodEntry[];
   };
   message?: string;
 }
 
 export interface MoodComparisonResponse {
   data: {
-    user: any[];
-    partner: any[];
+    user: BackendMoodEntry[];
+    partner: BackendMoodEntry[];
   };
   message?: string;
 }
 
 export interface MoodEntryResponse {
   data: {
-    entry: any;
+    entry: BackendMoodEntry;
   };
   message?: string;
 }
 
 export interface MoodAnnotationsResponse {
   data: {
-    annotations: any[];
+    annotations: BackendAnnotation[];
   };
   message?: string;
 }
@@ -182,7 +228,7 @@ export interface AiCoachQueryResponse {
 
 export interface NutritionResponse {
   data: {
-    nutrition: {  // ← Add this wrapper to match actual API response
+    nutrition: {  
       partnersIntake: any[];
       recommendations: string[];
       suggestedMeals: any[];

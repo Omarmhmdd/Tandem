@@ -22,4 +22,3 @@ export interface ExpenseFormData {
   category: 'groceries' | 'dining' | 'wedding' | 'health' | 'big-ticket' | 'other';
 }
 
-

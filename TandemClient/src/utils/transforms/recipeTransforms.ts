@@ -92,7 +92,6 @@ export const transformRecipeToBackend = (recipe: Recipe): {
       let unit: string | null = null;
       let ingredient_name = trimmed;
       
-      // Check if second part is also a number (e.g., "2 1/2 cups")
       if (parts.length > 2 && !isNaN(parseFloat(parts[1]))) {
         quantity = parseFloat(parts[0]) + parseFloat(parts[1]);
         unit = parts[2];

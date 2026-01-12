@@ -1,3 +1,20 @@
+export interface MoodEntry {
+  id: string;
+  date: string;
+  userId: string;
+  userName: string;
+  mood: 'happy' | 'calm' | 'tired' | 'anxious' | 'sad' | 'energized';
+  notes?: string;
+  annotations?: string[];
+}
+
+export interface Annotation {
+  id: string;
+  date: string;
+  type: 'call' | 'trip' | 'purchase' | 'event';
+  title: string;
+  description: string;
+}
 export interface MoodOption {
   emoji: string;
   label: string;
