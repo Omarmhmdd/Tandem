@@ -13,6 +13,7 @@ import { MealPlanner } from './pages/MealPlanner';
 import { Recipes } from './pages/Recipes';
 import { Goals } from './pages/Goals';
 import { Budget } from './pages/Budget';
+import { MoodTimeline } from './pages/MoodTimeline';
 import { Settings } from './pages/Settings';
 import { HouseholdSetup } from './pages/HouseholdSetup';
 
@@ -45,6 +46,7 @@ function App() {
                           <Route path="/recipes" element={<Recipes />} />
                           <Route path="/goals" element={<Goals />} />
                           <Route path="/budget" element={<Budget />} />
+                          <Route path="/mood-timeline" element={<MoodTimeline />} />
                           <Route path="/settings" element={<Settings />} />
                           <Route path="/householdsetup" element={<HouseholdSetup/>} />
                           <Route path="/household-setup" element={<HouseholdSetup/>} />

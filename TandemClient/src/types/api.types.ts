@@ -150,31 +150,53 @@ export interface ShoppingListResponse {
 }
 
 // Mood API Responses
+// Backend mood entry structure (snake_case)
+export interface BackendMoodEntry {
+  id: number | string;
+  user_id?: number | string;
+  user_name?: string | null;
+  date: string;
+  time?: string | null;
+  mood: 'happy' | 'calm' | 'tired' | 'anxious' | 'sad' | 'energized';
+  notes?: string | null;
+  created_at?: string;
+}
+
+// Backend mood annotation structure (snake_case)
+export interface BackendAnnotation {
+  id: number | string;
+  household_id?: number;
+  date: string;
+  type: 'call' | 'trip' | 'purchase' | 'event';
+  title: string;
+  description: string;
+}
+
 export interface MoodTimelineResponse {
   data: {
-    entries: any[];
+    entries: BackendMoodEntry[];
   };
   message?: string;
 }
 
 export interface MoodComparisonResponse {
   data: {
-    user: any[];
-    partner: any[];
+    user: BackendMoodEntry[];
+    partner: BackendMoodEntry[];
   };
   message?: string;
 }
 
 export interface MoodEntryResponse {
   data: {
-    entry: any;
+    entry: BackendMoodEntry;
   };
   message?: string;
 }
 
 export interface MoodAnnotationsResponse {
   data: {
-    annotations: any[];
+    annotations: BackendAnnotation[];
   };
   message?: string;
 }
