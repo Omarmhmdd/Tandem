@@ -7,12 +7,23 @@ class PantryWasteData
     public static function empty(): array
     {
         return [
-            'used' => 0,
-            'wasted' => 0,
-            'donated' => 0,
+            'active' => 0,
+            'expiring_soon' => 0,
+            'deleted' => 0,
         ];
     }
 
+
+    public static function calculateFromCounts(int $activeCount, int $expiringSoonCount, int $deletedCount): array
+    {
+        return [
+            'active' => $activeCount,
+            'expiring_soon' => $expiringSoonCount,
+            'deleted' => $deletedCount,
+        ];
+    }
+
+    
     public static function calculate(int $totalExpired): array
     {
         $wasted = (int) ($totalExpired * AnalyticsConstants::PANTRY_WASTE_PERCENTAGE);

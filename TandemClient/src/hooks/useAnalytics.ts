@@ -33,8 +33,8 @@ export const useAnalytics = ({timeRange,weekStart,weekEnd,monthStart,currentYear
   // Transform data for charts
   const weeklyData = useMemo<WeeklyChartData[]>(() => {
     if (!weeklyAnalytics) return [];
-    return transformWeeklyDataForChart(weeklyAnalytics);
-  }, [weeklyAnalytics]);
+    return transformWeeklyDataForChart(weeklyAnalytics, timeRange);
+  }, [weeklyAnalytics, timeRange]);
 
   const pantryWasteChartData = useMemo<PantryWasteChartData[]>(() => {
     if (!pantryWasteData) return [];

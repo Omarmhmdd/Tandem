@@ -66,7 +66,7 @@ export const Analytics: React.FC = () => {
           onClick={() => setTimeRange('week')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             timeRange === 'week'
-              ? 'bg-brand-primary text-white'
+              ? 'bg-[#53389E] text-white hover:bg-[#462d85] shadow-sm'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
@@ -76,7 +76,7 @@ export const Analytics: React.FC = () => {
           onClick={() => setTimeRange('month')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             timeRange === 'month'
-              ? 'bg-brand-primary text-white'
+              ? 'bg-[#53389E] text-white hover:bg-[#462d85] shadow-sm'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
@@ -94,7 +94,7 @@ export const Analytics: React.FC = () => {
                 <p className="text-2xl font-bold text-gray-900">
                   {totalSteps.toLocaleString()}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">This week</p>
+                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
               </div>
               <Activity className="w-10 h-10 text-green-500" />
             </div>
@@ -107,7 +107,7 @@ export const Analytics: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Avg Sleep</p>
                 <p className="text-2xl font-bold text-gray-900">{avgSleep}h</p>
-                <p className="text-xs text-gray-500 mt-1">This week</p>
+                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
               </div>
               <Moon className="w-10 h-10 text-blue-500" />
             </div>
@@ -120,7 +120,7 @@ export const Analytics: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Avg Mood</p>
                 <p className="text-2xl font-bold text-gray-900">{avgMood}/5</p>
-                <p className="text-xs text-gray-500 mt-1">This week</p>
+                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
               </div>
               <Heart className="w-10 h-10 text-pink-500" />
             </div>
@@ -156,7 +156,7 @@ export const Analytics: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Steps Comparison - This Week</CardTitle>
+                <CardTitle>Steps Comparison - {timeRange === 'week' ? 'This Week' : 'This Month'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -260,29 +260,35 @@ export const Analytics: React.FC = () => {
                 <CardTitle>Pantry Usage</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pantryWasteChartData as unknown as Array<Record<string, unknown>>}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={(props: { name?: string; percent?: number }) => {
-                        const name = props.name || '';
-                        const percent = props.percent;
-                        return `${name}: ${formatPercentage(percent)}`;
-                      }}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {pantryWasteChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                {pantryWasteChartData && pantryWasteChartData.length > 0 && pantryWasteChartData.some(entry => entry.value > 0) ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={pantryWasteChartData as unknown as Array<Record<string, unknown>>}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={(props: { name?: string; percent?: number }) => {
+                          const name = props.name || '';
+                          const percent = props.percent;
+                          return `${name}: ${formatPercentage(percent)}`;
+                        }}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {pantryWasteChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-[300px] text-gray-500">
+                    <p>No pantry waste data available for this {timeRange === 'week' ? 'week' : 'month'}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -41,7 +41,7 @@ export const calculateAverageSleep = (
 ): string => {
   const sleepValues = weeklyData
     .map((d) => d.sleep)
-    .filter((s) => s != null && s > 0);
+    .filter((s): s is number => s != null && s > 0);
   
   if (sleepValues.length === 0) return '0';
   
@@ -56,7 +56,7 @@ export const calculateAverageMood = (
 ): string => {
   const moodValues = weeklyData
     .map((d) => d.mood)
-    .filter((m) => m != null && m > 0);
+    .filter((m): m is number => m != null && m > 0);
   
   if (moodValues.length === 0) return '0';
   

@@ -62,6 +62,11 @@ class AnalyticsService
         $userAvg = $this->calculateAverageMood($userMoods);
         $partnerAvg = $this->calculateAverageMood($partnerMoods);
 
+        // Only return data if at least one user has mood entries (not both null)
+        if ($userAvg === null && $partnerAvg === null) {
+            return [];
+        }
+
         $monthName = AnalyticsConstants::MONTH_NAMES[$month - 1];
 
         return [
@@ -77,12 +82,7 @@ class AnalyticsService
             return PantryWasteData::empty();
         }
 
-        $startDate = $startDate ?? now()->subDays(AnalyticsConstants::MOOD_ANNOTATION_DAYS)->format('Y-m-d');
-        $endDate = $endDate ?? now()->format('Y-m-d');
-
-        $expiredItems = $this->getExpiredPantryItems($householdMember->household_id, $startDate, $endDate);
-
-        return PantryWasteData::calculate($expiredItems->count());
+        return $this->getPantryStatusCounts($householdMember->household_id);
     }
 
     public function getBudgetCategoriesData(?int $year = null, ?int $month = null): array
@@ -132,6 +132,45 @@ class AnalyticsService
             ->whereNotNull('deleted_at')
             ->withTrashed()
             ->get();
+    }
+
+    
+    protected function getPantryStatusCounts(int $householdId): array
+    {
+        $today = now()->startOfDay();
+        $sevenDaysFromNow = now()->addDays(7)->endOfDay();
+
+        // Get all items including deleted ones
+        $allItems = PantryItem::where('household_id', $householdId)
+            ->withTrashed()
+            ->get();
+
+        $activeCount = 0;
+        $expiringSoonCount = 0;
+        $deletedCount = 0;
+
+        foreach ($allItems as $item) {
+            if ($item->deleted_at) {
+                // Item is deleted
+                $deletedCount++;
+            } else {
+                // Item is active (not deleted)
+                if ($item->expiry_date) {
+                    $expiryDate = \Carbon\Carbon::parse($item->expiry_date)->startOfDay();
+                    // Check if expiring within 7 days (including today)
+                    if ($expiryDate >= $today && $expiryDate <= $sevenDaysFromNow) {
+                        $expiringSoonCount++;
+                    } else {
+                        $activeCount++;
+                    }
+                } else {
+                    // No expiry date, consider it active
+                    $activeCount++;
+                }
+            }
+        }
+
+        return PantryWasteData::calculateFromCounts($activeCount, $expiringSoonCount, $deletedCount);
     }
 
     protected function getExpensesForYearMonth(int $householdId, int $year, int $month)
