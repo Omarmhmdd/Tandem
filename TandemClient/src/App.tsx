@@ -15,8 +15,10 @@ import { Goals } from './pages/Goals';
 import { Budget } from './pages/Budget';
 import { MoodTimeline } from './pages/MoodTimeline';
 import { DateNight } from './pages/DateNight';
+import { Analytics } from './pages/Analytics';
 import { Settings } from './pages/Settings';
 import { HouseholdSetup } from './pages/HouseholdSetup';
+import { Coach } from './pages/Coach';
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
                           <Route path="/budget" element={<Budget />} />
                           <Route path="/mood-timeline" element={<MoodTimeline />} />
                           <Route path="/date-night" element={<DateNight />} />
+                          <Route path="/analytics" element={<Analytics />} />
+                          <Route path="/coach" element={<Coach />} />
                           <Route path="/settings" element={<Settings />} />
                           <Route path="/householdsetup" element={<HouseholdSetup/>} />
                           <Route path="/household-setup" element={<HouseholdSetup/>} />

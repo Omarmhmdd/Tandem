@@ -118,8 +118,7 @@ export const parseNutritionResponse = (
 
 export const transformApiTargetToTargets = (
   currentTarget: { calories: number | null; protein: number | null; carbs: number | null; fat: number | null } | null,
-  existingTargets: NutritionTargets
-): NutritionTargets => {
+  existingTargets: NutritionTargets): NutritionTargets => {
   if (!currentTarget) {
     return existingTargets;
   }
