@@ -22,5 +22,6 @@ export interface DateNightSuggestion {
   reasoning: string;
   status?: 'pending' | 'accepted' | 'declined';
   id?: string | number;
+  suggestedAt?: string;
 }
 

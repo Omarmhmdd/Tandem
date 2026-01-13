@@ -234,6 +234,7 @@ export interface BackendDateNightSuggestion {
 export interface DateNightSuggestionsResponse {
   data: {
     suggestions: BackendDateNightSuggestion[];
+    accepted_date_nights?: BackendDateNightSuggestion[];
   };
   message?: string;
 }

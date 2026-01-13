@@ -32,6 +32,22 @@ class DateNightService
         }
 
         return DateNightSuggestion::where('household_id', $householdMember->household_id)
+            ->where('status', DateNightSuggestion::STATUS_PENDING)
+            ->where('suggested_at', '>=', now()->format('Y-m-d'))
+            ->orderBy('suggested_at', 'asc')
+            ->get();
+    }
+
+    public function getAcceptedDateNights(): \Illuminate\Support\Collection
+    {
+        $householdMember = $this->getActiveHouseholdMemberOrNull();
+
+        if (!$householdMember) {
+            return collect([]);
+        }
+
+        return DateNightSuggestion::where('household_id', $householdMember->household_id)
+            ->where('status', DateNightSuggestion::STATUS_ACCEPTED)
             ->where('suggested_at', '>=', now()->format('Y-m-d'))
             ->orderBy('suggested_at', 'asc')
             ->get();
@@ -52,7 +68,7 @@ class DateNightService
         return $this->createSuggestion($householdMember->household_id, $suggestedAt, $validated);
     }
 
-    public function acceptSuggestion(int $suggestionId): DateNightSuggestion
+    public function acceptSuggestion(int $suggestionId, string $date): DateNightSuggestion
     {
         $householdMember = $this->getActiveHouseholdMember();
         $user = $this->getAuthenticatedUser();
@@ -61,7 +77,7 @@ class DateNightService
         $this->validateSuggestionNotAccepted($suggestion);
         $suggestion->update(['status' => DateNightSuggestion::STATUS_ACCEPTED]);
 
-        $this->createMealPlanFromSuggestion($suggestion, $householdMember->household_id, $user->id);
+        $this->createMealPlanFromSuggestion($suggestion, $householdMember->household_id, $user->id, $date);
         $this->createExpenseFromSuggestion($suggestion, $householdMember->household_id, $user->id);
 
         return $suggestion->fresh();
@@ -200,10 +216,10 @@ class DateNightService
         return (int)(microtime(true) * 1000) % 100000;
     }
 
-        private function createMealPlanFromSuggestion(DateNightSuggestion $suggestion, int $householdId, int $userId): void
+        private function createMealPlanFromSuggestion(DateNightSuggestion $suggestion, int $householdId, int $userId, string $date): void
     {
         $recipeId = $this->findRecipeByName($suggestion->meal['name'] ?? null, $householdId);
-        DateNightData::createOrUpdateMealPlan($suggestion, $householdId, $userId, $recipeId);
+        DateNightData::createOrUpdateMealPlan($suggestion, $householdId, $userId, $recipeId, $date);
     }
 
     private function createExpenseFromSuggestion(DateNightSuggestion $suggestion, int $householdId, int $userId): void

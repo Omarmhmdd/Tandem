@@ -35,6 +35,7 @@ export const transformDateNightSuggestion = (
     : suggestion.total_cost,
   reasoning: suggestion.reasoning,
   status: suggestion.status || 'pending',
+  suggestedAt: suggestion.suggested_at,
 });
 
 
