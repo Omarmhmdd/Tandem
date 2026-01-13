@@ -14,8 +14,15 @@ interface NutritionStateSetters {
   setTargets: (data: NutritionTargets) => void;
 }
 
+interface NutritionStateValues {
+  partnersIntake: PartnerIntake[];
+  recommendations: string[];
+}
 
-export const useNutritionLoader = (setters: NutritionStateSetters) => {
+export const useNutritionLoader = (
+  setters: NutritionStateSetters,
+  _state: NutritionStateValues // Not used in dependencies to prevent infinite loop
+) => {
   const nutritionMutation = useNutritionRecommendations();
   const { household } = useHousehold();
   const { user } = useAuth();
@@ -23,8 +30,15 @@ export const useNutritionLoader = (setters: NutritionStateSetters) => {
   const hasLoadedRef = useRef(false);
   const lastUserIdRef = useRef<string | null>(null);
 
+  const isLoadingRef = useRef(false);
+
   const loadNutritionData = useCallback(async () => {
     if (!household || !user?.id) {
+      return;
+    }
+
+    // Prevent multiple simultaneous loads
+    if (isLoadingRef.current) {
       return;
     }
 
@@ -32,6 +46,9 @@ export const useNutritionLoader = (setters: NutritionStateSetters) => {
     if (user.id !== lastUserIdRef.current) {
       lastUserIdRef.current = user.id;
       hasLoadedRef.current = false;
+      // Clear session storage for previous user
+      const today = new Date().toISOString().split('T')[0];
+      sessionStorage.removeItem(`nutrition_loaded_${lastUserIdRef.current}_${today}`);
       // Clear all cached nutrition data for previous user
       queryClient.removeQueries({ queryKey: ['nutritionRecommendations'] });
       queryClient.removeQueries({ queryKey: ['nutritionTarget'] });
@@ -42,8 +59,19 @@ export const useNutritionLoader = (setters: NutritionStateSetters) => {
       setters.setTargets({ user: null, partner: null });
     }
 
+    // CRITICAL: Always call API - backend cache handles freshness
+    // The cache key is based on last food log timestamp, so new food = new cache key = fresh data
+    // Always fetch - backend will return cached if same, or fresh if food logs changed
+    // IMPORTANT: Add a small delay to ensure new food logs are committed to database
+    // This prevents race condition where cache key is calculated before new log is saved
+
+    isLoadingRef.current = true;
     try {
-      // Always fetch fresh data - don't use cache
+      // Small delay to ensure any recently added food logs are committed
+      // This prevents cache key from using old timestamp
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Fetch data (backend will cache it based on food logs, so same food = same result)
       const result = await nutritionMutation.mutateAsync();
       const parsed = parseNutritionResponse(result);
 
@@ -63,9 +91,11 @@ export const useNutritionLoader = (setters: NutritionStateSetters) => {
       setters.setRecommendations([]);
       setters.setPartnersIntake([]);
       setters.setSuggestedMeals([]);
+    } finally {
+      isLoadingRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [household, user?.id, nutritionMutation, queryClient]); // Setters are stable, don't need in deps
+  }, [household, user?.id, nutritionMutation, queryClient]); // Removed state.partnersIntake to prevent infinite loop
 
   return {
     loadNutritionData,

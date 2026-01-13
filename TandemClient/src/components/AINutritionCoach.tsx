@@ -182,6 +182,7 @@ const handleSaveTargets = useCallback(async () => {
     }
     
     setHasRequestedData(true);
+    // Force reload - always fetch fresh data
     loadNutritionData();
   }, [household, loadNutritionData]);
 
@@ -304,89 +305,6 @@ const handleSaveTargets = useCallback(async () => {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Individual Comparison - Show BOTH Users: Current User + Partner */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Individual Comparison</h3>
-              <div className="space-y-4">
-                {uniquePartnersIntake.length > 0 ? (
-                  uniquePartnersIntake.map((partner, idx) => {
-                    // Identify if this is the current user or partner (handle string/number ID comparison)
-                    const partnerUserIdStr = String(partner.userId);
-                    const currentUserIdStr = String(currentUserId || '');
-                    const isCurrentUser = partnerUserIdStr === currentUserIdStr;
-                    // Get the appropriate target: current user gets targets.user, partner gets targets.partner
-                    const partnerTarget = isCurrentUser ? targets.user : targets.partner;
-                    
-                    // Debug: Log to see what we're showing
-                    // console.log('Individual Comparison - Showing:', {
-                    //   userId: partnerUserIdStr,
-                    //   name: partner.name,
-                    //   isCurrentUser,
-                    //   today: partner.today,
-                    //   target: partnerTarget
-                    // });
-
-                    return (
-                      <div
-                        key={`partner-${partner.userId}-${idx}`}
-                        className={`p-4 bg-white rounded-lg border-2 ${
-                          isCurrentUser ? 'border-green-300 bg-green-50/30' : 'border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-3">
-                          <p className={`font-semibold ${isCurrentUser ? 'text-green-700' : 'text-gray-900'}`}>
-                            {partner.name}
-                          </p>
-                          {isCurrentUser && (
-                            <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
-                              You
-                            </span>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-4 gap-3">
-                          {MACROS.map((macro) => {
-                            const current = partner.today[macro];
-                            const target = partnerTarget?.[macro] ?? null;
-                            const unit = getMacroUnit(macro);
-
-                            return (
-                              <div key={macro}>
-                                <p className="text-xs text-gray-600 capitalize mb-1">{macro}</p>
-                                <p className="text-sm font-semibold text-gray-900">
-                                  {current.toFixed(0)}{unit}
-                                  {target !== null && target !== undefined ? (
-                                    <span className="text-gray-500 font-normal">
-                                      {' '}/ {target.toFixed(0)}{unit}
-                                    </span>
-                                  ) : (
-                                    <span className="text-gray-400 font-normal"> / N/A</span>
-                                  )}
-                                </p>
-                                {target !== null && target !== undefined && target > 0 && (
-                                  <div className="mt-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                      className={`h-full transition-all ${getProgressColor(calculateProgress(current, target))}`}
-                                      style={{ width: `${Math.min(calculateProgress(current, target), 100)}%` }}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
-                    <p className="text-sm text-gray-600">
-                      No nutrition data available. Log some food entries to see your intake!
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
 

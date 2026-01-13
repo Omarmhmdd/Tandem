@@ -7,10 +7,7 @@ import { useNutritionState } from './useNutritionState';
 import { useNutritionLoader } from './useNutritionLoader';
 import { useNutritionTargetSync } from './useNutritionTargetSync';
 
-/**
- * Main hook to orchestrate nutrition data management
- * Combines state, loading, and synchronization concerns
- */
+
 export const useNutritionData = () => {
   const { household } = useHousehold();
   const { user } = useAuth();
@@ -26,6 +23,9 @@ export const useNutritionData = () => {
     setRecommendations: state.setRecommendations,
     setSuggestedMeals: state.setSuggestedMeals,
     setTargets: state.setTargets,
+  }, {
+    partnersIntake: state.partnersIntake,
+    recommendations: state.recommendations,
   });
   
   // Target synchronization
@@ -61,14 +61,21 @@ export const useNutritionData = () => {
     }
   }, [userId, state, loader.hasLoadedRef, queryClient]);
 
-  // Auto-load on mount when household and target are available (reset when user changes)
+  // Auto-load on mount when household and target are available
+  // Use a ref to track if we've already triggered auto-load to prevent multiple loads
   const hasAutoLoadedRef = useRef(false);
+  
   useEffect(() => {
-    if (household && currentTarget && userId && !hasAutoLoadedRef.current && !loader.hasLoadedRef.current) {
+    if (household && currentTarget && userId && !hasAutoLoadedRef.current) {
       hasAutoLoadedRef.current = true;
+      // Load data when component mounts - backend cache key is based on food log timestamps
+      // If food logs changed, cache key changes = fresh data
+      // If food logs didn't change, cache hit = instant response
       loader.loadNutritionData();
-    } else if (userId !== lastUserIdRef.current) {
-      // Reset auto-load flag when user changes
+    }
+    
+    // Reset auto-load flag when user changes
+    if (userId !== lastUserIdRef.current) {
       hasAutoLoadedRef.current = false;
     }
   }, [household, currentTarget, userId, loader.loadNutritionData]);

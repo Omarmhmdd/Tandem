@@ -45,11 +45,11 @@ export const useNutritionRecommendations = () => {
         queryKey: ['nutritionTarget'] 
       });
       
-      // Always fetch fresh data - add timestamp to prevent caching
-      // Note: Backend should handle user authentication from token, but we add timestamp to prevent browser/proxy caching
+      // Always fetch fresh data - add timestamp to prevent browser/proxy caching
+      // Backend cache is based on food log timestamps, so it will return fresh data if food changed
       const timestamp = Date.now();
       const response = await apiClient.post<NutritionResponse>(
-        `${ENDPOINTS.AI_COACH_NUTRITION}?t=${timestamp}`,
+        `${ENDPOINTS.AI_COACH_NUTRITION}?t=${timestamp}&_refresh=${timestamp}`,
         {} // Empty body - backend uses token to identify user
       );
       return response.data.nutrition || response.data;

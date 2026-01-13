@@ -6,6 +6,7 @@
     import { Input } from '../components/ui/Input';
     import { Logo } from '../components/Logo';
     import { showToast } from '../utils/toast';
+    import { FeatureCarousel } from '../components/auth/FeatureCarousel';
 
     export const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -36,41 +37,38 @@
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-        {/* Left side - Branding */}
-    <div className="hidden lg:flex lg:w-1/2 bg-[#53389E] items-center justify-center p-12">
-    <div className="max-w-md">
-        <Logo size="lg" showText={true} variant="light" className="mb-8" />
-        <h2 className="text-3xl font-bold text-white mb-4">
-        Welcome back to Tandem
-        </h2>
-        <p className="text-white text-lg opacity-90">
-        Your partner in building healthier relationships and better habits together.
-        </p>
-    </div>
-    </div>
+        {/* Left side - Feature Carousel */}
+        <FeatureCarousel type="login" />
 
         {/* Right side - Login Form */}
-        <div className="flex-1 flex items-center justify-center p-8">
+        <div className="flex-1 flex items-center justify-center p-6 h-screen overflow-hidden">
             <div className="w-full max-w-md">
-            <div className="lg:hidden mb-8 text-center">
+            <div className="lg:hidden mb-6 text-center">
                 <Logo size="lg" />
             </div>
             
             <Card className="border-0 shadow-lg">
-                <CardHeader className="space-y-1 pb-6">
-                <CardTitle className="text-2xl font-bold text-gray-900">
-                    Sign in to your account
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                    Enter your credentials to continue
-                </p>
+                <CardHeader className="space-y-3 pb-4">
+                {/* Logo and Brand Name - In white form section */}
+                <div className="flex flex-col items-center mb-2">
+                    <Logo size="md" showText={true} variant="dark" />
+                </div>
+                
+                <div className="text-center space-y-1">
+                    <CardTitle className="text-xl font-semibold text-gray-900 font-sans">
+                        Sign in to your account
+                    </CardTitle>
+                    <p className="text-xs text-gray-600 font-sans">
+                        Enter your credentials to continue
+                    </p>
+                </div>
                 </CardHeader>
-                <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <CardContent className="pb-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                     <label 
                         htmlFor="email" 
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-medium text-gray-700 mb-1.5"
                     >
                         Email address
                     </label>
@@ -83,12 +81,13 @@
                         required
                         disabled={isLoading}
                         autoComplete="email"
+                        className="text-sm py-2"
                     />
                     </div>
                     <div>
                     <label 
                         htmlFor="password" 
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-medium text-gray-700 mb-1.5"
                     >
                         Password
                     </label>
@@ -101,18 +100,19 @@
                         required
                         disabled={isLoading}
                         autoComplete="current-password"
+                        className="text-sm py-2"
                     />
                     </div>
                     <Button
                     type="submit"
                     variant="primary"
-                    className="w-full"
+                    className="w-full mt-4"
                     disabled={isLoading}
                     >
                     {isLoading ? 'Signing in...' : 'Sign in'}
                     </Button>
                 </form>
-                <div className="mt-6 text-center">
+                <div className="mt-4 text-center">
                     <p className="text-sm text-gray-600">
                     Don't have an account?{' '}
                     <Link 
