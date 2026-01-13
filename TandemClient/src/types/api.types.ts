@@ -202,16 +202,45 @@ export interface MoodAnnotationsResponse {
 }
 
 // Date Night API Responses
+// Backend date night suggestion structure (snake_case)
+export interface BackendDateNightSuggestion {
+  id: number | string;
+  household_id?: number;
+  suggested_at: string;
+  meal: {
+    name: string;
+    description: string;
+    cost: number;
+    recipeId?: number;
+    usesPantry?: boolean;
+  };
+  activity: {
+    name: string;
+    description: string;
+    duration: string;
+    cost: number;
+    location?: 'home' | 'outdoor' | 'venue';
+  };
+  treat: {
+    name: string;
+    description: string;
+    cost: number;
+  };
+  total_cost: number | string;
+  reasoning: string;
+  status?: 'pending' | 'accepted' | 'declined';
+}
+
 export interface DateNightSuggestionsResponse {
   data: {
-    suggestions: any[];
+    suggestions: BackendDateNightSuggestion[];
   };
   message?: string;
 }
 
 export interface SingleDateNightResponse {
   data: {
-    suggestion: any;
+    suggestion: BackendDateNightSuggestion;
   };
   message?: string;
 }

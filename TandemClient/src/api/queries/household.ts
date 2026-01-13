@@ -74,7 +74,7 @@ export const useHouseholdMembers = (householdId: string) => {
       return (response.data.members || []).map(transformMember);
     },
     enabled: !!householdId,
-    staleTime: STALE_TIME_5_MIN,  // ← Use constant
+    staleTime: STALE_TIME_5_MIN,  
   });
 };
 

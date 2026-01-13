@@ -146,8 +146,7 @@ export const AINutritionCoach: React.FC = () => {
     }).slice(0, 5); // Show up to 5 recommendations (backend should return exactly 5: calories, protein, carbs, fat, overall)
   }, [recommendations, currentUserId, user?.firstName, user?.lastName]);
 
-  // ✅ CREATE WRAPPER that updates targets immediately after save
-// ✅ CREATE WRAPPER that updates targets immediately after save
+
 const handleSaveTargets = useCallback(async () => {
   try {
     const savedTarget = await originalHandleSaveTargets();

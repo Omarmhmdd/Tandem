@@ -73,8 +73,8 @@ class NutritionCalculationValidator
                         $userIntake = $validated['partnersIntake'][$key];
                     }
                 }
+                }
             }
-        }
 
         // Ensure both user and partner entries exist if partner exists
         $finalIntake = [];
