@@ -100,17 +100,37 @@ public function autoAnnotate(?string $startDate = null, ?string $endDate = null)
     $householdMember = $this->getActiveHouseholdMember();
     [$startDate, $endDate] = $this->prepareDateRange($startDate, $endDate);
 
+    // Get existing annotations for the requested date range (use distinct to prevent duplicates)
+    $existingAnnotations = MoodAnnotation::where('household_id', $householdMember->household_id)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->orderBy('date', 'desc')
+        ->orderBy('id', 'desc')
+        ->get()
+        ->unique(function ($annotation) {
+            return $annotation->date . '|' . $annotation->title . '|' . $annotation->type;
+        })
+        ->values();
+
+    // If annotations already exist for this date range, return them (avoid regenerating)
+    if ($existingAnnotations->isNotEmpty()) {
+        return $existingAnnotations;
+    }
+
+    // Only generate new annotations if none exist for this date range
     $moodEntries = $this->getMoodEntries($householdMember->household_id, $startDate, $endDate);
     $healthLogs = $this->getHealthLogs($householdMember->household_id, $startDate, $endDate);
     $expenses = $this->getExpenses($householdMember->household_id, $startDate, $endDate);
 
     if (empty($moodEntries) && empty($healthLogs) && empty($expenses)) {
-        return collect([]);
+        return collect([]); // No data, no annotations
     }
 
     $validatedAnnotations = $this->generateAnnotationsFromData($moodEntries, $healthLogs, $expenses, $startDate, $endDate);
 
-    return $this->createAnnotationsFromValidated($validatedAnnotations, $householdMember->household_id);
+    return $this->createAnnotationsFromValidated($validatedAnnotations, $householdMember->household_id)
+        ->sortByDesc('date')
+        ->sortByDesc('id')
+        ->values();
 }
 //helper methods for thus feature
 private function prepareDateRange(?string $startDate, ?string $endDate): array
@@ -144,8 +164,31 @@ private function generateAnnotationsFromData(array $moodEntries, array $healthLo
 }
 private function createAnnotationsFromValidated(array $validatedAnnotations, int $householdId): \Illuminate\Support\Collection
 {
-    $annotations = collect([]);
+    // First, deduplicate within the current batch (same date, title, type)
+    $deduplicated = [];
+    $seen = [];
     foreach ($validatedAnnotations as $annotation) {
+        $key = $annotation['date'] . '|' . $annotation['title'] . '|' . $annotation['type'];
+        if (!isset($seen[$key])) {
+            $seen[$key] = true;
+            $deduplicated[] = $annotation;
+        }
+    }
+    
+    $annotations = collect([]);
+    foreach ($deduplicated as $annotation) {
+        // Check if annotation with same date, title, type, and household already exists in database
+        $existing = MoodAnnotation::where('household_id', $householdId)
+            ->where('date', $annotation['date'])
+            ->where('title', $annotation['title'])
+            ->where('type', $annotation['type'])
+            ->first();
+        
+        if ($existing) {
+            // Skip creating duplicate - don't add to collection, it will be merged from existing annotations
+            continue;
+        }
+        
         $created = MoodAnnotation::create(
             $this->buildAnnotationData($annotation, $householdId)
         );

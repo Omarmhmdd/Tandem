@@ -1,4 +1,5 @@
 import type { LogEntry, BackendHealthLog ,ParsedHealthLog} from '../../types/health.types';
+import { formatDateForAPI } from '../dateHelpers';
 
 export const transformHealthLog = (log: BackendHealthLog): LogEntry => ({
   id: String(log.id),
@@ -50,9 +51,10 @@ export const transformParsedToEntry = (
   selectedMood?: string,
   originalText?: string
 ): Omit<LogEntry, 'id'> & { confidence?: number; originalText?: string } => {
+  const now = new Date();
   return {
-    date: new Date().toISOString().split('T')[0],
-    time: new Date().toTimeString().slice(0, 5),
+    date: formatDateForAPI(now),
+    time: now.toTimeString().slice(0, 5),
     activities: parsed.activities || [],
     food: parsed.food || [],
     sleep: parsed.sleep_hours ? { 

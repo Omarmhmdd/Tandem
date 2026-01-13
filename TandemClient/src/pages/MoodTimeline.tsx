@@ -17,6 +17,7 @@ export const MoodTimeline: React.FC = () => {
     youAvg,
     partnerAvg,
     groupedMoods,
+    timelineDates,
   } = useMoodTimelinePage();
 
   return (
@@ -105,7 +106,7 @@ export const MoodTimeline: React.FC = () => {
                 onClick={() => setTimeRange('week')}
                 className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                   timeRange === 'week'
-                    ? 'bg-brand-primary text-white'
+                    ? 'bg-[#53389E] text-white hover:bg-[#462d85] shadow-sm'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -115,7 +116,7 @@ export const MoodTimeline: React.FC = () => {
                 onClick={() => setTimeRange('month')}
                 className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                   timeRange === 'month'
-                    ? 'bg-brand-primary text-white'
+                    ? 'bg-[#53389E] text-white hover:bg-[#462d85] shadow-sm'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -126,9 +127,8 @@ export const MoodTimeline: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {Object.entries(groupedMoods)
-              .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-              .map(([date, dayMoods]) => {
+            {timelineDates.map((date) => {
+                const dayMoods = groupedMoods[date] || [];
                 const dayAnnotations = annotations.filter(a => a.date === date);
                 
                 return (
@@ -163,34 +163,36 @@ export const MoodTimeline: React.FC = () => {
                     )}
 
                     {/* Moods */}
-                    <div className="space-y-2">
-                      {dayMoods.map(mood => (
-                        <div
-                          key={mood.id}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                        >
-                          <div className="flex items-center gap-2 flex-1">
-                            <span className="text-2xl">{getMoodEmoji(mood.mood)}</span>
-                            <div>
-                              <p className="font-medium text-gray-900">{mood.userName}</p>
-                              <p className="text-sm text-gray-600 capitalize">{mood.mood}</p>
+                    {dayMoods.length > 0 && (
+                      <div className="space-y-2">
+                        {dayMoods.map(mood => (
+                          <div
+                            key={mood.id}
+                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <span className="text-2xl">{getMoodEmoji(mood.mood)}</span>
+                              <div>
+                                <p className="font-medium text-gray-900">{mood.userName}</p>
+                                <p className="text-sm text-gray-600 capitalize">{mood.mood}</p>
+                              </div>
                             </div>
+                            {mood.notes && (
+                              <p className="text-sm text-gray-600 italic">{mood.notes}</p>
+                            )}
                           </div>
-                          {mood.notes && (
-                            <p className="text-sm text-gray-600 italic">{mood.notes}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
           </div>
 
-          {moods.length === 0 && (
+          {timelineDates.length === 0 && (
             <div className="text-center py-12">
               <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No mood entries yet. Start tracking your moods!</p>
+              <p className="text-gray-600">No mood entries or annotations yet. Start tracking your moods!</p>
             </div>
           )}
         </CardContent>
