@@ -27,7 +27,7 @@ class MealPlannerService
 
         return MealPlan::where('household_id', $householdMember->household_id)
             ->whereBetween('date', [$weekStart, $weekEnd])
-            ->with(['recipe', 'matchMeal'])
+            ->with(['recipe', 'matchMeal.invitedBy', 'matchMeal.invitedTo'])
             ->orderBy('date', 'asc')
             ->orderBy('meal_type', 'asc')
             ->get();
@@ -35,8 +35,27 @@ class MealPlannerService
 
     public function create(array $mealPlanData): MealPlan
     {
-        $mealPlan = MealPlan::create($mealPlanData);
-        return $mealPlan->load(['recipe', 'matchMeal']);
+        // Check if a meal plan exists (including soft-deleted) for this household/date/meal_type
+        $existingMealPlan = MealPlan::withTrashed()
+            ->where('household_id', $mealPlanData['household_id'])
+            ->where('date', $mealPlanData['date'])
+            ->where('meal_type', $mealPlanData['meal_type'])
+            ->first();
+        
+        if ($existingMealPlan) {
+            // If soft-deleted, restore it first
+            if ($existingMealPlan->trashed()) {
+                $existingMealPlan->restore();
+            }
+            // Update the existing meal plan
+            $existingMealPlan->update($mealPlanData);
+            $mealPlan = $existingMealPlan->fresh();
+        } else {
+            // Create a new meal plan
+            $mealPlan = MealPlan::create($mealPlanData);
+        }
+        
+        return $mealPlan->load(['recipe', 'matchMeal.invitedBy', 'matchMeal.invitedTo']);
     }
 
     public function update(int $id, array $mealPlanData): MealPlan
@@ -46,7 +65,7 @@ class MealPlannerService
         
         $mealPlan->update($mealPlanData);
 
-        return $mealPlan->fresh()->load(['recipe', 'matchMeal']);
+        return $mealPlan->fresh()->load(['recipe', 'matchMeal.invitedBy', 'matchMeal.invitedTo']);
     }
 
     public function delete(int $id): void
@@ -101,17 +120,11 @@ class MealPlannerService
             $mealPlan->update(['is_match_meal' => true]);
 
             // Auto-accept the match-meal
-            $matchMeal->update([
-                'status' => 'accepted',
-                'responded_at' => now(),
-            ]);
+            $matchMeal->update(['status' => 'accepted','responded_at' => now(),]);
 
-            return $matchMeal->load([
-                'mealPlan.recipe.ingredients',
-                'mealPlan.recipe.instructions',
-                'invitedBy',
-                'invitedTo'
-            ]);
+            $matchMeal->load(['mealPlan.recipe.ingredients','mealPlan.recipe.instructions','invitedBy','invitedTo']);
+
+            return $matchMeal;
         });
     }
 

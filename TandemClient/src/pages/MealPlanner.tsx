@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
@@ -10,11 +10,13 @@ import { AutoOrder } from '../components/AutoOrder';
 import { useMealPlannerPage } from '../hooks/useMealPlanner';
 import { useModal } from '../hooks/useModal';
 import { useConfirmDialog } from '../hooks/useConfirmDialog';
+import { useAuth } from '../contexts/AuthContext';
 import type { MealSlot, ShoppingListItem, Recipe } from '../types/meal.types';
 import { MEAL_TYPES } from '../utils/constants';
 import { showToast } from '../utils/toast';
 
 export const MealPlanner: React.FC = () => {
+  const { user } = useAuth();
   const {
     weekDates,
     recipes,
@@ -181,6 +183,16 @@ export const MealPlanner: React.FC = () => {
                   </div>
                   {weekDates.map((wd) => {
                     const mealSlot = getMealForSlot(wd.date, meal);
+                    // Determine partner name - show the OTHER user (not current user)
+                    let partnerName: string | undefined;
+                    if (mealSlot?.isMatchMeal && user?.id) {
+                      const currentUserId = typeof user.id === 'string' ? parseInt(user.id, 10) : Number(user.id);
+                      if (mealSlot.matchMealInvitedByUser?.id === currentUserId && mealSlot.matchMealInvitedToUser) {
+                        partnerName = `${mealSlot.matchMealInvitedToUser.first_name} ${mealSlot.matchMealInvitedToUser.last_name}`.trim();
+                      } else if (mealSlot.matchMealInvitedToUser?.id === currentUserId && mealSlot.matchMealInvitedByUser) {
+                        partnerName = `${mealSlot.matchMealInvitedByUser.first_name} ${mealSlot.matchMealInvitedByUser.last_name}`.trim();
+                      }
+                    }
                     return (
                       <div
                         key={`${wd.date}-${meal}`}
@@ -192,7 +204,7 @@ export const MealPlanner: React.FC = () => {
                             {mealSlot.isMatchMeal && (
                               <div className="flex items-center gap-1 text-xs text-brand-primary font-medium">
                                 <Users className="w-3 h-3" />
-                                Match
+                                Match{partnerName ? ` with ${partnerName}` : ''}
                               </div>
                             )}
                             <p className="text-xs font-medium text-gray-900">{mealSlot.recipeName}</p>
@@ -219,22 +231,6 @@ export const MealPlanner: React.FC = () => {
               ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Match Meal Card */}
-      <Card className="border-2 border-brand-primary bg-gradient-to-r from-brand-primary/5 to-brand-light/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-brand-primary" />
-            Match Meal Feature
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-700 mb-4">
-            Schedule a "Match Meal" to cook the same recipe together, even when you're apart! 
-            Both partners receive notifications and can sync cooking times.
-          </p>
         </CardContent>
       </Card>
 

@@ -15,5 +15,6 @@ export interface DashboardData {
   thisWeekMeals: number;
   partnerName: string | null;
   latestSummary: WeeklySummary | null;
+  isLoading: boolean;
 }
 

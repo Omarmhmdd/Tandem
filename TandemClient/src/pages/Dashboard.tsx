@@ -48,7 +48,41 @@
     export const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { pantryItems, expiringItems,totalGoals,completedGoals,recentLogs,avgSleep,thisWeekMeals,partnerName,latestSummary, } = useDashboardPage();
+    const { pantryItems, expiringItems,totalGoals,completedGoals,recentLogs,avgSleep,thisWeekMeals,partnerName,latestSummary, isLoading } = useDashboardPage();
+
+    if (isLoading) {
+      return (
+        <div className="space-y-6">
+          <Breadcrumbs items={[{ label: 'Dashboard' }]} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
+    }
 
     return (
         <div className="space-y-6">

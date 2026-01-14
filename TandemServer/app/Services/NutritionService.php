@@ -24,24 +24,22 @@ class NutritionService
         $householdMember = $this->getActiveHouseholdMember();
         $user = $this->getAuthenticatedUser();
         $partner = $this->getPartner();
-
-        // Get last food log timestamps FIRST to create cache key (faster than collecting all data)
-        // CRITICAL: Use fresh query to ensure we get the latest timestamp (no query caching)
         $userLastTimestamp = NutritionData::getLastFoodLogTimestamp($user->id);
-        $partnerLastTimestamp = $partner?->user_id 
-            ? NutritionData::getLastFoodLogTimestamp($partner->user_id) 
-            : null;
-        
-        // Generate cache key and check cache FIRST before collecting data (much faster)
-        $cacheKey = NutritionResponseData::generateCacheKey(
-            $user->id,
-            $partner?->user_id,
-            $userLastTimestamp,
-            $partnerLastTimestamp
-        );
+        $partnerLastTimestamp = $partner?->user_id ? NutritionData::getLastFoodLogTimestamp($partner->user_id) : null;
+        $cacheKey = NutritionResponseData::generateCacheKey($user->id,$partner?->user_id,$userLastTimestamp,$partnerLastTimestamp);
         
         $cached = cache()->get($cacheKey);
         if ($cached !== null) {
+            // Apply fix to cached response too (in case cache was created before fix was deployed)
+            $targets = NutritionData::getNutritionTargets($user->id, $partner?->user_id);
+            if (!empty($cached['recommendations']) && !empty($cached['partnersIntake'])) {
+                $fixed = NutritionResponseData::fixRecommendationsWithCorrectMath(
+                    ['recommendations' => $cached['recommendations'], 'partnersIntake' => $cached['partnersIntake']],
+                    $targets,
+                    $user->first_name
+                );
+                $cached['recommendations'] = $fixed['recommendations'];
+            }
             return $cached;
         }
         
@@ -106,8 +104,8 @@ class NutritionService
             $systemPrompt,
             $userPrompt,
             [
-                'temperature' => 0.3, // Lower temperature for more consistent results
-                'seed' => $seed, // Deterministic seed based on food logs
+                'temperature' => 0.3, 
+                'seed' => $seed,
             ]
         );
     }
@@ -125,6 +123,10 @@ class NutritionService
             $partnerInfo['partnerName'],
             $partnerInfo['partnerHasFoodLogs']
         );
+        
+        // Fix recommendations with correct math calculations
+        $targets = $nutritionData['targets'];
+        $validated = NutritionResponseData::fixRecommendationsWithCorrectMath($validated, $targets, $user->first_name);
         
         return $validated;
     }

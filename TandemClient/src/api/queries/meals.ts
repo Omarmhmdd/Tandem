@@ -17,7 +17,7 @@
             `${ENDPOINTS.MEAL_PLANS}${queryString}`
         );
         const plans = response.data.plans || [];
-        return plans.map(transformMealPlan);
+        return plans.map(plan => transformMealPlan(plan));
         },
         enabled: hasHousehold,
         staleTime: STALE_TIME_5_MIN,
@@ -36,6 +36,8 @@
             : ENDPOINTS.MEAL_PLANS;
 
         const response = await apiClient.post<SingleMealPlanResponse>(endpoint, backendData);
+        // Note: We don't pass currentUserId here because mutation invalidates queries,
+        // which will refetch with the correct user ID from useMealPlans
         return transformMealPlan(response.data.plan);
         },
         onSuccess: () => {

@@ -16,11 +16,11 @@ import type { DashboardData } from '../types/Dashboard.types';
 export const useDashboardPage = (): DashboardData => {
   const { user } = useAuth();
   const { household } = useHousehold();
-  const { data: pantryItems = [] } = usePantryItems();
-  const { data: goals = [] } = useGoals();
-  const { data: healthLogs = [] } = useHealthLogs();
-  const { data: mealPlans = [] } = useMealPlans();
-  const { data: members = [] } = useHouseholdMembers(household?.id || '');
+  const { data: pantryItems = [], isLoading: isLoadingPantry } = usePantryItems();
+  const { data: goals = [], isLoading: isLoadingGoals } = useGoals();
+  const { data: healthLogs = [], isLoading: isLoadingHealthLogs } = useHealthLogs();
+  const { data: mealPlans = [], isLoading: isLoadingMealPlans } = useMealPlans();
+  const { data: members = [], isLoading: isLoadingMembers } = useHouseholdMembers(household?.id || '');
   const { data: weeklySummaries = [], isLoading: isLoadingSummaries } = useWeeklySummaries();
   const generateSummary = useGenerateWeeklySummary();
   const isGeneratingRef = useRef(false);
@@ -64,6 +64,15 @@ export const useDashboardPage = (): DashboardData => {
     // Only show summaries for completed weeks (exclude current week)
     return getLatestCompletedWeekSummary(weeklySummaries);
   }, [weeklySummaries]);
+
+  // Page-level loading state: any of the core queries still loading
+  const isLoading =
+    isLoadingPantry ||
+    isLoadingGoals ||
+    isLoadingHealthLogs ||
+    isLoadingMealPlans ||
+    isLoadingMembers ||
+    isLoadingSummaries;
 
   // Auto-generate summary for previous completed week if it doesn't exist
   useEffect(() => {
@@ -134,5 +143,6 @@ export const useDashboardPage = (): DashboardData => {
     thisWeekMeals,
     partnerName,
     latestSummary,
+    isLoading,
   };
 };
