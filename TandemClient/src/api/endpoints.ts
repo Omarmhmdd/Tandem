@@ -34,6 +34,7 @@ export const ENDPOINTS = {
   RECIPE_DELETE: (id: string) => `/recipes/${id}/delete`,
 
   // Goals
+  GOALS_AGGREGATED: '/goals/aggregated',
   GOALS: '/goals',
   GOAL_UPDATE: (id: string) => `/goals/${id}/update`,
   GOAL_DELETE: (id: string) => `/goals/${id}/delete`,
@@ -43,6 +44,7 @@ export const ENDPOINTS = {
   GOAL_MILESTONE_DELETE: (id: string, milestoneId: string) => `/goals/${id}/milestones/${milestoneId}/delete`,
 
   // Budget
+  BUDGET_AGGREGATED: '/budget/aggregated',
   EXPENSES: '/budget/expenses',
   EXPENSE_UPDATE: (id: string) => `/budget/expenses/${id}/update`,
   EXPENSE_DELETE: (id: string) => `/budget/expenses/${id}/delete`,
@@ -80,6 +82,7 @@ export const ENDPOINTS = {
   DATE_NIGHT_ACCEPT: (id: string) => `/date-night/${id}/accept`,
 
   // Analytics
+  ANALYTICS_AGGREGATED: '/analytics/aggregated',
   ANALYTICS_WEEKLY: '/analytics/weekly',
   ANALYTICS_MONTHLY_MOOD: '/analytics/monthly-mood',
   ANALYTICS_PANTRY_WASTE: '/analytics/pantry-waste',
@@ -88,6 +91,9 @@ export const ENDPOINTS = {
   // Auto Order
   AUTO_ORDER_PARTNERS: '/auto-order/partners',
   AUTO_ORDER_SEND: '/auto-order/send',
+
+  // Dashboard (aggregated endpoint)
+  DASHBOARD: '/dashboard',
 } as const;
 
 

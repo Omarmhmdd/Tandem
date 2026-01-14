@@ -1,5 +1,5 @@
-import type { Expense } from '../../types/budget.types';
-import type { BackendExpense } from '../../types/api.types';
+import type { Expense, BudgetAggregatedData } from '../../types/budget.types';
+import type { BackendExpense, BudgetAggregatedResponse } from '../../types/api.types';
 
 
 export const transformExpense = (expense: BackendExpense): Expense => ({
@@ -26,4 +26,13 @@ export const transformExpenseToBackend = (expense: Expense): {
   category: expense.category,
   auto_tagged: expense.autoTagged,
 });
+
+export const transformBudgetAggregated = (
+  data: BudgetAggregatedResponse['data']
+): BudgetAggregatedData => {
+  return {
+    expenses: (data.expenses || []).map(transformExpense),
+    budgetSummary: data.budget_summary,
+  };
+};
 

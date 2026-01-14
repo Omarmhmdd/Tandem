@@ -97,6 +97,19 @@ export interface BackendBudget {
   updated_at?: string;
 }
 
+// Budget Aggregated API Response
+export interface BudgetAggregatedResponse {
+  data: {
+    expenses: BackendExpense[];
+    budget_summary: {
+      budget: BackendBudget | null;
+      total_expenses: number;
+      remaining: number | null;
+    };
+  };
+  message?: string;
+}
+
 export interface BudgetSummaryResponse {
   data: {
     budget: BackendBudget | null;
@@ -302,7 +315,46 @@ export interface SingleHouseholdResponse {
 
 export interface HouseholdMembersResponse {
   data: {
-    members: any[]; // BackendHouseholdMember[] - but using any to match pattern
+    members: import('./household.type').BackendHouseholdMember[];
+  };
+  message?: string;
+}
+
+  // Goals Aggregated API Response
+  export interface GoalsAggregatedResponse {
+    data: {
+      goals: import('./goal.types').BackendGoal[];
+      budget_summary: {
+        budget: BackendBudget | null;
+        total_expenses: number;
+        remaining: number | null;
+      };
+    };
+    message?: string;
+  }
+
+  // Dashboard API Response - Aggregated endpoint
+  export interface DashboardResponse {
+  data: {
+    items: import('./pantry.types').BackendPantryItem[];
+    goals: import('./goal.types').BackendGoal[];
+    logs: import('./health.types').BackendHealthLog[];
+    plans: import('./meal.types').BackendMealPlan[];
+    members: import('./household.type').BackendHouseholdMember[];
+    summaries: import('./weeklySummary.types').BackendWeeklySummary[];
+  };
+  message?: string;
+}
+
+// Analytics API Response - Aggregated endpoint
+export interface AnalyticsAggregatedResponse {
+  data: {
+    weekly: import('./analytics.types').BackendWeeklyAnalytics;
+    monthly_mood: import('./analytics.types').BackendMonthlyMood[];
+    pantry_waste: import('./analytics.types').BackendPantryWaste;
+    budget_categories: import('./analytics.types').BackendBudgetCategory[];
+    goals: import('./goal.types').BackendGoal[];
+    budget_summary: any;
   };
   message?: string;
 }

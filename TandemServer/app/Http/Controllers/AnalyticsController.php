@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DateRangeRequest;
 use App\Http\Requests\YearMonthRequest;
+use App\Http\Requests\GetAggregatedAnalyticsRequest;
 use App\Services\AnalyticsService;
+use App\Data\AnalyticsAggregatedRequestData;
+use App\Http\Resources\GoalResource;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -58,6 +61,21 @@ class AnalyticsController extends Controller
         return $this->success([
             'categories' => $data,
         ]);
+    }
+
+    
+    public function getAggregated(GetAggregatedAnalyticsRequest $request): JsonResponse
+    {
+        $requestData = AnalyticsAggregatedRequestData::fromArray($request->toDataArray());
+        
+        $responseData = $this->analyticsService->getAggregatedAnalyticsData($requestData);
+        
+        $responseArray = $responseData->toArray();
+        
+        // Transform goals collection to resources
+        $responseArray['goals'] = GoalResource::collection($responseData->goals);
+
+        return $this->success($responseArray);
     }
 }
 

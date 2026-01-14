@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyAnalyticsResponse,MonthlyMoodAnalyticsResponse,PantryWasteAnalyticsResponse,BudgetCategoriesAnalyticsResponse,} from '../../types/analytics.types';
+import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyAnalyticsResponse,MonthlyMoodAnalyticsResponse,PantryWasteAnalyticsResponse,BudgetCategoriesAnalyticsResponse,AnalyticsAggregatedData,UseAnalyticsParams,} from '../../types/analytics.types';
+import type { AnalyticsAggregatedResponse } from '../../types/api.types';
 import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
 import { useHasHousehold } from '../../hooks/useHasHousehold';
-import {transformWeeklyAnalytics,transformMonthlyMood,transformPantryWaste,transformBudgetCategory,} from '../../utils/transforms/analyticsTransforms';
+import {transformWeeklyAnalytics,transformMonthlyMood,transformPantryWaste,transformBudgetCategory,transformAnalyticsAggregated,} from '../../utils/transforms/analyticsTransforms';
 import { buildAnalyticsQueryString } from '../../utils/analyticsHelpers';
 
 export const useWeeklyAnalytics = (startDate?: string, endDate?: string) => {
@@ -105,6 +106,49 @@ export const useBudgetCategoriesAnalytics = (year?: number, month?: number) => {
     },
     enabled: hasHousehold,
     staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+};
+
+
+export const useAnalyticsAggregated = (params: UseAnalyticsParams) => {
+  const hasHousehold = useHasHousehold();
+  
+  return useQuery<AnalyticsAggregatedData>({
+    queryKey: [
+      'analytics',
+      'aggregated',
+      params.timeRange,
+      params.weekStart,
+      params.weekEnd,
+      params.monthStart,
+      params.currentYear,
+      params.currentMonth,
+    ],
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
+      
+      if (params.timeRange) queryParams.set('time_range', params.timeRange);
+      if (params.weekStart) queryParams.set('week_start', params.weekStart);
+      if (params.weekEnd) queryParams.set('week_end', params.weekEnd);
+      if (params.monthStart) queryParams.set('month_start', params.monthStart);
+      if (params.currentYear) queryParams.set('year', params.currentYear.toString());
+      if (params.currentMonth) queryParams.set('month', params.currentMonth.toString());
+      
+      const query = queryParams.toString();
+      
+      const response = await apiClient.get<AnalyticsAggregatedResponse>(
+        `${ENDPOINTS.ANALYTICS_AGGREGATED}${query ? `?${query}` : ''}`
+      );
+      
+      // Backend returns: { data: { weekly: {...}, monthly_mood: [...], ... } }
+      // apiClient.get returns the response directly, so response.data is the BackendAnalyticsAggregated
+      const backendData = response.data;
+      
+      return transformAnalyticsAggregated(backendData);
+    },
+    enabled: hasHousehold,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
   });
 };

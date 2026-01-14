@@ -4,12 +4,18 @@ namespace App\Services;
 
 use App\Models\Goal;
 use App\Models\GoalMilestone;
+use App\Data\GoalsAggregatedRequestData;
+use App\Data\GoalsAggregatedResponseData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use Illuminate\Support\Collection;
 
 class GoalsService
 {
     use VerifiesResourceOwnership;
+
+    public function __construct(
+        private BudgetService $budgetService
+    ) {}
 
     public function getAll(): Collection
     {
@@ -162,5 +168,16 @@ class GoalsService
         });
         
         return $isProgressComplete && $allMilestonesComplete;
+    }
+
+    public function getAggregatedGoalsData(GoalsAggregatedRequestData $requestData): GoalsAggregatedResponseData
+    {
+        $goals = $this->getAll();
+        $budgetSummary = $this->budgetService->getBudgetSummary($requestData->year, $requestData->month);
+
+        return GoalsAggregatedResponseData::from([
+            'goals' => $goals,
+            'budgetSummary' => $budgetSummary,
+        ]);
     }
 }

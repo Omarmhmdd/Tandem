@@ -12,16 +12,14 @@ import { useGoalsPage } from '../hooks/useGoals';
 import { useModal } from '../hooks/useModal';
 import { useConfirmDialog } from '../hooks/useConfirmDialog';
 import  type { Goal, GoalFormData, Milestone } from '../types/goal.types';
-import { useBudgetSummary } from '../api/queries/budget';
 import { useCreateMilestone, useUpdateMilestone, useDeleteMilestone } from '../api/queries/goals';
 import { getCategoryColor } from '../utils/goalHelpers';
 
 export const Goals: React.FC = () => {
-  const {goals,getGoalCompletionStatus,saveGoal,deleteGoal,updateProgress,quickAdd,getQuickAddSuggestions,} = useGoalsPage();
+  const {goals,budgetSummary,getGoalCompletionStatus,saveGoal,deleteGoal,updateProgress,quickAdd,getQuickAddSuggestions,} = useGoalsPage();
 
   const modal = useModal();
   const deleteConfirm = useConfirmDialog();
-  const { data: budgetSummary } = useBudgetSummary();
   const createMilestone = useCreateMilestone();
   const updateMilestoneMutation = useUpdateMilestone();
   const deleteMilestoneMutation = useDeleteMilestone();

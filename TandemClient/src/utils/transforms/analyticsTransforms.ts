@@ -1,4 +1,6 @@
-import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyChartData,PantryWasteChartData,BackendWeeklyAnalytics,BackendMonthlyMood,BackendPantryWaste,BackendBudgetCategory,} from '../../types/analytics.types';
+import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyChartData,PantryWasteChartData,BackendWeeklyAnalytics,BackendMonthlyMood,BackendPantryWaste,BackendBudgetCategory,BackendAnalyticsAggregated,AnalyticsAggregatedData,} from '../../types/analytics.types';
+import type { BackendGoal } from '../../types/goal.types';
+import { transformGoal } from './goalTransforms';
 
 export const transformWeeklyAnalytics = (
   data: BackendWeeklyAnalytics
@@ -51,57 +53,71 @@ export const transformWeeklyDataForChart = (
   const sleep = weeklyAnalytics.sleep || [];
   const mood = weeklyAnalytics.mood || [];
   
+  // Early return if no data
+  if (steps.length === 0 && sleep.length === 0 && mood.length === 0) {
+    return [];
+  }
+  
   // Create daily data array by index (preserves chronological order)
-  const dailyData: WeeklyChartData[] = [];
+  // Pre-allocate array size for better performance
   const maxLength = Math.max(steps.length, sleep.length, mood.length);
+  const dailyData: WeeklyChartData[] = new Array(maxLength);
   
   for (let i = 0; i < maxLength; i++) {
     const step = steps[i];
     const sleepEntry = sleep[i];
     const moodEntry = mood[i];
     
-    dailyData.push({
+    dailyData[i] = {
       day: step?.day || sleepEntry?.day || moodEntry?.day || '',
       me: step?.me ?? 0,
       partner: step?.partner ?? 0,
       sleep: sleepEntry?.hours ?? null,
       mood: moodEntry?.me ?? null,
-    });
+    };
   }
   
   // If month view and we have more than 7 days, group by weeks (4 weeks)
   if (timeRange === 'month' && dailyData.length > 7) {
-    const weeks: WeeklyChartData[] = [];
     const daysPerWeek = 7;
     const numberOfWeeks = Math.ceil(dailyData.length / daysPerWeek);
+    const weeks: WeeklyChartData[] = new Array(numberOfWeeks);
     
     for (let weekIndex = 0; weekIndex < numberOfWeeks; weekIndex++) {
       const weekStart = weekIndex * daysPerWeek;
       const weekEnd = Math.min(weekStart + daysPerWeek, dailyData.length);
-      const weekDays = dailyData.slice(weekStart, weekEnd);
       
-      // Aggregate data for the week
-      const weekStepsMe = weekDays.reduce((sum, day) => sum + (day.me || 0), 0);
-      const weekStepsPartner = weekDays.reduce((sum, day) => sum + (day.partner || 0), 0);
+      // Aggregate data for the week - optimized single pass
+      let weekStepsMe = 0;
+      let weekStepsPartner = 0;
+      let sleepSum = 0;
+      let sleepCount = 0;
+      let moodSum = 0;
+      let moodCount = 0;
       
-      // Average sleep and mood (only for days that have data)
-      const sleepValues = weekDays.map(d => d.sleep).filter((s): s is number => s !== null && s !== undefined);
-      const moodValues = weekDays.map(d => d.mood).filter((m): m is number => m !== null && m !== undefined);
+      for (let i = weekStart; i < weekEnd; i++) {
+        const day = dailyData[i];
+        weekStepsMe += day.me || 0;
+        weekStepsPartner += day.partner || 0;
+        
+        if (day.sleep !== null && day.sleep !== undefined) {
+          sleepSum += day.sleep;
+          sleepCount++;
+        }
+        
+        if (day.mood !== null && day.mood !== undefined) {
+          moodSum += day.mood;
+          moodCount++;
+        }
+      }
       
-      const avgSleep = sleepValues.length > 0 
-        ? sleepValues.reduce((sum, val) => sum + val, 0) / sleepValues.length 
-        : null;
-      const avgMood = moodValues.length > 0 
-        ? moodValues.reduce((sum, val) => sum + val, 0) / moodValues.length 
-        : null;
-      
-      weeks.push({
+      weeks[weekIndex] = {
         day: `Week ${weekIndex + 1}`,
         me: weekStepsMe,
         partner: weekStepsPartner,
-        sleep: avgSleep,
-        mood: avgMood,
-      });
+        sleep: sleepCount > 0 ? sleepSum / sleepCount : null,
+        mood: moodCount > 0 ? moodSum / moodCount : null,
+      };
     }
     
     return weeks;
@@ -120,5 +136,22 @@ export const transformPantryWasteForChart = (
     { name: 'Expiring Soon', value: pantryWaste.expiring_soon, color: '#F59E0B' },
     { name: 'Deleted', value: pantryWaste.deleted, color: '#EF4444' },
   ];
+};
+
+/**
+ * Transform aggregated analytics response from backend to frontend format
+ * Reuses existing transform functions for each data type
+ */
+export const transformAnalyticsAggregated = (
+  data: BackendAnalyticsAggregated
+): AnalyticsAggregatedData => {
+  return {
+    weekly: transformWeeklyAnalytics(data.weekly),
+    monthlyMood: transformMonthlyMood(data.monthly_mood || []),
+    pantryWaste: transformPantryWaste(data.pantry_waste),
+    budgetCategories: transformBudgetCategory(data.budget_categories || []),
+    goals: (data.goals || []).map((goal: BackendGoal) => transformGoal(goal)),
+    budgetSummary: data.budget_summary || null,
+  };
 };
 

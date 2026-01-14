@@ -50,6 +50,7 @@ export const Analytics: React.FC = () => {
     currentMonth: dateRange.currentMonth,
   });
 
+
   // Format budget summary for display using helper function
   const monthlyBudget = useMemo(() => {
     return formatMonthlyBudget(budgetSummary?.budget?.monthly_budget);
@@ -86,63 +87,98 @@ export const Analytics: React.FC = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Combined Steps</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalSteps.toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
-              </div>
-              <Activity className="w-10 h-10 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
+        {isLoading ? (
+          <>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4 mt-2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4 mt-2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4 mt-2" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+                <div className="h-3 bg-gray-200 rounded w-1/4 mt-2" />
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Combined Steps</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {totalSteps.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
+                  </div>
+                  <Activity className="w-10 h-10 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Avg Sleep</p>
-                <p className="text-2xl font-bold text-gray-900">{avgSleep}h</p>
-                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
-              </div>
-              <Moon className="w-10 h-10 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Avg Sleep</p>
+                    <p className="text-2xl font-bold text-gray-900">{avgSleep}h</p>
+                    <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
+                  </div>
+                  <Moon className="w-10 h-10 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Avg Mood</p>
-                <p className="text-2xl font-bold text-gray-900">{avgMood}/5</p>
-                <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
-              </div>
-              <Heart className="w-10 h-10 text-pink-500" />
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Avg Mood</p>
+                    <p className="text-2xl font-bold text-gray-900">{avgMood}/5</p>
+                    <p className="text-xs text-gray-500 mt-1">{timeRange === 'week' ? 'This week' : 'This month'}</p>
+                  </div>
+                  <Heart className="w-10 h-10 text-pink-500" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Goals Progress</p>
-                <p className="text-2xl font-bold text-gray-900">{goalsProgress}%</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {goals.length > 0
-                    ? `${goals.length} goal${goals.length > 1 ? 's' : ''}`
-                    : 'No goals'}
-                </p>
-              </div>
-              <Target className="w-10 h-10 text-brand-primary" />
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Goals Progress</p>
+                    <p className="text-2xl font-bold text-gray-900">{goalsProgress}%</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {goals.length > 0
+                        ? `${goals.length} goal${goals.length > 1 ? 's' : ''}`
+                        : 'No goals'}
+                    </p>
+                  </div>
+                  <Target className="w-10 h-10 text-brand-primary" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
 
       {isLoading ? (
@@ -161,45 +197,45 @@ export const Analytics: React.FC = () => {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="day" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="me"
-                  name="Me"
-                  stroke="#53389E"
-                  strokeWidth={2}
-                  dot={{ fill: '#53389E', r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="partner"
-                  name="Partner"
-                  stroke="#9E77ED"
-                  strokeWidth={2}
-                  dot={{ fill: '#9E77ED', r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="day" stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="me"
+                      name="Me"
+                      stroke="#53389E"
+                      strokeWidth={2}
+                      dot={{ fill: '#53389E', r: 4 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="partner"
+                      name="Partner"
+                      stroke="#9E77ED"
+                      strokeWidth={2}
+                      dot={{ fill: '#9E77ED', r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Sleep & Mood Trends</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="day" stroke="#6b7280" />
-                <YAxis yAxisId="left" stroke="#6b7280" />
-                <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
-                <Tooltip />
-                <Legend />
+            <Card>
+              <CardHeader>
+                <CardTitle>Sleep & Mood Trends</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={weeklyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="day" stroke="#6b7280" />
+                    <YAxis yAxisId="left" stroke="#6b7280" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
+                    <Tooltip />
+                    <Legend />
                     <Bar
                       yAxisId="left"
                       dataKey="sleep"
@@ -214,14 +250,14 @@ export const Analytics: React.FC = () => {
                       name="Mood (/5)"
                       radius={[8, 8, 0, 0]}
                     />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Charts Row 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Monthly Mood Trend</CardTitle>
@@ -229,31 +265,31 @@ export const Analytics: React.FC = () => {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={monthlyMoodData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="me"
-                  name="Me"
-                  stroke="#53389E"
-                  strokeWidth={2}
-                  dot={{ fill: '#53389E', r: 5 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="partner"
-                  name="Partner"
-                  stroke="#9E77ED"
-                  strokeWidth={2}
-                  dot={{ fill: '#9E77ED', r: 5 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="month" stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="me"
+                      name="Me"
+                      stroke="#53389E"
+                      strokeWidth={2}
+                      dot={{ fill: '#53389E', r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="partner"
+                      name="Partner"
+                      stroke="#9E77ED"
+                      strokeWidth={2}
+                      dot={{ fill: '#9E77ED', r: 5 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
@@ -304,30 +340,30 @@ export const Analytics: React.FC = () => {
                   data={budgetCategoriesData}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="category" stroke="#6b7280" />
-              <YAxis 
-                stroke="#6b7280" 
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="category" stroke="#6b7280" />
+                  <YAxis 
+                    stroke="#6b7280" 
                     domain={[0, budgetChartDomain]}
                     tickFormatter={(value) => formatCurrency(value)}
-              />
+                  />
                   <Tooltip formatter={(value: number | undefined) => formatCurrency(value || 0)} />
-              <Legend />
+                  <Legend />
                   {monthlyBudget && (
-                <ReferenceLine 
+                    <ReferenceLine 
                       y={monthlyBudget}
-                  stroke="#D6BBFB" 
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  label={{ 
+                      stroke="#D6BBFB" 
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      label={{ 
                         value: `Monthly Budget: ${formatCurrency(monthlyBudget)}`,
-                    position: 'top', 
-                    fill: '#6b7280',
-                    fontSize: 12,
+                        position: 'top', 
+                        fill: '#6b7280',
+                        fontSize: 12,
                         fontWeight: 'bold',
-                  }}
-                />
-              )}
+                      }}
+                    />
+                  )}
                   <Bar
                     dataKey="amount"
                     fill="#53389E"

@@ -19,6 +19,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DateNightController;
 use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\AiCoachController;
+use App\Http\Controllers\DashboardController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -75,8 +76,12 @@ Route::group(['prefix' => 'v0.1'], function () {
 
         // ALL OTHER ROUTES - Require household
         Route::group(['middleware' => 'require.household'], function () {
+            // DASHBOARD - Aggregated data endpoint
+            Route::get('/dashboard', [DashboardController::class, 'index']);
+
             // GOALS
             Route::group(['prefix' => 'goals'], function () {
+                Route::get('/aggregated', [GoalsController::class, 'getAggregated']);
                 Route::get('/', [GoalsController::class, 'index']);
                 Route::post('/', [GoalsController::class, 'store']);
                 Route::post('/{id}/update', [GoalsController::class, 'update']);
@@ -89,6 +94,7 @@ Route::group(['prefix' => 'v0.1'], function () {
 
             // BUDGET & EXPENSES
             Route::group(['prefix' => 'budget'], function () {
+                Route::get('/aggregated', [BudgetController::class, 'getAggregated']);
                 Route::post('/', [BudgetController::class, 'createOrUpdateBudget']);
                 Route::get('/expenses', [BudgetController::class, 'getExpenses']);
                 Route::post('/expenses', [BudgetController::class, 'createExpense']);
@@ -122,6 +128,7 @@ Route::group(['prefix' => 'v0.1'], function () {
 
                     // ANALYTICS
         Route::group(['prefix' => 'analytics'], function () {
+            Route::get('/aggregated', [AnalyticsController::class, 'getAggregated']);
             Route::get('/weekly', [AnalyticsController::class, 'getWeekly']);
             Route::get('/monthly-mood', [AnalyticsController::class, 'getMonthlyMood']);
             Route::get('/pantry-waste', [AnalyticsController::class, 'getPantryWaste']);

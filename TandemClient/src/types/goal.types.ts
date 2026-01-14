@@ -1,6 +1,4 @@
-/**
- * Goal feature types
- */
+
 
 // Frontend types (camelCase)
 export interface Milestone {
@@ -83,6 +81,30 @@ export interface MilestoneResponse {
     milestone: BackendMilestone;
   };
   message?: string;
+}
+
+// Aggregated Goals Data (after transformation)
+export interface GoalsAggregatedData {
+  goals: Goal[];
+  budgetSummary: {
+    budget: {
+      id?: number | string;
+      household_id?: number;
+      year?: number;
+      month?: number;
+      monthly_budget: number | string;
+      created_at?: string;
+      updated_at?: string;
+    } | null;
+    total_expenses: number;
+    remaining: number | null;
+  };
+}
+
+// Hook parameters
+export interface UseGoalsAggregatedParams {
+  year?: number;
+  month?: number;
 }
 
 

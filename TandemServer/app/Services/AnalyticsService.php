@@ -13,11 +13,18 @@ use App\Data\WeeklyAnalyticsData;
 use App\Data\MonthlyMoodData;
 use App\Data\PantryWasteData;
 use App\Data\BudgetCategoryData;
+use App\Data\AnalyticsAggregatedRequestData;
+use App\Data\AnalyticsAggregatedResponseData;
 use Illuminate\Support\Carbon;
 
 class AnalyticsService
 {
     use VerifiesResourceOwnership;
+
+    public function __construct(
+        private GoalsService $goalsService,
+        private BudgetService $budgetService
+    ) {}
 
     public function getWeeklyData(?string $startDate = null, ?string $endDate = null): array
     {
@@ -351,5 +358,20 @@ class AnalyticsService
         }
 
         return $result;
+    }
+
+    public function getAggregatedAnalyticsData(AnalyticsAggregatedRequestData $requestData): AnalyticsAggregatedResponseData
+    {
+        $analyticsStartDate = $requestData->getAnalyticsStartDate();
+        $analyticsEndDate = $requestData->getAnalyticsEndDate();
+
+        return new AnalyticsAggregatedResponseData(
+            weekly: $this->getWeeklyData($analyticsStartDate, $analyticsEndDate),
+            monthlyMood: $this->getMonthlyMoodData($requestData->currentYear, $requestData->currentMonth),
+            pantryWaste: $this->getPantryWasteData($analyticsStartDate, $analyticsEndDate),
+            budgetCategories: $this->getBudgetCategoriesData($requestData->currentYear, $requestData->currentMonth),
+            goals: $this->goalsService->getAll(),
+            budgetSummary: $this->budgetService->getBudgetSummary($requestData->currentYear, $requestData->currentMonth),
+        );
     }
 } 

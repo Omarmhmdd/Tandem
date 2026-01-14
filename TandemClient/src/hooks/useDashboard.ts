@@ -1,10 +1,6 @@
 import { useMemo, useEffect, useRef } from 'react';
-import { usePantryItems } from '../api/queries/pantry';
-import { useGoals } from '../api/queries/goals';
-import { useHealthLogs } from '../api/queries/health';
-import { useMealPlans } from '../api/queries/meals';
-import { useHouseholdMembers } from '../api/queries/household';
-import { useWeeklySummaries, useGenerateWeeklySummary } from '../api/queries/weeklySummary';
+import { useDashboard } from '../api/queries/dashboard';
+import { useGenerateWeeklySummary } from '../api/queries/weeklySummary';
 import { useAuth } from '../contexts/AuthContext';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { calculateDaysUntilExpiry } from '../utils/pantryHelpers';
@@ -16,15 +12,18 @@ import type { DashboardData } from '../types/Dashboard.types';
 export const useDashboardPage = (): DashboardData => {
   const { user } = useAuth();
   const { household } = useHousehold();
-  const { data: pantryItems = [], isLoading: isLoadingPantry } = usePantryItems();
-  const { data: goals = [], isLoading: isLoadingGoals } = useGoals();
-  const { data: healthLogs = [], isLoading: isLoadingHealthLogs } = useHealthLogs();
-  const { data: mealPlans = [], isLoading: isLoadingMealPlans } = useMealPlans();
-  const { data: members = [], isLoading: isLoadingMembers } = useHouseholdMembers(household?.id || '');
-  const { data: weeklySummaries = [], isLoading: isLoadingSummaries } = useWeeklySummaries();
+  const { data: dashboardData, isLoading } = useDashboard();
   const generateSummary = useGenerateWeeklySummary();
   const isGeneratingRef = useRef(false);
   const lastCheckedWeekRef = useRef<string | null>(null);
+
+  // Extract data from aggregated response
+  const pantryItems = dashboardData?.items || [];
+  const goals = dashboardData?.goals || [];
+  const healthLogs = dashboardData?.logs || [];
+  const mealPlans = dashboardData?.plans || [];
+  const members = dashboardData?.members || [];
+  const weeklySummaries = dashboardData?.summaries || [];
 
   const expiringItems = useMemo(() => {
     return pantryItems.filter((item) => {
@@ -65,24 +64,15 @@ export const useDashboardPage = (): DashboardData => {
     return getLatestCompletedWeekSummary(weeklySummaries);
   }, [weeklySummaries]);
 
-  // Page-level loading state: any of the core queries still loading
-  const isLoading =
-    isLoadingPantry ||
-    isLoadingGoals ||
-    isLoadingHealthLogs ||
-    isLoadingMealPlans ||
-    isLoadingMembers ||
-    isLoadingSummaries;
-
   // Auto-generate summary for previous completed week if it doesn't exist
   useEffect(() => {
     // Only run if:
     // 1. We have a household
-    // 2. Summaries have finished loading (not loading anymore)
+    // 2. Dashboard data has finished loading (not loading anymore)
     // 3. We're not currently generating
     if (
       !household?.id ||
-      isLoadingSummaries ||
+      isLoading ||
       isGeneratingRef.current ||
       generateSummary.isPending
     ) {
@@ -92,34 +82,31 @@ export const useDashboardPage = (): DashboardData => {
     const previousWeekStart = getPreviousWeekStartString();
     const lastCheckedWeek = lastCheckedWeekRef.current;
 
+    // Skip if we already checked this previous week (prevents infinite loops)
+    if (lastCheckedWeek === previousWeekStart) {
+      return;
+    }
+
     // Check if we need to generate a summary for the previous completed week
     const needsGeneration = !hasSummaryForPreviousWeek(weeklySummaries);
 
-    // Skip if we already checked this previous week AND a summary exists
-    if (lastCheckedWeek === previousWeekStart) {
-      const hasPreviousWeekSummary = hasSummaryForPreviousWeek(weeklySummaries);
-      if (hasPreviousWeekSummary) {
-        return; // Already have summary for previous week, no need to check again
-      }
-      // If we checked but no summary exists, it means generation failed - try again
-    }
-
     if (needsGeneration) {
-      // Mark that we're generating to prevent duplicate calls
+      // Mark that we're generating AND mark this week as checked to prevent re-runs
       isGeneratingRef.current = true;
+      lastCheckedWeekRef.current = previousWeekStart;
 
       // Generate summary for previous week (no weekStart param = backend uses previous week)
       generateSummary.mutate(undefined, {
         onSuccess: () => {
-          // Mark this previous week as checked only on success
-          lastCheckedWeekRef.current = previousWeekStart;
+          // Keep the ref marked as checked on success
           isGeneratingRef.current = false;
         },
         onError: (error) => {
           // Silently handle errors - don't show to user, just log
           console.error('Failed to auto-generate weekly summary:', error);
-          // Don't mark as checked on error - we'll try again
+          // Reset refs on error so we can try again on next render
           isGeneratingRef.current = false;
+          lastCheckedWeekRef.current = null;
         },
       });
     } else {
@@ -128,9 +115,10 @@ export const useDashboardPage = (): DashboardData => {
     }
   }, [
     household?.id,
-    isLoadingSummaries,
+    isLoading,
     weeklySummaries,
-    generateSummary,
+    generateSummary.isPending,
+    generateSummary.mutate,
   ]);
 
   return {

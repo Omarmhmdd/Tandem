@@ -129,3 +129,46 @@ export interface DateRange {
   currentMonth: number;
 }
 
+// Backend Budget Summary (from API)
+export interface BackendBudgetSummary {
+  budget: {
+    id: number | string;
+    household_id: number;
+    year: number;
+    month: number;
+    monthly_budget: string | number;
+    created_by_user_id: number | string;
+    updated_by_user_id: number | string;
+    created_at: string;
+    updated_at: string;
+  } | null;
+  total_expenses: number;
+  remaining: number | null;
+}
+
+// Aggregated Analytics Response Types
+export interface BackendAnalyticsAggregated {
+  weekly: BackendWeeklyAnalytics;
+  monthly_mood: BackendMonthlyMood[];
+  pantry_waste: BackendPantryWaste;
+  budget_categories: BackendBudgetCategory[];
+  goals: import('./goal.types').BackendGoal[];
+  budget_summary: BackendBudgetSummary;
+}
+
+export interface AnalyticsAggregatedResponse {
+  data: BackendAnalyticsAggregated;
+  message?: string;
+}
+
+import type { Goal } from './goal.types';
+
+export interface AnalyticsAggregatedData {
+  weekly: WeeklyAnalytics;
+  monthlyMood: MonthlyMood[];
+  pantryWaste: PantryWaste;
+  budgetCategories: BudgetCategory[];
+  goals: Goal[];
+  budgetSummary: BackendBudgetSummary;
+}
+
