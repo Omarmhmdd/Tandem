@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   REGISTER: '/register',
   LOGOUT: '/auth/logout',
   ME: '/auth/me',
+  UPDATE_PROFILE: '/auth/profile',
   NUTRITION_TARGET: '/nutrition-target',
 
   // Household
@@ -14,6 +15,7 @@ export const ENDPOINTS = {
   HOUSEHOLD_JOIN: (code: string) => `/household/join/${code}`,
   HOUSEHOLD_INVITE_CODE: (id: string) => `/household/${id}/invite-code`,
   HOUSEHOLD_REGENERATE_INVITE_CODE: (id: string) => `/household/${id}/regenerate-invite-code`,
+  HOUSEHOLD_UPDATE: (id: string) => `/household/${id}/update`,
   HOUSEHOLD_MEMBERS: (id: string) => `/household/${id}/members`,
 
   // Habits
@@ -94,6 +96,11 @@ export const ENDPOINTS = {
 
   // Dashboard (aggregated endpoint)
   DASHBOARD: '/dashboard',
+
+  // Notifications
+  NOTIFICATIONS: '/notifications',
+  NOTIFICATION_READ: (id: string) => `/notifications/${id}/read`,
+  NOTIFICATIONS_READ_ALL: '/notifications/read-all',
 } as const;
 
 

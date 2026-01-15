@@ -155,6 +155,30 @@ class HouseholdService
     });
 }
 
+    public function update(int $householdId, array $householdData): Household
+    {
+        $user = $this->getAuthenticatedUser();
+
+        $household = Household::find($householdId);
+
+        if (!$household) {
+            throw new Exception('Household not found');
+        }
+
+        $member = HouseholdMember::where('household_id', $householdId)
+            ->where('user_id', $user->id)
+            ->where('role', 'primary')
+            ->first();
+
+        if (!$member) {
+            throw new Exception('Only primary member can update household');
+        }
+
+        $household->update($householdData);
+
+        return $household->fresh();
+    }
+
     public function getMembers(int $householdId): Collection
 {
     $user = $this->getAuthenticatedUser();

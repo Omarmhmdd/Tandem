@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuthService;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UpdateUserProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\HouseholdResource;
 use Illuminate\Http\JsonResponse;
@@ -47,6 +48,15 @@ class AuthController extends Controller
             'household' => $result['household'] ? new HouseholdResource($result['household']) : null,
             'has_household' => $result['has_household'],
         ]);
+    }
+
+    public function updateProfile(UpdateUserProfileRequest $request): JsonResponse
+    {
+        $user = $this->authService->updateProfile($request->getUserData());
+
+        return $this->success([
+            'user' => new UserResource($user),
+        ], 'Profile updated successfully');
     }
 
 

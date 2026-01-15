@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, MessageSquare, Brain, Sparkles, FileText, TrendingUp, Zap, Heart, ShoppingBag, UtensilsCrossed, Target, DollarSign, Calendar, CheckSquare } from 'lucide-react';
-import { Logo } from '../Logo';
+import { ChevronLeft, ChevronRight, Brain, Sparkles, TrendingUp, Zap, Heart } from 'lucide-react';
 
 interface FeatureCarouselProps {
   type: 'signup' | 'login';
@@ -98,7 +97,7 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
   const lastWheelTime = useRef<number>(0);
-  const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
+  const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const minSwipeDistance = 50;
   const wheelThrottle = 500; // ms between wheel events
@@ -114,13 +113,6 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setTimeout(() => setIsTransitioning(false), 400);
-  };
-
-  const goToSlide = (index: number) => {
-    if (isTransitioning || index === currentSlide) return;
-    setIsTransitioning(true);
-    setCurrentSlide(index);
     setTimeout(() => setIsTransitioning(false), 400);
   };
 
@@ -229,7 +221,7 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
   return (
     <div 
       ref={carouselRef}
-      className="hidden lg:flex lg:w-1/2 bg-[#53389E] items-center justify-center p-12 relative overflow-hidden h-screen"
+      className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#53389E] via-[#6B4FA8] to-[#53389E] items-center justify-center p-12 relative overflow-hidden h-screen [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -237,17 +229,17 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
       onMouseUp={onMouseUp}
     >
       <div className="relative z-10 w-full max-w-lg h-full flex flex-col justify-center">
-        {/* Tandem Title - At the top (purple section only) */}
+        {/* Tandem Title - Professional Styling */}
         <div className="flex flex-col items-center mb-8">
-          <h1 className="text-5xl font-bold text-white font-sans tracking-tight">
+          <h1 className="text-6xl font-light text-white tracking-[0.2em] uppercase letter-spacing-wider" style={{ fontFamily: 'ui-serif, Georgia, serif', letterSpacing: '0.15em' }}>
             Tandem
           </h1>
         </div>
 
-        {/* Carousel Content - Fits slide properly */}
+        {/* Carousel Content - Glass-morphism Card */}
         <div className="flex-1 flex flex-col justify-center">
           <div 
-            className={`transition-opacity duration-400 ${
+            className={`backdrop-blur-md bg-white/10 rounded-2xl p-8 border border-white/20 shadow-2xl transition-opacity duration-400 ${
               isTransitioning ? 'opacity-0' : 'opacity-100'
             }`}
           >
@@ -257,19 +249,19 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
               </div>
             )}
             
-            <h2 className="text-3xl font-semibold text-white mb-4 font-sans">
+            <h2 className="text-3xl font-semibold text-white mb-4 text-center font-sans">
               {currentSlideData.title}
             </h2>
             
-            <p className="text-white text-base opacity-95 mb-6 leading-relaxed font-sans">
+            <p className="text-white text-base opacity-95 mb-6 leading-relaxed text-center font-sans">
               {currentSlideData.description}
             </p>
 
             {currentSlideData.features && (
               <ul className="space-y-3 mb-8">
                 {currentSlideData.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/80 mt-2 flex-shrink-0" />
+                  <li key={index} className="flex items-center gap-3 justify-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/80 flex-shrink-0" />
                     <span className="text-white/95 text-sm leading-relaxed font-sans">{feature}</span>
                   </li>
                 ))}
@@ -277,24 +269,9 @@ export const FeatureCarousel: React.FC<FeatureCarouselProps> = ({ type }) => {
             )}
           </div>
 
-          {/* Slide Indicators */}
-          <div className="flex justify-center gap-2 mb-6">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`rounded-full transition-all duration-300 ${
-                  index === currentSlide
-                    ? 'bg-white w-8 h-2'
-                    : 'bg-white/40 hover:bg-white/60 w-2 h-2'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
 
-        {/* Navigation Arrows - Beside each other */}
+        {/* Navigation Arrows - Centered */}
         <div className="flex justify-center items-center gap-4">
           <button
             onClick={prevSlide}

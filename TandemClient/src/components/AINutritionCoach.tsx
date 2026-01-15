@@ -187,11 +187,11 @@ const handleSaveTargets = useCallback(async () => {
   }, [household, loadNutritionData]);
 
   return (
-    <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-white">
+    <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-white">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Apple className="w-5 h-5 text-green-600" />
+            <Apple className="w-5 h-5 text-purple-500" />
             AI Nutrition Coach
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -223,8 +223,8 @@ const handleSaveTargets = useCallback(async () => {
       <CardContent className="space-y-6">
         {/* Initial prompt */}
         {!hasRequestedData && !targetLoading && (
-          <div className="p-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg text-center">
-            <Apple className="w-12 h-12 text-green-600 mx-auto mb-4" />
+          <div className="p-6 bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-lg text-center">
+            <Apple className="w-12 h-12 text-purple-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Talk to Your AI Coach and Set Targets
             </h3>
@@ -339,7 +339,7 @@ const handleSaveTargets = useCallback(async () => {
                   {suggestedMeals.map((meal, idx) => (
                     <div
                       key={meal.id ? `meal-${meal.id}-${idx}` : `meal-${idx}-${meal.name || 'unnamed'}`}
-                      className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg"
                     >
                       <div>
                         <p className="font-medium text-gray-900">{meal.name}</p>

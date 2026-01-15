@@ -33,7 +33,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon?: React.ComponentType<LucideProps>;
   iconPosition?: 'left' | 'right';
   isLoading?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 // Input Component

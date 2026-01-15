@@ -7,6 +7,7 @@ use App\Models\MatchMeal;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Http\Traits\HasDatabaseTransactions;
 use Illuminate\Support\Collection;
+use App\Notifications\MatchMealNotification;
 class MealPlannerService
 {
     use VerifiesResourceOwnership, HasDatabaseTransactions;
@@ -123,6 +124,24 @@ class MealPlannerService
             $matchMeal->update(['status' => 'accepted','responded_at' => now(),]);
 
             $matchMeal->load(['mealPlan.recipe.ingredients','mealPlan.recipe.instructions','invitedBy','invitedTo']);
+
+            // Send notification to the invited user
+            $invitedToUser = $matchMeal->invitedTo;
+            $invitedByName = $matchMeal->invitedBy->first_name . ' ' . ($matchMeal->invitedBy->last_name ?? '');
+            $recipeName = $matchMeal->mealPlan->recipe?->name ?? 'Match Meal';
+            $mealDate = $matchMeal->mealPlan->date instanceof \Illuminate\Support\Carbon 
+                ? $matchMeal->mealPlan->date->format('Y-m-d') 
+                : $matchMeal->mealPlan->date;
+            $mealType = $matchMeal->mealPlan->meal_type;
+
+            $invitedToUser->notify(new MatchMealNotification(
+                $matchMeal->id,
+                $matchMeal->mealPlan->id,
+                trim($invitedByName),
+                $recipeName,
+                $mealDate,
+                $mealType
+            ));
 
             return $matchMeal;
         });

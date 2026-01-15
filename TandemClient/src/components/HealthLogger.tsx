@@ -54,9 +54,7 @@ export const HealthLogger: React.FC<HealthLoggerProps> = ({ onSave }) => {
           <MoodTracker onMoodSelect={setSelectedMood} currentMood={selectedMood || parsedData?.mood} />
           <div className="flex items-center justify-between pt-2">
             <p className="text-sm text-gray-500">AI will automatically parse your entry into structured data</p>
-            <Button onClick={handleSubmit} disabled={(!logText.trim() && !selectedMood) || isParsing} isLoading={isSubmitting || isParsing} icon={Send}>
-              Save Entry
-            </Button>
+            <Button onClick={handleSubmit} disabled={(!logText.trim() && !selectedMood) || isParsing} isLoading={isSubmitting || isParsing} icon={Send} />
           </div>
         </CardContent>
       </Card>

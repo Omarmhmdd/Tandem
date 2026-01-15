@@ -6,7 +6,8 @@ import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { PageHeader } from '../components/shared/PageHeader';
 import { useHousehold } from '../contexts/HouseholdContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useHouseholdInviteCode, useRegenerateInviteCode } from '../api/queries/household';
+import { useHouseholdInviteCode, useRegenerateInviteCode, useUpdateHousehold } from '../api/queries/household';
+import { useUpdateProfile } from '../api/queries/auth';
 import { Settings as SettingsIcon, Copy, RefreshCw, Key, Users, Check } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
@@ -15,9 +16,27 @@ export const Settings: React.FC = () => {
   const { user } = useAuth();
   const { data: inviteCode, isLoading: inviteCodeLoading } = useHouseholdInviteCode(household?.id || '');
   const regenerateMutation = useRegenerateInviteCode();
+  const updateHouseholdMutation = useUpdateHousehold();
+  const updateProfileMutation = useUpdateProfile();
   const [copied, setCopied] = useState(false);
+  
+  const [householdName, setHouseholdName] = useState(household?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
 
   const isPrimary = household?.primaryUserId === user?.id;
+
+  // Update local state when props change
+  React.useEffect(() => {
+    if (household?.name) setHouseholdName(household.name);
+  }, [household?.name]);
+
+  React.useEffect(() => {
+    if (user?.email) setEmail(user.email);
+    if (user?.firstName) setFirstName(user.firstName);
+    if (user?.lastName) setLastName(user.lastName);
+  }, [user?.email, user?.firstName, user?.lastName]);
 
   const handleCopyCode = async () => {
     if (!inviteCode) return;
@@ -40,6 +59,41 @@ export const Settings: React.FC = () => {
       showToast('Invite code regenerated successfully!', 'success');
     } catch (error: any) {
       showToast(error.message || 'Failed to regenerate invite code', 'error');
+    }
+  };
+
+  const handleSaveHousehold = async () => {
+    if (!household?.id || !householdName.trim()) {
+      showToast('Household name is required', 'error');
+      return;
+    }
+
+    try {
+      await updateHouseholdMutation.mutateAsync({
+        householdId: household.id,
+        name: householdName.trim(),
+      });
+      showToast('Household name updated successfully!', 'success');
+    } catch (error: any) {
+      showToast(error.message || 'Failed to update household name', 'error');
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!email.trim() || !firstName.trim() || !lastName.trim()) {
+      showToast('All fields are required', 'error');
+      return;
+    }
+
+    try {
+      await updateProfileMutation.mutateAsync({
+        email: email.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+      });
+      showToast('Profile updated successfully!', 'success');
+    } catch (error: any) {
+      showToast(error.message || 'Failed to update profile', 'error');
     }
   };
 
@@ -66,11 +120,23 @@ export const Settings: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Household Name
               </label>
-              <Input
-                value={household?.name || ''}
-                disabled
-                className="bg-gray-50"
-              />
+              <div className="flex gap-2">
+                <Input
+                  value={householdName}
+                  onChange={(e) => setHouseholdName(e.target.value)}
+                  disabled={!isPrimary || updateHouseholdMutation.isPending}
+                  className={!isPrimary ? "bg-gray-50" : ""}
+                />
+                {isPrimary && (
+                  <Button
+                    onClick={handleSaveHousehold}
+                    disabled={updateHouseholdMutation.isPending || !householdName.trim() || householdName === household?.name}
+                    isLoading={updateHouseholdMutation.isPending}
+                  >
+                    Save
+                  </Button>
+                )}
+              </div>
             </div>
 
             {isPrimary && (
@@ -101,7 +167,7 @@ export const Settings: React.FC = () => {
                   Share this code with your partner so they can join your household
                 </p>
                 <Button
-                  variant="outline"
+                  variant="primary"
                   onClick={handleRegenerateCode}
                   disabled={regenerateMutation.isPending || !household?.id}
                   icon={RefreshCw}
@@ -136,21 +202,46 @@ export const Settings: React.FC = () => {
                 Email
               </label>
               <Input
-                value={user?.email || ''}
-                disabled
-                className="bg-gray-50"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={updateProfileMutation.isPending}
+                type="email"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name
+                First Name
               </label>
               <Input
-                value={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || ''}
-                disabled
-                className="bg-gray-50"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                disabled={updateProfileMutation.isPending}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
+              <Input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                disabled={updateProfileMutation.isPending}
+              />
+            </div>
+            <Button
+              onClick={handleSaveProfile}
+              disabled={
+                updateProfileMutation.isPending ||
+                !email.trim() ||
+                !firstName.trim() ||
+                !lastName.trim() ||
+                (email === user?.email && firstName === user?.firstName && lastName === user?.lastName)
+              }
+              isLoading={updateProfileMutation.isPending}
+              className="w-full"
+            >
+              Save Changes
+            </Button>
           </CardContent>
         </Card>
       </div>

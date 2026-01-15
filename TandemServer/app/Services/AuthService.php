@@ -72,6 +72,20 @@ class AuthService
         ];
     }
 
+    public function updateProfile(array $userData): User
+    {
+        $authUser = Auth::user();
+
+        if (!$authUser) {
+            throw new AuthenticationException('User not authenticated');
+        }
+
+        $user = User::findOrFail($authUser->id);
+        $user->update($userData);
+
+        return $user->fresh();
+    }
+
     private function buildAuthResponse(User $user): array
     {
         return [

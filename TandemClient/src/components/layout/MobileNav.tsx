@@ -3,6 +3,7 @@
     import { X, LayoutDashboard, ShoppingBag, UtensilsCrossed, Heart, Target, TrendingUp, Calendar, MessageSquare, CheckSquare, DollarSign } from 'lucide-react';
     import { useAuth } from '../../contexts/AuthContext';
     import { useHousehold } from '../../contexts/HouseholdContext';
+    import { useHouseholdMembers } from '../../api/queries/household';
     import type { NavItem } from '../../types/navigation.types';
 
     const navItems: NavItem[] = [
@@ -29,7 +30,8 @@
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { household, members } = useHousehold();
+    const { household } = useHousehold();
+    const { data: members = [] } = useHouseholdMembers(household?.id || '');
 
     // Memoized navigation handler
     const handleNavigate = useCallback((path: string) => {
@@ -68,8 +70,8 @@
 
     if (!isOpen) return null;
 
-    // Get user initials for avatar
-    const userInitials = user?.firstName?.[0]?.toUpperCase() || 'U';
+    // Get household initial for avatar
+    const householdInitial = household?.name?.[0]?.toUpperCase() || 'H';
     const memberCount = members.length || 0;
 
     return (
@@ -132,15 +134,15 @@
             <div className="border-t border-gray-200 p-4">
             <div className="flex items-center">
                 <div className="flex-shrink-0">
-                <div className="w-10 h-10 bg-gradient-brand rounded-full flex items-center justify-center text-white font-semibold">
-                    <span className="text-sm">{userInitials}</span>
+                <div className="w-9 h-9 bg-gradient-to-br from-[#53389E] to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                    <span>{householdInitial}</span>
                 </div>
                 </div>
                 <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-semibold text-gray-900 leading-tight">
                     {household?.name || 'Our Home'}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 leading-tight">
                     {memberCount} {memberCount === 1 ? 'member' : 'members'}
                 </p>
                 </div>

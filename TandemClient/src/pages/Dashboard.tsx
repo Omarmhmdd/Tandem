@@ -189,7 +189,7 @@
                     )}
                     </ul>
                     <div className="mt-4 p-4 bg-brand-primary/10 rounded-lg border border-brand-primary/20">
-                    <p className="font-semibold text-brand-primary mb-1">🎯 Priority Action:</p>
+                    <p className="font-semibold text-brand-primary mb-1"> Priority Action:</p>
                     <p className="text-gray-700">{latestSummary.action}</p>
                     </div>
                     {latestSummary.week_start && (

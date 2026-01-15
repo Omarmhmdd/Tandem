@@ -1,6 +1,8 @@
 import React from 'react';
-import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Heart, Target, TrendingUp, Calendar, MessageSquare, Home, CheckSquare, DollarSign } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Heart, Target, TrendingUp, Calendar, MessageSquare, CheckSquare, DollarSign } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useHousehold } from '../../contexts/HouseholdContext';
+import { useHouseholdMembers } from '../../api/queries/household';
 import type { NavItem } from '../../types/navigation.types';
 
 const navItems: NavItem[] = [
@@ -21,6 +23,11 @@ const navItems: NavItem[] = [
 export const Sidebar: React.FC = () => {
 const location = useLocation();
 const navigate = useNavigate();
+const { household } = useHousehold();
+const { data: members = [] } = useHouseholdMembers(household?.id || '');
+
+const memberCount = members.length || 0;
+const householdInitial = household?.name?.[0]?.toUpperCase() || 'H';
 
     return (
         <aside className="hidden lg:flex lg:flex-shrink-0">
@@ -77,13 +84,15 @@ const navigate = useNavigate();
                 <div className="flex-shrink-0 w-full group block">
                 <div className="flex items-center">
                     <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-gradient-brand rounded-full flex items-center justify-center text-white font-semibold">
-                        <Home className="w-5 h-5" />
+                    <div className="w-9 h-9 bg-gradient-to-br from-[#53389E] to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                        <span>{householdInitial}</span>
                     </div>
                     </div>
                     <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-700">Our Home</p>
-                    <p className="text-xs text-gray-500">2 members</p>
+                    <p className="text-sm font-semibold text-gray-900 leading-tight">{household?.name || 'Our Home'}</p>
+                    <p className="text-xs text-gray-500 leading-tight">
+                        {memberCount} {memberCount === 1 ? 'member' : 'members'}
+                    </p>
                     </div>
                 </div>
                 </div>

@@ -41,14 +41,15 @@ export const autoTagCategory = (description: string, amount: number): Expense['c
 
 export const getCategoryColor = (category: string): string => {
   const colors: Record<string, string> = {
-    groceries: 'bg-green-100 text-green-700',
-    dining: 'bg-orange-100 text-orange-700',
-    wedding: 'bg-pink-100 text-pink-700',
-    health: 'bg-blue-100 text-blue-700',
-    'big-ticket': 'bg-purple-100 text-purple-700',
-    other: 'bg-gray-100 text-gray-700',
+    groceries: 'bg-purple-400 text-white',
+    dining: 'bg-gray-500 text-white',
+    wedding: 'bg-purple-600 text-white',
+    health: 'bg-purple-300 text-gray-800',
+    'big-ticket': 'bg-gray-700 text-white',
+    other: 'bg-gray-400 text-white',
   };
   return colors[category] || colors.other;
 };
+
 
 

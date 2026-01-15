@@ -22,7 +22,6 @@
         totalFoodItems,
         saveEntry,
         deleteEntry,
-        getMoodEmoji,
     } = useHealthPage();
 
     const [showAll, setShowAll] = useState(false);
@@ -166,7 +165,6 @@
                         </div>
 
                         <div className="flex items-center gap-2">
-                        <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
                         <span className="px-2 py-1 bg-brand-light/30 text-brand-primary rounded text-xs font-medium capitalize">
                             {entry.mood}
                         </span>

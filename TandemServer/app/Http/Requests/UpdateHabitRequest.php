@@ -19,6 +19,7 @@ class UpdateHabitRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'frequency' => ['sometimes', 'in:daily,weekly,custom'],
             'reminder_time' => ['nullable', 'date_format:H:i'],
+            'timezone' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -27,11 +28,23 @@ class UpdateHabitRequest extends FormRequest
         $data = [];
         $user = Auth::user();
 
-        if ($this->has('name')) $data['name'] = $this->name;
-        if ($this->has('description')) $data['description'] = $this->description;
-        if ($this->has('frequency')) $data['frequency'] = $this->frequency;
+        if ($this->has('name')) {
+            $data['name'] = $this->name;
+        }
+        if ($this->has('description')) {
+            $data['description'] = $this->description;
+        }
+        if ($this->has('frequency')) {
+            $data['frequency'] = $this->frequency;
+        }
         if ($this->has('reminder_time')) {
             $data['reminder_time'] = $this->reminder_time ? now()->setTimeFromTimeString($this->reminder_time) : null;
+            
+            // Update user timezone if reminder_time is set and timezone is provided
+            if ($this->reminder_time && $this->has('timezone') && $this->timezone) {
+                $user->timezone = $this->timezone;
+                $user->save();
+            }
         }
 
         $data['updated_by_user_id'] = $user->id;

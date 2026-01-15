@@ -6,6 +6,7 @@ use App\Services\HouseholdService;
 use App\Http\Requests\CreateHouseholdRequest;
 use App\Http\Requests\JoinHouseholdRequest;
 use App\Http\Requests\TransferOwnershipRequest;
+use App\Http\Requests\UpdateHouseholdRequest;
 use App\Http\Resources\HouseholdResource;
 use App\Http\Resources\HouseholdMemberResource;
 use Illuminate\Http\JsonResponse;
@@ -70,6 +71,19 @@ class HouseholdController extends Controller
             return $this->success([
                 'invite_code' => $inviteCode,
             ], 'Invite code regenerated successfully');
+        } catch (Exception $e) {
+            return $this->error($e->getMessage(), 400);
+        }
+    }
+
+    public function update(UpdateHouseholdRequest $request, int $householdId): JsonResponse
+    {
+        try {
+            $household = $this->householdService->update($householdId, $request->getHouseholdData());
+
+            return $this->success([
+                'household' => new HouseholdResource($household),
+            ], 'Household updated successfully');
         } catch (Exception $e) {
             return $this->error($e->getMessage(), 400);
         }
