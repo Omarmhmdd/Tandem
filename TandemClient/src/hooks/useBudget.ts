@@ -4,10 +4,6 @@ import type { Expense, ExpenseFormData, BudgetSummary } from '../types/budget.ty
 import { showToast } from '../utils/toast';
 import { autoTagCategory, getCategoryColor, calculateBudgetSummary } from '../utils/budgetHelpers';
 
-// Expense alert threshold - should match backend constant: DefaultValues::EXPENSE_ALERT_THRESHOLD
-const EXPENSE_ALERT_THRESHOLD = 200.0;
-
-
 export const useBudgetPage = () => {
   // Fetch all budget data in a single aggregated call
   const { data: aggregatedData, isLoading } = useBudgetAggregated();

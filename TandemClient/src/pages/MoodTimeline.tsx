@@ -9,7 +9,6 @@ import { getMoodEmoji } from '../utils/moodHelpers';
 
 export const MoodTimeline: React.FC = () => {
   const {
-    moods,
     annotations,
     timeRange,
     setTimeRange,

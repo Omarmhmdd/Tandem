@@ -1,7 +1,6 @@
     import React, { useCallback, useEffect } from 'react';
     import { useLocation, useNavigate } from 'react-router-dom';
     import { X, LayoutDashboard, ShoppingBag, UtensilsCrossed, Heart, Target, TrendingUp, Calendar, MessageSquare, CheckSquare, DollarSign } from 'lucide-react';
-    import { useAuth } from '../../contexts/AuthContext';
     import { useHousehold } from '../../contexts/HouseholdContext';
     import { useHouseholdMembers } from '../../api/queries/household';
     import type { NavItem } from '../../types/navigation.types';
@@ -29,7 +28,6 @@
     export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const { household } = useHousehold();
     const { data: members = [] } = useHouseholdMembers(household?.id || '');
 
