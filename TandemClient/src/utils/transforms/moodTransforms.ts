@@ -1,5 +1,6 @@
 import type { MoodEntry, Annotation } from '../../types/mood.types';
 import type { BackendMoodEntry, BackendAnnotation } from '../../types/api.types';
+import { formatDateForAPI } from '../dateHelpers';
 
 
 export const transformMoodEntry = (entry: BackendMoodEntry): MoodEntry => ({
@@ -27,7 +28,7 @@ export const transformMoodEntryToBackend = (entry: Partial<MoodEntry>): {
   notes?: string;
   time?: string;
 } => ({
-  date: entry.date || new Date().toISOString().split('T')[0],
+  date: entry.date || formatDateForAPI(),
   mood: entry.mood || 'calm',
   notes: entry.notes,
 });

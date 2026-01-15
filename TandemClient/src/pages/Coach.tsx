@@ -118,9 +118,7 @@ export const Coach: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 className="flex-1"
               />
-              <Button onClick={handleSend} disabled={isLoading || !inputValue.trim()} icon={Send}>
-                Send
-              </Button>
+              <Button onClick={handleSend} disabled={isLoading || !inputValue.trim()} icon={Send} />
             </div>
           </CardContent>
         </Card>

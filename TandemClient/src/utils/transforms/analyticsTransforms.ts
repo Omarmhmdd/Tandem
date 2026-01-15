@@ -1,4 +1,6 @@
-import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyChartData,PantryWasteChartData,BackendWeeklyAnalytics,BackendMonthlyMood,BackendPantryWaste,BackendBudgetCategory,} from '../../types/analytics.types';
+import type {WeeklyAnalytics,MonthlyMood,PantryWaste,BudgetCategory,WeeklyChartData,PantryWasteChartData,BackendWeeklyAnalytics,BackendMonthlyMood,BackendPantryWaste,BackendBudgetCategory,BackendAnalyticsAggregated,AnalyticsAggregatedData,} from '../../types/analytics.types';
+import type { BackendGoal } from '../../types/goal.types';
+import { transformGoal } from './goalTransforms';
 
 export const transformWeeklyAnalytics = (
   data: BackendWeeklyAnalytics
@@ -25,10 +27,10 @@ export const transformMonthlyMood = (
 export const transformPantryWaste = (
   data: BackendPantryWaste
 ): PantryWaste => ({
-  used: data.used || 0,
-  wasted: data.wasted || 0,
-  donated: data.donated || 0,
-  totalItems: data.total_items || 0,
+  active: data.active || 0,
+  expiring_soon: data.expiring_soon || 0,
+  deleted: data.deleted || 0,
+  totalItems: data.total_items,
 });
 
 
@@ -44,33 +46,85 @@ export const transformBudgetCategory = (
 
 
 export const transformWeeklyDataForChart = (
-  weeklyAnalytics: WeeklyAnalytics
+  weeklyAnalytics: WeeklyAnalytics,
+  timeRange: 'week' | 'month' = 'week'
 ): WeeklyChartData[] => {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const steps = weeklyAnalytics.steps || [];
+  const sleep = weeklyAnalytics.sleep || [];
+  const mood = weeklyAnalytics.mood || [];
   
-  const stepsMap = new Map(
-    (weeklyAnalytics.steps || []).map((s) => [s.day, s])
-  );
-  const sleepMap = new Map(
-    (weeklyAnalytics.sleep || []).map((s) => [s.day, s])
-  );
-  const moodMap = new Map(
-    (weeklyAnalytics.mood || []).map((m) => [m.day, m])
-  );
-
-  return days.map((day) => {
-    const steps = stepsMap.get(day) || { me: 0, partner: 0 };
-    const sleep = sleepMap.get(day) || { hours: null };
-    const mood = moodMap.get(day) || { me: 0, partner: 0 };
-
-    return {
-      day,
-      me: steps.me || 0,
-      partner: steps.partner || 0,
-      sleep: sleep.hours ?? 0,
-      mood: mood.me || 0,
+  // Early return if no data
+  if (steps.length === 0 && sleep.length === 0 && mood.length === 0) {
+    return [];
+  }
+  
+  // Create daily data array by index (preserves chronological order)
+  // Pre-allocate array size for better performance
+  const maxLength = Math.max(steps.length, sleep.length, mood.length);
+  const dailyData: WeeklyChartData[] = new Array(maxLength);
+  
+  for (let i = 0; i < maxLength; i++) {
+    const step = steps[i];
+    const sleepEntry = sleep[i];
+    const moodEntry = mood[i];
+    
+    dailyData[i] = {
+      day: step?.day || sleepEntry?.day || moodEntry?.day || '',
+      me: step?.me ?? 0,
+      partner: step?.partner ?? 0,
+      sleep: sleepEntry?.hours ?? null,
+      mood: moodEntry?.me ?? null,
     };
-  });
+  }
+  
+  // If month view and we have more than 7 days, group by weeks (4 weeks)
+  if (timeRange === 'month' && dailyData.length > 7) {
+    const daysPerWeek = 7;
+    const numberOfWeeks = Math.ceil(dailyData.length / daysPerWeek);
+    const weeks: WeeklyChartData[] = new Array(numberOfWeeks);
+    
+    for (let weekIndex = 0; weekIndex < numberOfWeeks; weekIndex++) {
+      const weekStart = weekIndex * daysPerWeek;
+      const weekEnd = Math.min(weekStart + daysPerWeek, dailyData.length);
+      
+      // Aggregate data for the week - optimized single pass
+      let weekStepsMe = 0;
+      let weekStepsPartner = 0;
+      let sleepSum = 0;
+      let sleepCount = 0;
+      let moodSum = 0;
+      let moodCount = 0;
+      
+      for (let i = weekStart; i < weekEnd; i++) {
+        const day = dailyData[i];
+        weekStepsMe += day.me || 0;
+        weekStepsPartner += day.partner || 0;
+        
+        if (day.sleep !== null && day.sleep !== undefined) {
+          sleepSum += day.sleep;
+          sleepCount++;
+        }
+        
+        if (day.mood !== null && day.mood !== undefined) {
+          moodSum += day.mood;
+          moodCount++;
+        }
+      }
+      
+      weeks[weekIndex] = {
+        day: `Week ${weekIndex + 1}`,
+        me: weekStepsMe,
+        partner: weekStepsPartner,
+        sleep: sleepCount > 0 ? sleepSum / sleepCount : null,
+        mood: moodCount > 0 ? moodSum / moodCount : null,
+      };
+    }
+    
+    return weeks;
+  }
+  
+  // Week view: return all days as-is (should be 7 days)
+  return dailyData;
 };
 
 
@@ -78,9 +132,26 @@ export const transformPantryWasteForChart = (
   pantryWaste: PantryWaste
 ): PantryWasteChartData[] => {
   return [
-    { name: 'Used', value: pantryWaste.used, color: '#53389E' },
-    { name: 'Wasted', value: pantryWaste.wasted, color: '#EF4444' },
-    { name: 'Donated', value: pantryWaste.donated, color: '#10B981' },
+    { name: 'Active', value: pantryWaste.active, color: '#53389E' },
+    { name: 'Expiring Soon', value: pantryWaste.expiring_soon, color: '#F59E0B' },
+    { name: 'Deleted', value: pantryWaste.deleted, color: '#EF4444' },
   ];
+};
+
+/**
+ * Transform aggregated analytics response from backend to frontend format
+ * Reuses existing transform functions for each data type
+ */
+export const transformAnalyticsAggregated = (
+  data: BackendAnalyticsAggregated
+): AnalyticsAggregatedData => {
+  return {
+    weekly: transformWeeklyAnalytics(data.weekly),
+    monthlyMood: transformMonthlyMood(data.monthly_mood || []),
+    pantryWaste: transformPantryWaste(data.pantry_waste),
+    budgetCategories: transformBudgetCategory(data.budget_categories || []),
+    goals: (data.goals || []).map((goal: BackendGoal) => transformGoal(goal)),
+    budgetSummary: data.budget_summary || null,
+  };
 };
 

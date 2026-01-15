@@ -73,7 +73,10 @@ export interface MealSlot {
   recipeId?: string;
   recipeName?: string;
   isMatchMeal?: boolean;
-  matchMealPartnerId?: string;
+  matchMealPartnerName?: string;
+  matchMealInvitedBy?: string; // User ID who created the match meal
+  matchMealInvitedByUser?: { id: number; first_name: string; last_name: string }; // User who created the match meal
+  matchMealInvitedToUser?: { id: number; first_name: string; last_name: string }; // User who was invited
 }
 
 export interface ShoppingListItem {
@@ -96,15 +99,40 @@ export interface BackendMealPlan {
   };
   is_match_meal?: boolean;
   match_meal?: {
-    partner_user_id: number | string;
+    id: number | string;
+    meal_plan_id: number;
+    invited_by_user_id: number;
+    invited_to_user_id: number;
+    status: string;
+    invited_by?: {
+      id: number;
+      first_name: string;
+      last_name: string;
+    };
+    invited_to?: {
+      id: number;
+      first_name: string;
+      last_name: string;
+    };
   };
 }
 
 export interface MatchMeal {
   id: number | string;
   meal_plan_id: number;
+  invited_by_user_id: number;
   invited_to_user_id: number;
   status: string;
+  invited_by?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+  };
+  invited_to?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+  };
 }
 
 // API Response types

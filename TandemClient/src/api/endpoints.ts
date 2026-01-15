@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   REGISTER: '/register',
   LOGOUT: '/auth/logout',
   ME: '/auth/me',
+  UPDATE_PROFILE: '/auth/profile',
   NUTRITION_TARGET: '/nutrition-target',
 
   // Household
@@ -14,6 +15,7 @@ export const ENDPOINTS = {
   HOUSEHOLD_JOIN: (code: string) => `/household/join/${code}`,
   HOUSEHOLD_INVITE_CODE: (id: string) => `/household/${id}/invite-code`,
   HOUSEHOLD_REGENERATE_INVITE_CODE: (id: string) => `/household/${id}/regenerate-invite-code`,
+  HOUSEHOLD_UPDATE: (id: string) => `/household/${id}/update`,
   HOUSEHOLD_MEMBERS: (id: string) => `/household/${id}/members`,
 
   // Habits
@@ -34,6 +36,7 @@ export const ENDPOINTS = {
   RECIPE_DELETE: (id: string) => `/recipes/${id}/delete`,
 
   // Goals
+  GOALS_AGGREGATED: '/goals/aggregated',
   GOALS: '/goals',
   GOAL_UPDATE: (id: string) => `/goals/${id}/update`,
   GOAL_DELETE: (id: string) => `/goals/${id}/delete`,
@@ -43,6 +46,7 @@ export const ENDPOINTS = {
   GOAL_MILESTONE_DELETE: (id: string, milestoneId: string) => `/goals/${id}/milestones/${milestoneId}/delete`,
 
   // Budget
+  BUDGET_AGGREGATED: '/budget/aggregated',
   EXPENSES: '/budget/expenses',
   EXPENSE_UPDATE: (id: string) => `/budget/expenses/${id}/update`,
   EXPENSE_DELETE: (id: string) => `/budget/expenses/${id}/delete`,
@@ -80,6 +84,7 @@ export const ENDPOINTS = {
   DATE_NIGHT_ACCEPT: (id: string) => `/date-night/${id}/accept`,
 
   // Analytics
+  ANALYTICS_AGGREGATED: '/analytics/aggregated',
   ANALYTICS_WEEKLY: '/analytics/weekly',
   ANALYTICS_MONTHLY_MOOD: '/analytics/monthly-mood',
   ANALYTICS_PANTRY_WASTE: '/analytics/pantry-waste',
@@ -88,6 +93,14 @@ export const ENDPOINTS = {
   // Auto Order
   AUTO_ORDER_PARTNERS: '/auto-order/partners',
   AUTO_ORDER_SEND: '/auto-order/send',
+
+  // Dashboard (aggregated endpoint)
+  DASHBOARD: '/dashboard',
+
+  // Notifications
+  NOTIFICATIONS: '/notifications',
+  NOTIFICATION_READ: (id: string) => `/notifications/${id}/read`,
+  NOTIFICATIONS_READ_ALL: '/notifications/read-all',
 } as const;
 
 

@@ -29,40 +29,56 @@ export const formatMonthlyBudget = (
 
 
 export const calculateTotalSteps = (weeklyData: WeeklyChartData[]): number => {
-  return weeklyData.reduce(
-    (sum, day) => sum + (day.me || 0) + (day.partner || 0),
-    0
-  );
+  if (weeklyData.length === 0) return 0;
+  
+  let total = 0;
+  for (let i = 0; i < weeklyData.length; i++) {
+    const day = weeklyData[i];
+    total += (day.me || 0) + (day.partner || 0);
+  }
+  return total;
 };
 
 
 export const calculateAverageSleep = (
   weeklyData: WeeklyChartData[]
 ): string => {
-  const sleepValues = weeklyData
-    .map((d) => d.sleep)
-    .filter((s) => s != null && s > 0);
+  if (weeklyData.length === 0) return '0';
   
-  if (sleepValues.length === 0) return '0';
+  let sum = 0;
+  let count = 0;
   
-  const average =
-    sleepValues.reduce((sum, s) => sum + s, 0) / sleepValues.length;
-  return average.toFixed(1);
+  for (let i = 0; i < weeklyData.length; i++) {
+    const sleep = weeklyData[i].sleep;
+    if (sleep !== null && sleep !== undefined && sleep > 0) {
+      sum += sleep;
+      count++;
+    }
+  }
+  
+  if (count === 0) return '0';
+  return (sum / count).toFixed(1);
 };
 
 
 export const calculateAverageMood = (
   weeklyData: WeeklyChartData[]
 ): string => {
-  const moodValues = weeklyData
-    .map((d) => d.mood)
-    .filter((m) => m != null && m > 0);
+  if (weeklyData.length === 0) return '0';
   
-  if (moodValues.length === 0) return '0';
+  let sum = 0;
+  let count = 0;
   
-  const average =
-    moodValues.reduce((sum, m) => sum + m, 0) / moodValues.length;
-  return average.toFixed(1);
+  for (let i = 0; i < weeklyData.length; i++) {
+    const mood = weeklyData[i].mood;
+    if (mood !== null && mood !== undefined && mood > 0) {
+      sum += mood;
+      count++;
+    }
+  }
+  
+  if (count === 0) return '0';
+  return (sum / count).toFixed(1);
 };
 
 
@@ -71,10 +87,12 @@ export const calculateGoalsProgress = (
 ): number => {
   if (goals.length === 0) return 0;
   
-  const totalProgress = goals.reduce((sum, goal) => {
+  let totalProgress = 0;
+  for (let i = 0; i < goals.length; i++) {
+    const goal = goals[i];
     const progress = goal.target > 0 ? (goal.current / goal.target) * 100 : 0;
-    return sum + Math.min(progress, 100);
-  }, 0);
+    totalProgress += Math.min(progress, 100);
+  }
   
   return Math.round(totalProgress / goals.length);
 };
@@ -90,7 +108,14 @@ export const calculateBudgetChartDomain = (
   
   if (isNaN(budgetValue)) return 'auto';
   
-  const maxCategoryAmount = Math.max(...budgetCategories.map((d) => d.amount || 0),0);
+  // Find max category amount - optimized single pass
+  let maxCategoryAmount = 0;
+  for (let i = 0; i < budgetCategories.length; i++) {
+    const amount = budgetCategories[i].amount || 0;
+    if (amount > maxCategoryAmount) {
+      maxCategoryAmount = amount;
+    }
+  }
   
   return Math.max(maxCategoryAmount, budgetValue) * 1.1;
 };

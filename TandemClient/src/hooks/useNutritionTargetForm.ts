@@ -7,13 +7,15 @@ import type { NutritionTargetFormData, BackendNutritionTarget } from '../types/n
 
 
 export const useNutritionTargetForm = (onSuccess?: () => void) => {
-  const [shouldLoadTarget, setShouldLoadTarget] = useState(false);
   const onSuccessRef = useRef(onSuccess);
   useEffect(() => {
     onSuccessRef.current = onSuccess;
   }, [onSuccess]);
 
-  const { data: currentTarget, isLoading: targetLoading } = useNutritionTarget(shouldLoadTarget);
+  // Always call useNutritionTarget - hooks must be called unconditionally
+  // The hook itself handles the enabled flag internally
+  // Always enabled since we need the target data for the form
+  const { data: currentTarget, isLoading: targetLoading } = useNutritionTarget(true);
   const updateTargetMutation = useUpdateNutritionTarget();
   const targetModal = useModal();
 
@@ -32,9 +34,8 @@ export const useNutritionTargetForm = (onSuccess?: () => void) => {
     }
   }, [currentTarget]);
 
-  // Custom open function that triggers data fetch
+  // Custom open function - target data is always loaded, just open modal
   const openModal = useCallback(() => {
-    setShouldLoadTarget(true);
     targetModal.open();
   }, [targetModal]);
 

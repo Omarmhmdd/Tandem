@@ -109,3 +109,20 @@ export const useRegenerateInviteCode = () => {
     },
   });
 };
+
+export const useUpdateHousehold = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Household, Error, { householdId: string; name: string }>({
+    mutationFn: async ({ householdId, name }) => {
+      const response = await apiClient.post<SingleHouseholdResponse>(
+        ENDPOINTS.HOUSEHOLD_UPDATE(householdId),
+        { name }
+      );
+      return transformHousehold(response.data.household);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['households'] });
+    },
+  });
+};

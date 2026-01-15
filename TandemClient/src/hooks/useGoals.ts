@@ -1,10 +1,15 @@
-import { useGoals, useGoalMutation, useDeleteGoal, useUpdateGoalProgress } from '../api/queries/goals';
+import { useGoalsAggregated, useGoalMutation, useDeleteGoal, useUpdateGoalProgress } from '../api/queries/goals';
 import type { Goal, GoalFormData } from '../types/goal.types';
 import { calculateProgress, getGoalCompletionStatus, getQuickAddSuggestions } from '../utils/goalHelpers';
 import { showToast } from '../utils/toast';
 
 export const useGoalsPage = () => {
-  const { data: goals = [], isLoading } = useGoals();
+  // Fetch all goals data in a single aggregated call
+  const { data: aggregatedData, isLoading } = useGoalsAggregated();
+  
+  // Extract data from aggregated response
+  const goals = aggregatedData?.goals || [];
+  const budgetSummary = aggregatedData?.budgetSummary;
   const mutation = useGoalMutation();
   const deleteMutation = useDeleteGoal();
   const updateProgressMutation = useUpdateGoalProgress();
@@ -40,7 +45,6 @@ export const useGoalsPage = () => {
         ? error.message || 'Failed to save goal'
         : 'Failed to save goal';
       showToast(errorMessage, 'error');
-      console.error('Goal save error:', error);
       return null;
     }
   };
@@ -54,7 +58,6 @@ export const useGoalsPage = () => {
         ? error.message || 'Failed to delete goal'
         : 'Failed to delete goal';
       showToast(errorMessage, 'error');
-      console.error('Goal delete error:', error);
     }
   };
 
@@ -72,7 +75,6 @@ export const useGoalsPage = () => {
         ? error.message || 'Failed to update progress'
         : 'Failed to update progress';
       showToast(errorMessage, 'error');
-      console.error('Progress update error:', error);
     }
   };
 
@@ -103,6 +105,7 @@ export const useGoalsPage = () => {
 
   return {
     goals,
+    budgetSummary,
     isLoading,
     getProgress: calculateProgress,
     getGoalCompletionStatus,

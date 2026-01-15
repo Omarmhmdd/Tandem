@@ -8,7 +8,9 @@ use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Requests\CreateOrUpdateBudgetRequest;
 use App\Http\Requests\DateRangeRequest;
 use App\Http\Requests\BudgetSummaryRequest;
+use App\Http\Requests\GetAggregatedBudgetRequest;
 use App\Http\Resources\ExpenseResource;
+use App\Data\BudgetAggregatedRequestData;
 use App\Models\Expense;
 use App\Models\Budget;
 use App\Http\Traits\ApiResponse;
@@ -71,7 +73,18 @@ class BudgetController extends Controller
 
         return $this->budgetResponse($budget, 'Budget saved successfully');
     }
-//extract these to use up for clean code
+
+    public function getAggregated(GetAggregatedBudgetRequest $request): JsonResponse
+    {
+        $requestData = BudgetAggregatedRequestData::fromRequest($request);
+        $data = $this->budgetService->getAggregatedBudgetData($requestData);
+
+        return $this->success([
+            'expenses' => ExpenseResource::collection($data->expenses),
+            'budget_summary' => $data->budgetSummary,
+        ]);
+    }
+
     protected function expenseResponse(Expense $expense, string $message, int $statusCode = 200): JsonResponse
     {
         $data = [

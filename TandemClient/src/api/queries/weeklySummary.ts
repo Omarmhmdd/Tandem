@@ -35,7 +35,9 @@ export const useGenerateWeeklySummary = () => {
       return transformWeeklySummary(response.data.summary);
     },
     onSuccess: () => {
+      // Invalidate both queries to ensure dashboard gets updated data
       queryClient.invalidateQueries({ queryKey: ['weeklySummaries'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 };

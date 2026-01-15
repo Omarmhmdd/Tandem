@@ -8,8 +8,10 @@ use App\Http\Requests\UpdateGoalRequest;
 use App\Http\Requests\UpdateProgressRequest;
 use App\Http\Requests\CreateMilestoneRequest;
 use App\Http\Requests\UpdateMilestoneRequest;
+use App\Http\Requests\GetAggregatedGoalsRequest;
 use App\Http\Resources\GoalResource;
 use App\Http\Resources\GoalMilestoneResource;
+use App\Data\GoalsAggregatedRequestData;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -27,6 +29,17 @@ class GoalsController extends Controller
 
         return $this->success([
             'goals' => GoalResource::collection($goals),
+        ]);
+    }
+
+    public function getAggregated(GetAggregatedGoalsRequest $request): JsonResponse
+    {
+        $requestData = GoalsAggregatedRequestData::fromRequest($request);
+        $data = $this->goalsService->getAggregatedGoalsData($requestData);
+
+        return $this->success([
+            'goals' => GoalResource::collection($data->goals),
+            'budget_summary' => $data->budgetSummary,
         ]);
     }
 

@@ -7,6 +7,8 @@ use App\Models\Budget;
 use App\Data\BudgetSummaryData;
 use App\Data\BudgetData;
 use App\Data\ExpenseData;
+use App\Data\BudgetAggregatedRequestData;
+use App\Data\BudgetAggregatedResponseData;
 use App\Http\Traits\VerifiesResourceOwnership;
 use App\Http\Traits\UpdatesWeddingGoals;
 
@@ -98,6 +100,17 @@ class BudgetService
             BudgetData::getSearchCriteria($householdMember->household_id, $preparedData),
             BudgetData::getUpdateData($existingBudget, $preparedData, $this->getAuthenticatedUser()->id)
         );
+    }
+
+    public function getAggregatedBudgetData(BudgetAggregatedRequestData $requestData): BudgetAggregatedResponseData
+    {
+        $expenses = $this->getAllExpenses($requestData->startDate, $requestData->endDate);
+        $budgetSummary = $this->getBudgetSummary($requestData->year, $requestData->month);
+
+        return BudgetAggregatedResponseData::from([
+            'expenses' => $expenses,
+            'budgetSummary' => $budgetSummary,
+        ]);
     }
 
     protected function findExpenseForHousehold(int $id): Expense

@@ -31,6 +31,7 @@ export const Budget: React.FC = () => {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isEditingBudget, setIsEditingBudget] = useState<boolean>(false);
   const [budgetAmount, setBudgetAmount] = useState<number>(0);
+  const [showAllExpenses, setShowAllExpenses] = useState<boolean>(false);
   const [formData, setFormData] = useState<ExpenseFormData>({
     date: new Date().toISOString().split('T')[0],
     amount: 0,
@@ -297,50 +298,62 @@ export const Budget: React.FC = () => {
               }}
             />
           ) : (
-            <div className="space-y-3">
-              {expenses.map((expense: Expense) => (
-                <div
-                  key={expense.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-gray-900">
-                        ${expense.amount.toLocaleString()}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(expense.category)}`}>
-                        {expense.category}
-                      </span>
-                      {expense.autoTagged && (
-                        <span className="text-xs text-gray-500">Auto-tagged</span>
-                      )}
+            <>
+              <div className="space-y-3">
+                {(showAllExpenses ? expenses : expenses.slice(0, 5)).map((expense: Expense) => (
+                  <div
+                    key={expense.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900">
+                          ${expense.amount.toLocaleString()}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(expense.category)}`}>
+                          {expense.category}
+                        </span>
+                        {expense.autoTagged && (
+                          <span className="text-xs text-gray-500">Auto-tagged</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">{expense.description}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(expense.date).toLocaleDateString()}
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">{expense.description}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(expense.date).toLocaleDateString()}
-                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleOpenEdit(expense)}
+                        icon={Edit}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(expense.id)}
+                        icon={Trash2}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenEdit(expense)}
-                      icon={Edit}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(expense.id)}
-                      icon={Trash2}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                ))}
+              </div>
+              {expenses.length > 5 && (
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAllExpenses(!showAllExpenses)}
+                  >
+                    {showAllExpenses ? 'Show Less' : `View More (${expenses.length - 5} more)`}
+                  </Button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

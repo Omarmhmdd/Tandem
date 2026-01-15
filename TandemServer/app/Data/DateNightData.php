@@ -93,11 +93,11 @@ class DateNightData
         ];
     }
 
-    public static function buildMealPlanData(DateNightSuggestionModel $suggestion, int $householdId, int $userId, ?int $recipeId = null): array
+    public static function buildMealPlanData(DateNightSuggestionModel $suggestion, int $householdId, int $userId, ?int $recipeId = null, string $date = null): array
     {
         return [
             'household_id' => $householdId,
-            'date' => $suggestion->suggested_at,
+            'date' => $date ?? $suggestion->suggested_at,
             'meal_type' => 'dinner',
             'name' => $suggestion->meal['name'] ?? 'Date Night Meal',
             'recipe_id' => $recipeId,
@@ -121,9 +121,9 @@ class DateNightData
             'updated_by_user_id' => $userId,
         ];
     }
-    public static function createOrUpdateMealPlan(DateNightSuggestionModel $suggestion, int $householdId, int $userId, ?int $recipeId = null): void
+    public static function createOrUpdateMealPlan(DateNightSuggestionModel $suggestion, int $householdId, int $userId, ?int $recipeId = null, string $date = null): void
 {
-    $mealPlanData = self::buildMealPlanData($suggestion, $householdId, $userId, $recipeId);
+    $mealPlanData = self::buildMealPlanData($suggestion, $householdId, $userId, $recipeId, $date);
     
     MealPlan::updateOrCreate(
         [

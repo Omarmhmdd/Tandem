@@ -1,6 +1,4 @@
-/**
- * Weekly Summary feature types
- */
+
 
 // Frontend types (camelCase)
 export interface WeeklySummary {

@@ -19,6 +19,8 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DateNightController;
 use App\Http\Controllers\NutritionController;
 use App\Http\Controllers\AiCoachController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 
 Route::group(['prefix' => 'v0.1'], function () {
     // Unauthenticated routes
@@ -31,6 +33,7 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'auth'], function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);
+            Route::post('/profile', [AuthController::class, 'updateProfile']);
         });
 
         // HOUSEHOLD MANAGEMENT - No household required (user needs to create/join)
@@ -43,6 +46,7 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::group(['middleware' => 'require.household'], function () {
                 Route::get('/{household_id}/invite-code', [HouseholdController::class, 'getInviteCode']);
                 Route::post('/{household_id}/regenerate-invite-code', [HouseholdController::class, 'regenerateInviteCode'])->middleware('require.primary');
+                Route::post('/{household_id}/update', [HouseholdController::class, 'update'])->middleware('require.primary');
                 Route::get('/{household_id}/members', [HouseholdController::class, 'getMembers']);
                 Route::post('/{household_id}/leave', [HouseholdController::class, 'leaveHousehold']);
                 Route::post('/{household_id}/transfer-ownership', [HouseholdController::class, 'transferOwnership'])->middleware('require.primary');
@@ -73,10 +77,21 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::post('/', [NutritionTargetController::class, 'updateTarget']);
         });
 
+        // NOTIFICATIONS - User-specific, no household required
+        Route::group(['prefix' => 'notifications'], function () {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
+            Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
+        });
+
         // ALL OTHER ROUTES - Require household
         Route::group(['middleware' => 'require.household'], function () {
+            // DASHBOARD - Aggregated data endpoint
+            Route::get('/dashboard', [DashboardController::class, 'index']);
+
             // GOALS
             Route::group(['prefix' => 'goals'], function () {
+                Route::get('/aggregated', [GoalsController::class, 'getAggregated']);
                 Route::get('/', [GoalsController::class, 'index']);
                 Route::post('/', [GoalsController::class, 'store']);
                 Route::post('/{id}/update', [GoalsController::class, 'update']);
@@ -89,6 +104,7 @@ Route::group(['prefix' => 'v0.1'], function () {
 
             // BUDGET & EXPENSES
             Route::group(['prefix' => 'budget'], function () {
+                Route::get('/aggregated', [BudgetController::class, 'getAggregated']);
                 Route::post('/', [BudgetController::class, 'createOrUpdateBudget']);
                 Route::get('/expenses', [BudgetController::class, 'getExpenses']);
                 Route::post('/expenses', [BudgetController::class, 'createExpense']);
@@ -122,6 +138,7 @@ Route::group(['prefix' => 'v0.1'], function () {
 
                     // ANALYTICS
         Route::group(['prefix' => 'analytics'], function () {
+            Route::get('/aggregated', [AnalyticsController::class, 'getAggregated']);
             Route::get('/weekly', [AnalyticsController::class, 'getWeekly']);
             Route::get('/monthly-mood', [AnalyticsController::class, 'getMonthlyMood']);
             Route::get('/pantry-waste', [AnalyticsController::class, 'getPantryWaste']);

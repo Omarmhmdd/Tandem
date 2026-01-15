@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGenerateDateNight, useAcceptDateNight } from '../api/queries/dateNight';
+import { useGenerateDateNight, useAcceptDateNight, useDateNightSuggestions } from '../api/queries/dateNight';
 import type { DateNightSuggestion } from '../types/dateNight.types';
 import { showToast } from '../utils/toast';
 import { isValidDateNightBudget } from '../utils/dateNightHelpers';
@@ -16,8 +16,16 @@ interface ApiError {
 export const useDateNightPage = () => {
   const [budget, setBudget] = useState(50);
   const [suggestion, setSuggestion] = useState<DateNightSuggestion | null>(null);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    // Default to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  });
   const generateMutation = useGenerateDateNight();
   const acceptMutation = useAcceptDateNight();
+  const { data: dateNightData, isLoading: isLoadingAccepted } = useDateNightSuggestions();
+  const acceptedDateNights = dateNightData?.acceptedDateNights || [];
 
   const generateSuggestion = async () => {
     if (!isValidDateNightBudget(budget)) return;
@@ -42,8 +50,13 @@ export const useDateNightPage = () => {
       return;
     }
 
+    if (!selectedDate) {
+      showToast('Please select a date for your date night', 'error');
+      return;
+    }
+
     try {
-      const result = await acceptMutation.mutateAsync(suggestion.id);
+      const result = await acceptMutation.mutateAsync({ suggestionId: suggestion.id, date: selectedDate });
       setSuggestion(result);
       showToast('Date night accepted! Meal added to meal plan and expense recorded.', 'success');
     } catch (error) {
@@ -60,8 +73,12 @@ export const useDateNightPage = () => {
     budget,
     setBudget,
     suggestion,
+    selectedDate,
+    setSelectedDate,
+    acceptedDateNights,
     isLoading: generateMutation.isPending,
     isAccepting: acceptMutation.isPending,
+    isLoadingAccepted,
     generateSuggestion,
     acceptSuggestion,
   };

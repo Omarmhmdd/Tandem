@@ -9,12 +9,13 @@ import { transformDateNightSuggestion, transformDateNightSuggestionToBackend } f
 export const useDateNightSuggestions = () => {
   const hasHousehold = useHasHousehold();
   
-  return useQuery<DateNightSuggestion[]>({
+  return useQuery<{ suggestions: DateNightSuggestion[]; acceptedDateNights: DateNightSuggestion[] }>({
     queryKey: ['dateNightSuggestions'],
     queryFn: async () => {
       const response = await apiClient.get<DateNightSuggestionsResponse>(ENDPOINTS.DATE_NIGHT);
-      const suggestions = response.data.suggestions || [];
-      return suggestions.map(transformDateNightSuggestion);
+      const suggestions = (response.data.suggestions || []).map(transformDateNightSuggestion);
+      const acceptedDateNights = (response.data.accepted_date_nights || []).map(transformDateNightSuggestion);
+      return { suggestions, acceptedDateNights };
     },
     enabled: hasHousehold, // Only fetch if household exists
     staleTime: 1000 * 60 * 5,
@@ -43,9 +44,12 @@ export const useGenerateDateNight = () => {
 export const useAcceptDateNight = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<DateNightSuggestion, Error, string | number>({
-    mutationFn: async (suggestionId) => {
-      const response = await apiClient.post<SingleDateNightResponse>(ENDPOINTS.DATE_NIGHT_ACCEPT(suggestionId.toString()));
+  return useMutation<DateNightSuggestion, Error, { suggestionId: string | number; date: string }>({
+    mutationFn: async ({ suggestionId, date }) => {
+      const response = await apiClient.post<SingleDateNightResponse>(
+        ENDPOINTS.DATE_NIGHT_ACCEPT(suggestionId.toString()),
+        { date }
+      );
       return transformDateNightSuggestion(response.data.suggestion);
     },
     onSuccess: () => {

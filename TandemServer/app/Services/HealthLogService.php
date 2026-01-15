@@ -44,6 +44,12 @@ class HealthLogService
         
         $this->createMoodEntryIfProvided($healthLogData);
         
+        // Invalidate nutrition cache if food was logged
+        // CRITICAL: When a new food log is created, the timestamp changes
+        // This means the cache key will be different, but we need to ensure
+        // the frontend refetches. The new timestamp will create a new cache key automatically.
+        // No need to manually clear - the cache key is based on last timestamp, so it will change.
+        
         return $healthLog;
     }
 

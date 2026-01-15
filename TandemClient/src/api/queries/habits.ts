@@ -3,13 +3,15 @@ import  type{ Habit } from '../../types/habit.types';
 import type { HabitsResponse, SingleHabitResponse } from '../../types/api.types';
 import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
+import { transformHabit } from '../../utils/transforms/habitTransforms';
 
 export const useHabits = () => {
   return useQuery({
     queryKey: ['habits'],
     queryFn: async () => {
       const response = await apiClient.get<HabitsResponse>(ENDPOINTS.HABITS);
-      return response.data.habits || [];
+      const habits = response.data.habits || [];
+      return habits.map(transformHabit);
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -18,20 +20,44 @@ export const useHabits = () => {
 export const useHabitMutation = () => {
   const queryClient = useQueryClient();
 
+  // Helper to detect browser timezone
+  const getUserTimezone = (): string => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return 'UTC';
+    }
+  };
+
   return useMutation({
     mutationFn: async ({ habit, isEdit }: { habit: Habit; isEdit: boolean }) => {
+      // Prepare payload - include timezone if reminder_time is set
+      const payload: any = {
+        name: habit.name,
+        description: habit.description || null,
+        frequency: habit.frequency,
+      };
+
+      // Only include reminder_time if it's actually set (not empty string)
+      if (habit.reminderTime && habit.reminderTime.trim() !== '') {
+        payload.reminder_time = habit.reminderTime;
+        payload.timezone = getUserTimezone();
+      } else {
+        payload.reminder_time = null;
+      }
+
       if (isEdit) {
         const response = await apiClient.post<SingleHabitResponse>(
           ENDPOINTS.HABIT_UPDATE(habit.id),
-          habit
+          payload
         );
-        return response.data.habit;
+        return transformHabit(response.data.habit);
       } else {
         const response = await apiClient.post<SingleHabitResponse>(
           ENDPOINTS.HABITS,
-          habit
+          payload
         );
-        return response.data.habit;
+        return transformHabit(response.data.habit);
       }
     },
     onSuccess: () => {

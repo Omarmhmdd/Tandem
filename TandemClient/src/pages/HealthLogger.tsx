@@ -16,12 +16,12 @@
     export const HealthLogger: React.FC = () => {
     const {
         entries,
+        isLoading,
         avgSleep,
         totalActivities,
         totalFoodItems,
         saveEntry,
         deleteEntry,
-        getMoodEmoji,
     } = useHealthPage();
 
     const [showAll, setShowAll] = useState(false);
@@ -46,6 +46,25 @@
         deleteEntry(id);
         });
     };
+
+    if (isLoading) {
+        return (
+        <div className="space-y-6">
+            <Breadcrumbs items={[{ label: 'Health Logger' }]} />
+            <PageHeader title="Health Logger" description="Track your daily health and habits" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+                <Card key={i}>
+                <CardContent className="p-4 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
+                    <div className="h-8 bg-gray-200 rounded w-1/3" />
+                </CardContent>
+                </Card>
+            ))}
+            </div>
+        </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -146,7 +165,6 @@
                         </div>
 
                         <div className="flex items-center gap-2">
-                        <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
                         <span className="px-2 py-1 bg-brand-light/30 text-brand-primary rounded text-xs font-medium capitalize">
                             {entry.mood}
                         </span>

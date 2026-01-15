@@ -1,16 +1,17 @@
 import { useMemo } from 'react';
-import { useExpenses, useExpenseMutation, useDeleteExpense, useBudgetSummary, useBudgetMutation } from '../api/queries/budget';
+import { useBudgetAggregated, useExpenseMutation, useDeleteExpense, useBudgetMutation } from '../api/queries/budget';
 import type { Expense, ExpenseFormData, BudgetSummary } from '../types/budget.types';
 import { showToast } from '../utils/toast';
 import { autoTagCategory, getCategoryColor, calculateBudgetSummary } from '../utils/budgetHelpers';
 
-// Expense alert threshold - should match backend constant: DefaultValues::EXPENSE_ALERT_THRESHOLD
-const EXPENSE_ALERT_THRESHOLD = 200.0;
-
-
 export const useBudgetPage = () => {
-  const { data: expenses = [], isLoading } = useExpenses();
-  const { data: budgetSummary } = useBudgetSummary();
+  // Fetch all budget data in a single aggregated call
+  const { data: aggregatedData, isLoading } = useBudgetAggregated();
+  
+  // Extract data from aggregated response
+  const expenses = aggregatedData?.expenses || [];
+  const budgetSummary = aggregatedData?.budgetSummary;
+  
   const mutation = useExpenseMutation();
   const deleteMutation = useDeleteExpense();
   const budgetMutation = useBudgetMutation();
@@ -75,12 +76,6 @@ export const useBudgetPage = () => {
         editingExpense ? 'Expense updated successfully' : 'Expense logged successfully',
         'success'
       );
-      
-      // TODO_API: Check expense threshold alert
-      if (expenseData.amount > EXPENSE_ALERT_THRESHOLD && 
-          (expenseData.category === 'wedding' || expenseData.category === 'big-ticket')) {
-        // Backend should: Notify partner, append to wedding fund 
-      }
       
       return true;
     } catch (error) {

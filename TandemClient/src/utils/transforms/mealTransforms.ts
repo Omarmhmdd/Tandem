@@ -13,6 +13,27 @@ export const transformMealPlan = (plan: BackendMealPlan): MealSlot => {
     throw new Error('Meal plan must have an ID');
   }
 
+  // Extract match meal info - store both users, component will determine which to show
+  let matchMealInvitedByUser: { id: number; first_name: string; last_name: string } | undefined;
+  let matchMealInvitedToUser: { id: number; first_name: string; last_name: string } | undefined;
+  
+  if (plan.match_meal) {
+    if (plan.match_meal.invited_by) {
+      matchMealInvitedByUser = {
+        id: plan.match_meal.invited_by.id,
+        first_name: plan.match_meal.invited_by.first_name,
+        last_name: plan.match_meal.invited_by.last_name,
+      };
+    }
+    if (plan.match_meal.invited_to) {
+      matchMealInvitedToUser = {
+        id: plan.match_meal.invited_to.id,
+        first_name: plan.match_meal.invited_to.first_name,
+        last_name: plan.match_meal.invited_to.last_name,
+      };
+    }
+  }
+
   return {
     id: String(plan.id),
     date: plan.date,
@@ -21,9 +42,9 @@ export const transformMealPlan = (plan: BackendMealPlan): MealSlot => {
     recipeId: plan.recipe_id ? String(plan.recipe_id) : undefined,
     recipeName: plan.name || plan.recipe?.name || '',
     isMatchMeal: plan.is_match_meal || false,
-    matchMealPartnerId: plan.match_meal?.partner_user_id
-      ? String(plan.match_meal.partner_user_id)
-      : undefined,
+    matchMealInvitedBy: plan.match_meal?.invited_by_user_id ? String(plan.match_meal.invited_by_user_id) : undefined,
+    matchMealInvitedByUser,
+    matchMealInvitedToUser,
   };
 };
 

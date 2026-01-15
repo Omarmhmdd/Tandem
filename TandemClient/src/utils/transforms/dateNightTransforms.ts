@@ -1,5 +1,6 @@
 import type { DateNightSuggestion } from '../../types/dateNight.types';
 import type { BackendDateNightSuggestion } from '../../types/api.types';
+import { formatDateForAPI } from '../dateHelpers';
 
 
 export const transformDateNightSuggestion = (
@@ -35,6 +36,7 @@ export const transformDateNightSuggestion = (
     : suggestion.total_cost,
   reasoning: suggestion.reasoning,
   status: suggestion.status || 'pending',
+  suggestedAt: suggestion.suggested_at,
 });
 
 
@@ -42,7 +44,7 @@ export const transformDateNightSuggestionToBackend = (suggestion: Partial<DateNi
   suggested_at?: string;
   budget?: number;
 } => ({
-  suggested_at: suggestion.id ? undefined : new Date().toISOString().split('T')[0],
+  suggested_at: suggestion.id ? undefined : formatDateForAPI(),
   budget: suggestion.totalCost,
 });
 

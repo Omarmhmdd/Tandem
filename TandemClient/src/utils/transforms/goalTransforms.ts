@@ -1,4 +1,5 @@
-import type { Goal, Milestone, BackendGoal, BackendMilestone } from '../../types/goal.types';
+import type { Goal, Milestone, BackendGoal, BackendMilestone, GoalsAggregatedData } from '../../types/goal.types';
+import type { GoalsAggregatedResponse } from '../../types/api.types';
 
 export const transformMilestone = (milestone: BackendMilestone): Milestone => ({
   id: String(milestone.id),
@@ -54,5 +55,14 @@ export const transformMilestoneToBackend = (milestone: Omit<Milestone, 'id'> | P
     completed: milestone.completed ?? false,
     deadline: milestone.deadline || null,
     order: 0, // Default order, can be set by backend
+  };
+};
+
+export const transformGoalsAggregated = (
+  data: GoalsAggregatedResponse['data']
+): GoalsAggregatedData => {
+  return {
+    goals: (data.goals || []).map(transformGoal),
+    budgetSummary: data.budget_summary,
   };
 };

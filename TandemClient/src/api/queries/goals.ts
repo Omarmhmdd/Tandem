@@ -1,10 +1,39 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Goal, Milestone, GoalsResponse, SingleGoalResponse, MilestoneResponse } from '../../types/goal.types';
+import type { Goal, Milestone, GoalsResponse, SingleGoalResponse, MilestoneResponse, GoalsAggregatedData, UseGoalsAggregatedParams } from '../../types/goal.types';
+import type { GoalsAggregatedResponse } from '../../types/api.types';
 import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
 import { useHasHousehold } from '../../hooks/useHasHousehold';
 import { STALE_TIME_5_MIN } from '../../utils/constants';
-import { transformGoal, transformGoalToBackend, transformMilestone, transformMilestoneToBackend } from '../../utils/transforms/goalTransforms';
+import { transformGoal, transformGoalToBackend, transformMilestone, transformMilestoneToBackend, transformGoalsAggregated } from '../../utils/transforms/goalTransforms';
+
+/**
+ * Aggregated goals query hook - fetches goals and budget summary in a single call
+ */
+export const useGoalsAggregated = (params: UseGoalsAggregatedParams = {}) => {
+  const hasHousehold = useHasHousehold();
+  
+  return useQuery<GoalsAggregatedData>({
+    queryKey: ['goals', 'aggregated', params.year, params.month],
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
+      
+      if (params.year) queryParams.set('year', params.year.toString());
+      if (params.month) queryParams.set('month', params.month.toString());
+      
+      const query = queryParams.toString();
+      
+      const response = await apiClient.get<GoalsAggregatedResponse>(
+        `${ENDPOINTS.GOALS_AGGREGATED}${query ? `?${query}` : ''}`
+      );
+      
+      return transformGoalsAggregated(response.data);
+    },
+    enabled: hasHousehold,
+    staleTime: STALE_TIME_5_MIN,
+    retry: 2,
+  });
+};
 
 export const useGoals = () => {
   const hasHousehold = useHasHousehold();
@@ -37,6 +66,7 @@ export const useGoalMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };
@@ -51,6 +81,7 @@ export const useDeleteGoal = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };
@@ -68,6 +99,7 @@ export const useUpdateGoalProgress = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };
@@ -87,6 +119,7 @@ export const useCreateMilestone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };
@@ -108,6 +141,7 @@ export const useUpdateMilestone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };
@@ -122,6 +156,7 @@ export const useDeleteMilestone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['goals', 'aggregated'] });
     },
   });
 };

@@ -24,7 +24,10 @@ class AuthService
 
     public function login(array $credentials): array
     {
-        $user = User::where('email', $credentials['email'])->first();
+        // Only select needed columns for faster query  $user = User::where('email', $credentials['email'])->first();
+        $user = User::select('id', 'email', 'password_hash', 'first_name', 'last_name', 'deleted_at')
+            ->where('email', $credentials['email'])
+            ->first();
 
         if (!$user || $user->trashed()) {
             throw new AuthenticationException('Invalid credentials');
@@ -67,6 +70,20 @@ class AuthService
             'household' => $householdMember?->household,
             'has_household' => $householdMember !== null,
         ];
+    }
+
+    public function updateProfile(array $userData): User
+    {
+        $authUser = Auth::user();
+
+        if (!$authUser) {
+            throw new AuthenticationException('User not authenticated');
+        }
+
+        $user = User::findOrFail($authUser->id);
+        $user->update($userData);
+
+        return $user->fresh();
     }
 
     private function buildAuthResponse(User $user): array

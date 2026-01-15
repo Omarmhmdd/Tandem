@@ -8,7 +8,7 @@ import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageHeader } from '../components/shared/PageHeader';
 import { ActionButtons } from '../components/shared/ActionButtons';
-import { Plus, CheckCircle2, Circle, Clock, Target } from 'lucide-react';
+import { Plus, CheckCircle2, Circle, Clock, Target, Flame } from 'lucide-react';
 import { useHabits } from '../hooks/useHabits';
 import { useModal } from '../hooks/useModal';
 import { useConfirmDialog } from '../hooks/useConfirmDialog';
@@ -22,17 +22,17 @@ export const Habits: React.FC = () => {
     const deleteConfirm = useConfirmDialog();
 
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
-    const [formData, setFormData] = useState<HabitFormData>({name: '',description: '',frequency: 'daily',reminderTime: '09:00',});
+    const [formData, setFormData] = useState<HabitFormData>({name: '',description: '',frequency: 'daily',reminderTime: '',});
 
   const handleOpenAdd = () => {
     setEditingHabit(null);
-    setFormData({name: '',description: '',frequency: 'daily',reminderTime: '09:00',});
+    setFormData({name: '',description: '',frequency: 'daily',reminderTime: '',});
     modal.open();
   };
 
   const handleOpenEdit = (habit: Habit) => {
     setEditingHabit(habit);
-    setFormData({name: habit.name,description: habit.description || '',frequency: habit.frequency,reminderTime: habit.reminderTime || '09:00',});
+    setFormData({name: habit.name,description: habit.description || '',frequency: habit.frequency,reminderTime: habit.reminderTime || '',});
     modal.open();
   };
 
@@ -126,7 +126,7 @@ export const Habits: React.FC = () => {
                           {isCompletedToday(habit) ? 'Completed Today' : 'Mark as Complete'}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {isCompletedToday(habit) ? 'Great job! 🎉' : 'Click the circle to complete'}
+                          {isCompletedToday(habit) ? 'Great job! ' : 'Click the circle to complete'}
                         </p>
                       </div>
                     </div>
@@ -137,7 +137,7 @@ export const Habits: React.FC = () => {
                     {/* Streak Display */}
                     <div className="p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-200">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg">🔥</span>
+                        <Flame className="w-4 h-4 text-orange-600" />
                         <p className="text-xs font-medium text-gray-700">Streak</p>
                       </div>
                       <p className="text-2xl font-bold text-orange-600">{streak}</p>

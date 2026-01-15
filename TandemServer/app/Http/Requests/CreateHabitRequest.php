@@ -19,12 +19,19 @@ class CreateHabitRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'frequency' => ['required', 'in:daily,weekly,custom'],
             'reminder_time' => ['nullable', 'date_format:H:i'],
+            'timezone' => ['nullable', 'string', 'max:50'],
         ];
     }
 
     public function getHabitData(): array
     {
         $user = Auth::user();
+
+        // Update user timezone if provided and reminder_time is set
+        if ($this->reminder_time && $this->timezone) {
+            $user->timezone = $this->timezone;
+            $user->save();
+        }
 
         return [
             'user_id' => $user->id,

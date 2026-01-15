@@ -2,18 +2,44 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Sparkles, UtensilsCrossed, Heart, Gift, DollarSign, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Sparkles, UtensilsCrossed, Heart, Gift, DollarSign, RefreshCw, CheckCircle2, Calendar } from 'lucide-react';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { PageHeader } from '../components/shared/PageHeader';
 import { useDateNightPage } from '../hooks/useDateNight';
 import { isValidDateNightBudget, getMinDateNightBudget, getMaxDateNightBudget } from '../utils/dateNightHelpers';
 
+const formatDate = (dateString: string): string => {
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+};
+
 export const DateNight: React.FC = () => {
-  const { budget, setBudget, suggestion, isLoading, isAccepting, generateSuggestion, acceptSuggestion } = useDateNightPage();
+  const { 
+    budget, 
+    setBudget, 
+    suggestion, 
+    selectedDate,
+    setSelectedDate,
+    acceptedDateNights,
+    isLoading, 
+    isAccepting, 
+    generateSuggestion, 
+    acceptSuggestion 
+  } = useDateNightPage();
 
   const handleAccept = async () => {
     await acceptSuggestion();
   };
+
+  // Get minimum date (today)
+  const minDate = new Date().toISOString().split('T')[0];
 
   return (
     <div className="space-y-6">
@@ -28,6 +54,68 @@ export const DateNight: React.FC = () => {
           icon: RefreshCw,
         }}
       />
+
+      {/* Accepted Date Nights Section */}
+      {acceptedDateNights.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              Upcoming Date Nights
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {acceptedDateNights.map((dateNight) => (
+                <Card key={dateNight.id} className="border border-green-200 bg-green-50/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="w-4 h-4 text-green-600" />
+                          <span className="font-semibold text-gray-900">
+                            {dateNight.suggestedAt ? formatDate(dateNight.suggestedAt) : 'Date TBD'}
+                          </span>
+                        </div>
+                        <p className="text-lg font-bold text-gray-900">${dateNight.totalCost}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3 pt-3 border-t border-green-200">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <UtensilsCrossed className="w-4 h-4 text-orange-500" />
+                          <span className="font-medium text-gray-900">{dateNight.meal.name}</span>
+                          <span className="text-sm text-gray-600">${dateNight.meal.cost}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-6">{dateNight.meal.description}</p>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Heart className="w-4 h-4 text-pink-500" />
+                          <span className="font-medium text-gray-900">{dateNight.activity.name}</span>
+                          <span className="text-sm text-gray-600">${dateNight.activity.cost}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-6">{dateNight.activity.description}</p>
+                        {dateNight.activity.duration && (
+                          <p className="text-xs text-gray-500 ml-6">Duration: {dateNight.activity.duration}</p>
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Gift className="w-4 h-4 text-purple-500" />
+                          <span className="font-medium text-gray-900">{dateNight.treat.name}</span>
+                          <span className="text-sm text-gray-600">${dateNight.treat.cost}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 ml-6">{dateNight.treat.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Budget Input */}
       <Card>
@@ -184,9 +272,27 @@ export const DateNight: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Actions */}
+          {/* Date Picker and Actions */}
           <Card>
             <CardContent className="p-6">
+              {suggestion.status !== 'accepted' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="w-4 h-4 inline mr-2" />
+                    Choose Date for Your Date Night
+                  </label>
+                  <Input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    min={minDate}
+                    className="max-w-xs"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Select the date you'd like to schedule this date night
+                  </p>
+                </div>
+              )}
               <div className="flex gap-3">
                 {suggestion.status === 'accepted' ? (
                   <Button variant="primary" className="flex-1" disabled>
@@ -198,7 +304,7 @@ export const DateNight: React.FC = () => {
                     variant="primary" 
                     className="flex-1" 
                     onClick={handleAccept}
-                    disabled={isAccepting}
+                    disabled={isAccepting || !selectedDate}
                   >
                     {isAccepting ? 'Accepting...' : 'Accept All Suggestions'}
                   </Button>
