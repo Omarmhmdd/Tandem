@@ -32,7 +32,7 @@ class CreateHealthLogRequest extends FormRequest
     public function getHealthLogData(): array
     {
         $user = Auth::user();
-        $notes = $this->notes ?HealthLogParsedDataValidator::filterGibberish($this->notes) : null;
+        $notes = $this->notes ? HealthLogParsedDataValidator::filterGibberish($this->notes) : null;
 
         return [
             'user_id' => $user->id,

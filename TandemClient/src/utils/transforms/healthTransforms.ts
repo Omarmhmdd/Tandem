@@ -52,6 +52,9 @@ export const transformParsedToEntry = (
   originalText?: string
 ): Omit<LogEntry, 'id'> & { confidence?: number; originalText?: string } => {
   const now = new Date();
+  // Use parsed notes if available, otherwise use original text if it's meaningful
+  const notes = parsed.notes?.trim() || (originalText?.trim() || '');
+  
   return {
     date: formatDateForAPI(now),
     time: now.toTimeString().slice(0, 5),
@@ -63,7 +66,7 @@ export const transformParsedToEntry = (
       wakeTime: parsed.wake_time || undefined,
     } : undefined,
     mood: selectedMood || parsed.mood || 'neutral',
-    notes: parsed.notes || '',
+    notes: notes,
     confidence: parsed.confidence || 0.95,
     originalText: originalText || '',
   };

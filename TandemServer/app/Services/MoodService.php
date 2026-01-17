@@ -100,36 +100,68 @@ public function autoAnnotate(?string $startDate = null, ?string $endDate = null)
     $householdMember = $this->getActiveHouseholdMember();
     [$startDate, $endDate] = $this->prepareDateRange($startDate, $endDate);
 
-    // Get existing annotations for the requested date range (use distinct to prevent duplicates)
-    $existingAnnotations = MoodAnnotation::where('household_id', $householdMember->household_id)
+    // Check if source data exists first
+    $moodEntries = $this->getMoodEntries($householdMember->household_id, $startDate, $endDate);
+    $healthLogs = $this->getHealthLogs($householdMember->household_id, $startDate, $endDate);
+    $expenses = $this->getExpenses($householdMember->household_id, $startDate, $endDate);
+
+    // Get dates that have source data
+    $datesWithData = collect();
+    foreach ($moodEntries as $entry) {
+        $datesWithData->push($entry['date']);
+    }
+    foreach ($healthLogs as $log) {
+        $datesWithData->push($log['date']);
+    }
+    foreach ($expenses as $expense) {
+        $datesWithData->push($expense['date']);
+    }
+    $datesWithData = $datesWithData->unique()->values();
+
+    // Delete annotations for dates that have no source data
+    if ($datesWithData->isEmpty()) {
+        // No data at all for this range - delete all annotations in range
+        MoodAnnotation::where('household_id', $householdMember->household_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->delete();
+        return collect([]);
+    } else {
+        // Delete annotations for dates that don't have data
+        // Get all dates in the range
+        $allDatesInRange = collect();
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+        $current = $start->copy();
+        while ($current->lte($end)) {
+            $allDatesInRange->push($current->format('Y-m-d'));
+            $current->addDay();
+        }
+        
+        // Find dates without data
+        $datesWithoutData = $allDatesInRange->diff($datesWithData);
+        
+        // Delete annotations for dates without data
+        if ($datesWithoutData->isNotEmpty()) {
+            MoodAnnotation::where('household_id', $householdMember->household_id)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->whereIn('date', $datesWithoutData->toArray())
+                ->delete();
+        }
+    }
+
+    // Always generate annotations if we have data (let createAnnotationsFromValidated handle deduplication)
+    $validatedAnnotations = $this->generateAnnotationsFromData($moodEntries, $healthLogs, $expenses, $startDate, $endDate);
+    $this->createAnnotationsFromValidated($validatedAnnotations, $householdMember->household_id);
+
+    // Always return all annotations from database
+    return MoodAnnotation::where('household_id', $householdMember->household_id)
         ->whereBetween('date', [$startDate, $endDate])
         ->orderBy('date', 'desc')
         ->orderBy('id', 'desc')
         ->get()
         ->unique(function ($annotation) {
-            return $annotation->date . '|' . $annotation->title . '|' . $annotation->type;
+            return $annotation->date->format('Y-m-d') . '|' . $annotation->title . '|' . $annotation->type;
         })
-        ->values();
-
-    // If annotations already exist for this date range, return them (avoid regenerating)
-    if ($existingAnnotations->isNotEmpty()) {
-        return $existingAnnotations;
-    }
-
-    // Only generate new annotations if none exist for this date range
-    $moodEntries = $this->getMoodEntries($householdMember->household_id, $startDate, $endDate);
-    $healthLogs = $this->getHealthLogs($householdMember->household_id, $startDate, $endDate);
-    $expenses = $this->getExpenses($householdMember->household_id, $startDate, $endDate);
-
-    if (empty($moodEntries) && empty($healthLogs) && empty($expenses)) {
-        return collect([]); // No data, no annotations
-    }
-
-    $validatedAnnotations = $this->generateAnnotationsFromData($moodEntries, $healthLogs, $expenses, $startDate, $endDate);
-
-    return $this->createAnnotationsFromValidated($validatedAnnotations, $householdMember->household_id)
-        ->sortByDesc('date')
-        ->sortByDesc('id')
         ->values();
 }
 //helper methods for thus feature
@@ -240,7 +272,7 @@ private function getHealthLogs(int $householdId, string $startDate, string $endD
         'activities' => $log->activities ?? [],
         'food' => $log->food ?? [],
         'sleep_hours' => $log->sleep_hours,
-        'notes' => $log->notes,
+        'notes' => $log->notes ?? $log->original_text ?? '',
     ])
     ->toArray();
 }
@@ -259,6 +291,59 @@ private function getExpenses(int $householdId, string $startDate, string $endDat
             'category' => $expense->category,
         ])
         ->toArray();
+}
+
+
+private function shouldRegenerateAnnotations(int $householdId, string $startDate, string $endDate): bool
+{
+    $latestAnnotationTime = MoodAnnotation::where('household_id', $householdId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->max('created_at');
+
+    // Always regenerate if no annotations exist
+    if (!$latestAnnotationTime) {
+        return true;
+    }
+
+    // Check if any source data has changed after latest annotation
+    return $this->hasNewMoodEntries($householdId, $startDate, $endDate, $latestAnnotationTime)
+        || $this->hasNewHealthLogs($householdId, $startDate, $endDate, $latestAnnotationTime)
+        || $this->hasNewExpenses($householdId, $startDate, $endDate, $latestAnnotationTime);
+}
+
+private function hasNewMoodEntries(int $householdId, string $startDate, string $endDate, string $sinceTime): bool
+{
+    return MoodEntry::whereIn('user_id', $this->getHouseholdUserIds($householdId))
+        ->whereBetween('date', [$startDate, $endDate])
+        ->where(function ($q) use ($sinceTime) {
+            $q->where('created_at', '>', $sinceTime)
+              ->orWhere('updated_at', '>', $sinceTime);
+        })
+        ->exists();
+}
+
+private function hasNewHealthLogs(int $householdId, string $startDate, string $endDate, string $sinceTime): bool
+{
+    return HealthLog::whereHas('user.householdMembers', function ($q) use ($householdId) {
+        $q->where('household_id', $householdId)->where('status', 'active');
+    })
+    ->whereBetween('date', [$startDate, $endDate])
+    ->where(function ($q) use ($sinceTime) {
+        $q->where('created_at', '>', $sinceTime)
+          ->orWhere('updated_at', '>', $sinceTime);
+    })
+    ->exists();
+}
+
+private function hasNewExpenses(int $householdId, string $startDate, string $endDate, string $sinceTime): bool
+{
+    return \App\Models\Expense::where('household_id', $householdId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->where(function ($q) use ($sinceTime) {
+            $q->where('created_at', '>', $sinceTime)
+              ->orWhere('updated_at', '>', $sinceTime);
+        })
+        ->exists();
 }
 
 }

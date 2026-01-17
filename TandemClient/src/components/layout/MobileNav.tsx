@@ -115,8 +115,8 @@
                     transition-all duration-200
                     ${
                         isActive
-                        ? 'bg-brand-primary text-white shadow-brand'
-                        : 'text-gray-700 hover:bg-brand-light/30 hover:text-brand-primary'
+                            ? 'bg-[#53389E] text-white shadow-brand'
+                            : 'text-gray-700 hover:bg-brand-light/30 hover:text-brand-primary'
                     }
                     `}
                     aria-current={isActive ? 'page' : undefined}

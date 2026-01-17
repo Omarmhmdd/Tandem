@@ -56,8 +56,40 @@ class HealthLogService
     public function delete(int $id): void
     {
         $healthLog = $this->findHealthLogForUser($id);
+        $userId = $healthLog->user_id;
+        // Ensure date is formatted as string for comparison (handles both string and Carbon date)
+        $date = $healthLog->date instanceof \Carbon\Carbon 
+            ? $healthLog->date->format('Y-m-d') 
+            : $healthLog->date;
+        $hasMood = $healthLog->mood !== null;
         
         $healthLog->delete();
+        
+        // If the deleted health log had a mood, update or delete the mood entry
+        if ($hasMood) {
+            $remainingHealthLog = HealthLog::where('user_id', $userId)
+                ->where('date', $date)
+                ->whereNotNull('mood')
+                ->orderBy('time', 'desc')
+                ->first();
+            
+            if ($remainingHealthLog) {
+                // Update mood entry to match the remaining health log's mood
+                MoodEntry::updateOrCreate(
+                    ['user_id' => $userId, 'date' => $date],
+                    [
+                        'mood' => $remainingHealthLog->mood,
+                        'time' => $remainingHealthLog->time,
+                        'notes' => $remainingHealthLog->notes,
+                    ]
+                );
+            } else {
+                // No other health logs with mood exist, delete the mood entry
+                MoodEntry::where('user_id', $userId)
+                    ->where('date', $date)
+                    ->delete();
+            }
+        }
     }
 
     protected function findHealthLogForUser(int $id): HealthLog

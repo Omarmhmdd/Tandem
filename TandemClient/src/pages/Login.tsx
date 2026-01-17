@@ -44,9 +44,7 @@
         <div className="flex-1 flex items-center justify-center p-6 h-screen overflow-hidden relative bg-gray-50">
             
             <div className="w-full max-w-md relative z-10">
-            <div className="lg:hidden mb-6 text-center">
-                <Logo size="lg" />
-            </div>
+            
             
             <Card className="border-0 shadow-2xl backdrop-blur-sm bg-white/95 -ml-8 lg:-ml-16">
                 <CardHeader className="space-y-3 pb-4">

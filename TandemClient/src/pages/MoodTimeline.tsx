@@ -149,12 +149,12 @@ export const MoodTimeline: React.FC = () => {
                         {dayAnnotations.map(ann => (
                           <div
                             key={ann.id}
-                            className="flex items-start gap-2 p-2 bg-blue-50 border border-blue-200 rounded-lg"
+                            className="flex items-start gap-2 p-2 bg-purple-50 border border-purple-200 rounded-lg"
                           >
-                            <Sparkles className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <Sparkles className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-blue-900">{ann.title}</p>
-                              <p className="text-xs text-blue-700">{ann.description}</p>
+                              <p className="text-sm font-medium text-purple-900">{ann.title}</p>
+                              <p className="text-xs text-purple-700">{ann.description}</p>
                             </div>
                           </div>
                         ))}

@@ -1,20 +1,7 @@
 import React, { useMemo } from 'react';
 import type { LogoProps } from '../types/component.types';
 
-/**
- * Logo component displaying the TANDEM brand logo
- * 
- * Features:
- * - Responsive sizing with proper aspect ratio preservation
- * - Light/dark variant support for different backgrounds
- * - Accessible with proper ARIA labels
- * - Production-ready SVG optimization
- * 
- * @param size - Logo size: 'sm' (32px), 'md' (40px), or 'lg' (48px) height
- * @param showText - DEPRECATED: Text is now part of SVG. Kept for backward compatibility.
- * @param className - Additional CSS classes
- * @param variant - 'light' for dark backgrounds (inverts colors), 'dark' for light backgrounds
- */
+
 export const Logo: React.FC<LogoProps> = ({ 
   size = 'md', 
   showText: _showText = true, // Deprecated but kept for backward compatibility - text is now part of SVG
