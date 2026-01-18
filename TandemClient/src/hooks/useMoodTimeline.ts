@@ -83,24 +83,38 @@ export const useMoodTimelinePage = () => {
     return uniqueUserIds.find((id: string) => id !== currentUserId) || null;
   }, [moods, currentUserId]);
 
-  // Auto-annotation effect - only run when date range changes or when moods finish loading
+  // Track mood count to detect when moods are added or deleted
+  const moodCountRef = useRef<number>(0);
+  
+  // Auto-annotation effect - runs when date range changes, moods finish loading, or moods change
   // Uses ref-based tracking to prevent infinite loops
   useEffect(() => {
     // Skip if still loading
     if (moodsLoading) return;
     
     const dateRangeKey = `${startDateStr}-${endDate}`;
+    const currentMoodCount = moods.length;
+    const moodCountChanged = currentMoodCount !== moodCountRef.current;
     
-    // Skip if already requested for this date range
-    if (annotationRequestedRef.current === dateRangeKey) return;
+    // Reset annotation ref if mood count changed (added or deleted) or date range changed
+    if (moodCountChanged || annotationRequestedRef.current !== dateRangeKey) {
+      if (annotationRequestedRef.current !== '' && annotationRequestedRef.current !== dateRangeKey) {
+        setAnnotations([]);
+      }
+      // Reset ref to allow re-fetching when moods change (added or deleted)
+      if (moodCountChanged) {
+        annotationRequestedRef.current = '';
+        // Clear annotations immediately when mood count changes
+        setAnnotations([]);
+      }
+      moodCountRef.current = currentMoodCount;
+    }
+    
+    // Skip if already requested for this date range (unless moods changed)
+    if (annotationRequestedRef.current === dateRangeKey && !moodCountChanged) return;
     
     // Skip if mutation is already in progress
     if (autoAnnotateMutation.isPending) return;
-    
-    // Reset annotations when date range changes
-    if (annotationRequestedRef.current !== '' && annotationRequestedRef.current !== dateRangeKey) {
-      setAnnotations([]);
-    }
     
     // Mark as requested BEFORE calling to prevent race conditions
     annotationRequestedRef.current = dateRangeKey;
@@ -127,7 +141,7 @@ export const useMoodTimelinePage = () => {
         },
       }
     );
-  }, [moodsLoading, startDateStr, endDate, autoAnnotateMutation]);
+  }, [moodsLoading, startDateStr, endDate, moods.length, autoAnnotateMutation]);
 
   // Memoize chart data calculation
   const chartData = useMemo(() => {

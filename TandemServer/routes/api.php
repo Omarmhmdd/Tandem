@@ -27,6 +27,14 @@ Route::group(['prefix' => 'v0.1'], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
+    // Admin endpoints for n8n automation (no auth required)
+    Route::group(['prefix' => 'admin', 'middleware' => 'api.key'], function () {
+        Route::get('/households', [HouseholdController::class, 'getAllHouseholds']);
+        Route::get('/household/{household_id}/analytics', [AnalyticsController::class, 'getAggregatedForHousehold']);
+    });
+
+
+
     // Protected routes
     Route::group(['middleware' => 'auth:api'], function () {
         // AUTH - No household required

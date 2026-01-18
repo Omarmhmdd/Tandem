@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Middleware\RequireHousehold;
 use App\Http\Middleware\RequirePrimaryRole;
 use Illuminate\Http\Request;
+use App\Http\Middleware\VerifyApiKey;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'jwt.auth' => AuthenticateJwt::class,
             'require.household' =>RequireHousehold::class,
             'require.primary' => RequirePrimaryRole::class,
+            'api.key' => VerifyApiKey::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

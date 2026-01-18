@@ -1,21 +1,13 @@
 import type { Goal, GoalCompletionStatus } from '../types/goal.types';
 import { QUICK_ADD_AMOUNTS } from './constants';
 
-/**
- * Calculate the progress percentage of a goal
- * @param goal - The goal object
- * @returns Progress percentage (0-100)
- */
+
 export const calculateProgress = (goal: Goal): number => {
   if (goal.target === 0) return 0;
   return Math.min((goal.current / goal.target) * 100, 100);
 };
 
-/**
- * Get the completion status of a goal including milestone checks
- * @param goal - The goal object
- * @returns GoalCompletionStatus with all completion details
- */
+
 export const getGoalCompletionStatus = (goal: Goal): GoalCompletionStatus => {
   const progress = calculateProgress(goal);
   const hasMilestones = goal.milestones && goal.milestones.length > 0;
@@ -37,11 +29,7 @@ export const getGoalCompletionStatus = (goal: Goal): GoalCompletionStatus => {
   };
 };
 
-/**
- * Get the color classes for a goal category
- * @param category - The goal category
- * @returns Tailwind CSS classes for the category
- */
+
 export const getCategoryColor = (category: Goal['category']): string => {
   const colors: Record<Goal['category'], string> = {
     wedding: 'bg-pink-100 text-pink-700 border-pink-300',
@@ -52,11 +40,6 @@ export const getCategoryColor = (category: Goal['category']): string => {
   return colors[category] || colors.other;
 };
 
-/**
- * Get quick add suggestions based on goal unit and remaining amount
- * @param goal - The goal object
- * @returns Array of suggested amounts to add
- */
 export const getQuickAddSuggestions = (goal: Goal): number[] => {
   const remaining = goal.target - goal.current;
   

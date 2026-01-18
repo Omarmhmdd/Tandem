@@ -31,6 +31,7 @@
         },
         onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['healthLogs'] });
+        queryClient.invalidateQueries({ queryKey: ['moodTimeline'] });
         },
     });
     };
@@ -58,6 +59,7 @@
         },
         onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['healthLogs'] });
+        queryClient.invalidateQueries({ queryKey: ['moodTimeline'] });
         },
     });
     };

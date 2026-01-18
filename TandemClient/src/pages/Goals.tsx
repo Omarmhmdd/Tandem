@@ -247,9 +247,16 @@ export const Goals: React.FC = () => {
     }
   };
 
-  const handleQuickAdd = (goalId: string, amount: number) => {
-    quickAdd(goalId, amount);
-  };
+    const handleQuickAdd = async (goalId: string, amount: number) => {
+    await quickAdd(goalId, amount);
+    
+    // Update the input to reflect the new value
+    const goal = goals.find((g: Goal) => g.id === goalId);
+    if (goal) {
+      const newValue = Math.min(goal.current + amount, goal.target);
+      setProgressInputs(prev => ({ ...prev, [goalId]: newValue.toString() }));
+    } 
+  }; 
 
   const toggleMilestone = async (goalId: string, milestoneId: string) => {
     const goal = goals.find((g: Goal) => g.id === goalId);
@@ -527,11 +534,7 @@ export const Goals: React.FC = () => {
                     </>
                   )}
                   
-                  {completionStatus.isComplete && (
-                    <p className="text-xs text-purple-600 font-medium">
-                      🎉 Goal completed! You can still update progress if needed.
-                    </p>
-                  )}
+                  
                 </div>
 
                 {/* Milestones */}

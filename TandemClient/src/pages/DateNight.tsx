@@ -21,18 +21,7 @@ const formatDate = (dateString: string): string => {
 };
 
 export const DateNight: React.FC = () => {
-  const { 
-    budget, 
-    setBudget, 
-    suggestion, 
-    selectedDate,
-    setSelectedDate,
-    acceptedDateNights,
-    isLoading, 
-    isAccepting, 
-    generateSuggestion, 
-    acceptSuggestion 
-  } = useDateNightPage();
+  const { budget, setBudget, suggestion, selectedDate,setSelectedDate,acceptedDateNights,isLoading,  isAccepting, generateSuggestion, acceptSuggestion } = useDateNightPage();
 
   const handleAccept = async () => {
     await acceptSuggestion();

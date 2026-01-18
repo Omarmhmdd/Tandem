@@ -4,7 +4,7 @@ import { apiClient } from '../client';
 import { ENDPOINTS } from '../endpoints';
 import { useHasHousehold } from '../../hooks/useHasHousehold';
 import { useAuth } from '../../contexts/AuthContext';
-
+////
 export const useAiCoachQuery = () => {
   const hasHousehold = useHasHousehold();
   

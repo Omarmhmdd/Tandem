@@ -147,8 +147,8 @@ export const Pantry: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
+         <div className="flex flex-col gap-4">
+  <div className="w-full">
               <Input
                 icon={Search}
                 placeholder="Search pantry items..."
@@ -156,13 +156,13 @@ export const Pantry: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto">
+           <div className="flex flex-wrap gap-2">
               {PANTRY_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`
-                    px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition-all border-2
+                 className={`
+  px-3 py-2 rounded-lg font-semibold text-sm transition-all border-2
                     ${selectedCategory === cat
                       ? 'bg-[#53389E] text-white border-[#53389E] shadow-md shadow-purple-200'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-transparent hover:border-gray-300'
@@ -279,7 +279,7 @@ export const Pantry: React.FC = () => {
             disabled={isSaving}
           />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Quantity"
               type="number"

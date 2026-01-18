@@ -11,10 +11,6 @@ export const isGoalCompleted = (goal: Goal): boolean => {
 };
 
 
-/**
- * Get the start of the current week (Monday)
- * This matches Laravel's Carbon startOfWeek() behavior
- */
 export const getWeekStart = (): Date => {
   const weekStart = new Date();
   const day = weekStart.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
