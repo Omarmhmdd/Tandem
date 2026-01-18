@@ -38,8 +38,10 @@ import { NotificationBell } from '../NotificationBell';
     return (
         <>
         <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-20">
+                      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-20 gap-4">
+                        {/* Left side: Mobile Menu + Logo */}
+                       <div className="flex items-center gap-3 lg:gap-0 -ml-4 lg:-ml-2">
                 {/* Mobile Menu Button */}
                 <button
                 onClick={() => setMobileMenuOpen(true)}
@@ -52,12 +54,14 @@ import { NotificationBell } from '../NotificationBell';
                 </button>
 
                 {/* Logo */}
-                        <div className="flex-1 lg:flex-none ml-2 lg:-ml-4 xl:-ml-8">
+                        <div>
                 <Logo size="md" />
                 </div>
+                </div>
+                
 
-                {/* Actions */}
-                        <div className="flex items-center gap-3 sm:gap-4 pr-2 lg:-mr-4 xl:-mr-8">
+              {/* Right side: Actions */}
+                      <div className="flex items-center gap-3 sm:gap-4 -mr-2 lg:-mr-4">
                 {/* Settings */}
                 <button 
                     onClick={() => navigate('/settings')}

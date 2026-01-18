@@ -124,7 +124,7 @@ export const MealPlanner: React.FC = () => {
         description="Plan your week together"
       />
 
-      <div className="flex gap-2 justify-end items-center">
+      <div className="flex flex-col sm:flex-row gap-3 sm:justify-end items-stretch sm:items-center">
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -140,8 +140,11 @@ export const MealPlanner: React.FC = () => {
             icon={Calendar}
             onClick={goToCurrentWeek}
             title="Click to go to current week"
+            className="text-xs sm:text-sm px-2 sm:px-4 min-w-0"
           >
-            {new Date(weekDates[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(weekDates[6].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            <span className='truncate'>
+              {new Date(weekDates[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(weekDates[6].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
           </Button>
           <Button
             variant="outline"
@@ -153,7 +156,7 @@ export const MealPlanner: React.FC = () => {
             Next
           </Button>
         </div>
-        <Button variant="secondary" icon={Users} onClick={matchMealModal.open}>
+        <Button variant="secondary" icon={Users} onClick={matchMealModal.open} className="w-full sm:w-auto">
           Schedule Match Meal
         </Button>
       </div>
@@ -164,7 +167,71 @@ export const MealPlanner: React.FC = () => {
           <CardTitle>Weekly Meal Plan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          {/* Mobile View - Show days as cards */}
+          <div className="block lg:hidden space-y-4">
+            {weekDates.map((wd) => (
+              <div key={wd.date} className="border border-gray-200 rounded-lg p-3">
+                <div className="font-semibold text-gray-900 mb-3 flex items-center justify-between">
+                  <span>{wd.day}</span>
+                  <span className="text-sm text-gray-500">{new Date(wd.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                </div>
+                <div className="space-y-2">
+                  {MEAL_TYPES.map((meal: string) => {
+                    const mealSlot = getMealForSlot(wd.date, meal);
+                    let partnerName: string | undefined;
+                    if (mealSlot?.isMatchMeal && user?.id) {
+                      const currentUserId = typeof user.id === 'string' ? parseInt(user.id, 10) : Number(user.id);
+                      if (mealSlot.matchMealInvitedByUser?.id === currentUserId && mealSlot.matchMealInvitedToUser) {
+                        partnerName = `${mealSlot.matchMealInvitedToUser.first_name} ${mealSlot.matchMealInvitedToUser.last_name}`.trim();
+                      } else if (mealSlot.matchMealInvitedToUser?.id === currentUserId && mealSlot.matchMealInvitedByUser) {
+                        partnerName = `${mealSlot.matchMealInvitedByUser.first_name} ${mealSlot.matchMealInvitedByUser.last_name}`.trim();
+                      }
+                    }
+                    return (
+                      <div key={meal} className="flex items-start gap-2">
+                        <div className="w-20 pt-2 text-sm font-medium text-gray-700 capitalize flex-shrink-0">
+                          {meal}
+                        </div>
+                        <div
+                          onClick={() => handleSlotClick(wd.date, meal)}
+                          className="flex-1 min-h-[60px] p-2 border-2 border-dashed border-gray-200 rounded-lg hover:border-brand-light hover:bg-brand-light/5 transition-colors cursor-pointer relative group"
+                        >
+                          {mealSlot ? (
+                            <div className="space-y-1">
+                              {mealSlot.isMatchMeal && (
+                                <div className="flex items-center gap-1 text-xs text-brand-primary font-medium">
+                                  <Users className="w-3 h-3" />
+                                  Match{partnerName ? ` with ${partnerName}` : ''}
+                                </div>
+                              )}
+                              <p className="text-sm font-medium text-gray-900 leading-tight">{mealSlot.recipeName}</p>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(mealSlot.id);
+                                }}
+                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded transition-opacity"
+                                aria-label={`Remove ${mealSlot.recipeName} from meal plan`}
+                              >
+                                <X className="w-3 h-3 text-red-600" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <Plus className="w-4 h-4" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View - Grid layout */}
+          <div className="hidden lg:block overflow-x-auto">
             <div className="min-w-full">
               <div className="grid grid-cols-8 gap-2 mb-2">
                 <div className="font-semibold text-gray-700 text-sm">Meal</div>
@@ -178,12 +245,11 @@ export const MealPlanner: React.FC = () => {
 
               {MEAL_TYPES.map((meal: string) => (
                 <div key={meal} className="grid grid-cols-8 gap-2 mb-2">
-                  <div className="flex items-center font-medium text-gray-700 capitalize text-sm">
+                  <div className="flex items-start pt-2 font-medium text-gray-700 capitalize text-sm">
                     {meal}
                   </div>
                   {weekDates.map((wd) => {
                     const mealSlot = getMealForSlot(wd.date, meal);
-                    // Determine partner name - show the OTHER user (not current user)
                     let partnerName: string | undefined;
                     if (mealSlot?.isMatchMeal && user?.id) {
                       const currentUserId = typeof user.id === 'string' ? parseInt(user.id, 10) : Number(user.id);
@@ -197,7 +263,7 @@ export const MealPlanner: React.FC = () => {
                       <div
                         key={`${wd.date}-${meal}`}
                         onClick={() => handleSlotClick(wd.date, meal)}
-                        className="min-h-[70px] p-2 border-2 border-dashed border-gray-200 rounded-lg hover:border-brand-light hover:bg-brand-light/5 transition-colors cursor-pointer relative group"
+                        className="min-h-[85px] p-2 border-2 border-dashed border-gray-200 rounded-lg hover:border-brand-light hover:bg-brand-light/5 transition-colors cursor-pointer relative group overflow-hidden"
                       >
                         {mealSlot ? (
                           <div className="space-y-1">
@@ -207,7 +273,7 @@ export const MealPlanner: React.FC = () => {
                                 Match{partnerName ? ` with ${partnerName}` : ''}
                               </div>
                             )}
-                            <p className="text-xs font-medium text-gray-900">{mealSlot.recipeName}</p>
+                            <p className="text-xs font-medium text-gray-900 leading-tight line-clamp-2 break-words">{mealSlot.recipeName}</p>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -220,7 +286,7 @@ export const MealPlanner: React.FC = () => {
                             </button>
                           </div>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
                             <Plus className="w-4 h-4" />
                           </div>
                         )}
@@ -253,9 +319,8 @@ export const MealPlanner: React.FC = () => {
               shoppingList.map((item: ShoppingListItem) => (
                 <div
                   key={item.id}
-                  className={`flex items-center gap-3 p-2 rounded-lg ${
-                    item.inPantry ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'
-                  }`}
+                  className={`flex items-center gap-3 p-2 rounded-lg ${item.inPantry ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'
+                    }`}
                 >
                   <input
                     type="checkbox"
