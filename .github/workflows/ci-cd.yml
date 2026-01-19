@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-cd-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -131,4 +131,52 @@ jobs:
         with:
           name: frontend-dist
           path: TandemClient/dist
-          if-no-files-found: ignore
+          retention-days: 7
+
+  deploy:
+    name: Deploy to AWS
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Backend
+        env:
+          BACKEND_PATH: ${{ secrets.AWS_BACKEND_PATH }}
+        run: |
+          ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} "
+            cd $BACKEND_PATH &&
+            git pull origin main &&
+            composer install --no-dev --optimize-autoloader &&
+            php artisan migrate --force &&
+            php artisan config:cache &&
+            php artisan route:cache &&
+            php artisan view:cache &&
+            php artisan optimize &&
+            sudo systemctl restart php8.2-fpm || true
+          "
+
+      - name: Deploy Frontend
+        env:
+          FRONTEND_PATH: ${{ secrets.AWS_FRONTEND_PATH }}
+        run: |
+          ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} "
+            cd $FRONTEND_PATH &&
+            git pull origin main &&
+            npm install &&
+            npm run build &&
+            sudo systemctl reload nginx || true
+          "
+
+      - name: Deployment Success
+        run: echo " Deployment completed successfully!"
