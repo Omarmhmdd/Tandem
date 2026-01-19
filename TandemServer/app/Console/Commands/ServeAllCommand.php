@@ -118,6 +118,9 @@ class ServeAllCommand extends Command
 
     public function __destruct()
     {
-        $this->stopAllProcesses();
+        // Only stop processes if we're in a console context
+        if ($this->output !== null && !empty($this->processes)) {
+            $this->stopAllProcesses();
+        }
     }
 }
