@@ -150,15 +150,14 @@ jobs:
           username: ${{ secrets.AWS_USERNAME }}
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
-            git config --global --add safe.directory ${{ secrets.AWS_BACKEND_PATH }}
             cd ${{ secrets.AWS_BACKEND_PATH }}
-            sudo git pull origin main
-            sudo composer install --no-dev --optimize-autoloader
-            sudo php artisan migrate --force
-            sudo php artisan config:cache
-            sudo php artisan route:cache
-            sudo php artisan view:cache
-            sudo php artisan optimize
+            git pull origin main
+            composer install --no-dev --optimize-autoloader
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan optimize
             sudo systemctl restart php8.2-fpm || true
 
       - name: Deploy Frontend
