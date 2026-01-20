@@ -145,11 +145,10 @@ jobs:
 
       - name: Setup SSH
         run: |
-          mkdir -p $HOME/.ssh
-          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa
-          chmod 600 $HOME/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> $HOME/.ssh/known_hosts
-        shell: bash
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy Backend
         env:
@@ -172,13 +171,12 @@ jobs:
           FRONTEND_PATH: ${{ secrets.AWS_FRONTEND_PATH }}
         run: |
           ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} "
-            git config --global --add safe.directory $FRONTEND_PATH &&
             cd $FRONTEND_PATH &&
-            sudo git pull origin main &&
-            sudo npm install &&
-            sudo npm run build &&
+            git pull origin main &&
+            npm install &&
+            npm run build &&
             sudo systemctl reload nginx || true
           "
 
       - name: Deployment Success
-        run: echo "Deployment completed successfully!"
+        run: echo " Deployment completed successfully!"
