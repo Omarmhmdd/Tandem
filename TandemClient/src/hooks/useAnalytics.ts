@@ -15,13 +15,10 @@ export const useAnalytics = ({timeRange,weekStart,weekEnd,monthStart,currentYear
     currentMonth,
   });
 
-  // Use deferred value to prevent blocking main thread during heavy calculations
-  // This allows React to prioritize urgent updates (like user interactions)
-  // The deferred value will update after urgent updates are processed
   const deferredData = useDeferredValue(aggregatedData);
   const isPending = deferredData !== aggregatedData;
 
-  // Extract data from aggregated response - use deferred for heavy calculations
+  // Extract data from aggregated response, use deferred for heavy calculations
   const weeklyAnalytics = deferredData?.weekly;
   const monthlyMoodData = deferredData?.monthlyMood || [];
   const pantryWasteData = deferredData?.pantryWaste;
@@ -29,7 +26,7 @@ export const useAnalytics = ({timeRange,weekStart,weekEnd,monthStart,currentYear
   const goals = deferredData?.goals || [];
   const budgetSummary = deferredData?.budgetSummary;
 
-  // Transform data for charts - these are heavy operations, deferred to prevent blocking
+  // Transform data for charts , these are heavy operations, deferred to prevent blocking
   const weeklyData = useMemo<WeeklyChartData[]>(() => {
     if (!weeklyAnalytics) return [];
     return transformWeeklyDataForChart(weeklyAnalytics, timeRange);
@@ -40,7 +37,7 @@ export const useAnalytics = ({timeRange,weekStart,weekEnd,monthStart,currentYear
     return transformPantryWasteForChart(pantryWasteData);
   }, [pantryWasteData]);
 
-  // Calculate summary stats - deferred to prevent blocking
+  // Calculate summary stats , deferred to prevent blocking
   const totalSteps = useMemo(() => calculateTotalSteps(weeklyData), [weeklyData]);
   const avgSleep = useMemo(() => calculateAverageSleep(weeklyData), [weeklyData]);
   const avgMood = useMemo(() => calculateAverageMood(weeklyData), [weeklyData]);
