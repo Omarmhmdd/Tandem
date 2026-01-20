@@ -12,9 +12,6 @@ export const useNutritionTargetForm = (onSuccess?: () => void) => {
     onSuccessRef.current = onSuccess;
   }, [onSuccess]);
 
-  // Always call useNutritionTarget - hooks must be called unconditionally
-  // The hook itself handles the enabled flag internally
-  // Always enabled since we need the target data for the form
   const { data: currentTarget, isLoading: targetLoading } = useNutritionTarget(true);
   const updateTargetMutation = useUpdateNutritionTarget();
   const targetModal = useModal();

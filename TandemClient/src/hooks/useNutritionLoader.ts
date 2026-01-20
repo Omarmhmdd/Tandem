@@ -59,12 +59,6 @@ export const useNutritionLoader = (
       setters.setTargets({ user: null, partner: null });
     }
 
-    // CRITICAL: Always call API - backend cache handles freshness
-    // The cache key is based on last food log timestamp, so new food = new cache key = fresh data
-    // Always fetch - backend will return cached if same, or fresh if food logs changed
-    // IMPORTANT: Add a small delay to ensure new food logs are committed to database
-    // This prevents race condition where cache key is calculated before new log is saved
-
     isLoadingRef.current = true;
     try {
       // Small delay to ensure any recently added food logs are committed

@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { PageHeader } from '../components/shared/PageHeader';
 import { useMoodTimelinePage } from '../hooks/useMoodTimeline';
-import { getMoodEmoji } from '../utils/moodHelpers';
+
 
 export const MoodTimeline: React.FC = () => {
   const {
@@ -170,7 +170,7 @@ export const MoodTimeline: React.FC = () => {
                             className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                           >
                             <div className="flex items-center gap-2 flex-1">
-                              <span className="text-2xl">{getMoodEmoji(mood.mood)}</span>
+                              <span className="text-2xl"></span>
                               <div>
                                 <p className="font-medium text-gray-900">{mood.userName}</p>
                                 <p className="text-sm text-gray-600 capitalize">{mood.mood}</p>
