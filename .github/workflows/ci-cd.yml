@@ -143,36 +143,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy Backend
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USERNAME }}
-          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.AWS_BACKEND_PATH }}
-            git pull origin main
-            composer install --no-dev --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan optimize
+        env:
+          BACKEND_PATH: ${{ secrets.AWS_BACKEND_PATH }}
+        run: |
+          ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} "
+            cd $BACKEND_PATH &&
+            git pull origin main &&
+            composer install --no-dev --optimize-autoloader &&
+            php artisan migrate --force &&
+            php artisan config:cache &&
+            php artisan route:cache &&
+            php artisan view:cache &&
+            php artisan optimize &&
             sudo systemctl restart php8.2-fpm || true
+          "
 
       - name: Deploy Frontend
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USERNAME }}
-          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-          script: |
-            git config --global --add safe.directory ${{ secrets.AWS_FRONTEND_PATH }}
-            cd ${{ secrets.AWS_FRONTEND_PATH }}
-            sudo git pull origin main
-            sudo npm install
-            sudo npm run build
+        env:
+          FRONTEND_PATH: ${{ secrets.AWS_FRONTEND_PATH }}
+        run: |
+          ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_HOST }} "
+            git config --global --add safe.directory $FRONTEND_PATH &&
+            cd $FRONTEND_PATH &&
+            sudo git pull origin main &&
+            sudo npm install &&
+            sudo npm run build &&
             sudo systemctl reload nginx || true
+          "
 
       - name: Deployment Success
         run: echo "Deployment completed successfully!"
