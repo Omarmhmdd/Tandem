@@ -71,3 +71,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | Login | Register & Household Setup |
 |-------|----------------------------|
 | ![Login](./readme/demo/login.png) | ![Register Flow](./readme/demo/register-flow.gif) |
+
+| Dashboard | Habits |
+|-----------|--------|
+| ![Dashboard](./readme/demo/dashboard.png) | ![Habits](./readme/demo/habits.png) |
