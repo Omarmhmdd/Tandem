@@ -133,3 +133,9 @@ The platform features **AI agent assistance** for personalized household advice,
 | CI/CD Workflow | CI/CD Tests |
 |----------------|-------------|
 | ![CI/CD Workflow](./readme/demo/cicdworkflow.png) | ![CI/CD Tests](./readme/demo/cicdtest.png) |
+
+### Postman
+
+![Postman](./readme/demo/postman.png)
+
+<br><br>
