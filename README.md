@@ -111,3 +111,13 @@ The platform features **AI agent assistance** for personalized household advice,
 | AI Weekly Summary & Nutrition Coach | AI Mood Annotations |
 |-------------------------------------|---------------------|
 | ![AI Nutrition Coach & Summary](./readme/demo/nutrtioncoahc-summary.png) | ![AI Mood Annotations](./readme/demo/moodannotations.png) |
+
+| n8n Automation Workflow | Email Notification Result |
+|-------------------------|---------------------------|
+| ![n8n Workflow](./readme/demo/n8n.png) | ![Email Sent](./readme/demo/email.png) |
+
+| Calendar Event Result | Google Drive PDF Result |
+|-----------------------|-------------------------|
+| ![Calendar Event](./readme/demo/calendar.png) | ![Google Drive PDF](./readme/demo/googledrive.png) |
+
+<br><br>
