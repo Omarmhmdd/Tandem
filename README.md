@@ -83,3 +83,13 @@ The platform features **AI agent assistance** for personalized household advice,
 | Meal Planner | Goals |
 |--------------|-------|
 | ![Meal Planner](./readme/demo/mealPlanner.png) | ![Goals](./readme/demo/goals.png) |
+
+| Budget | Mood Timeline |
+|--------|---------------|
+| ![Budget](./readme/demo/budget.png) | ![Mood Timeline](./readme/demo/mood.png) |
+
+| Analytics |
+|-----------|
+| ![Analytics](./readme/demo/Analytics.png) |
+
+<br><br>
