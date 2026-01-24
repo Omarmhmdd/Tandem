@@ -103,3 +103,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | AI Date Night |
 |---------------|
 | ![AI Date Night](./readme/demo/dateNight-flow.gif) |
+
+| AI Health Logger | Auto Order Shopping List |
+|------------------|--------------------------|
+| ![AI Health Logger](./readme/demo/Healthlogger%20(2).gif) | ![Auto Order Shopping List](./readme/demo/autoorder.gif) |
