@@ -61,3 +61,13 @@ The platform features **AI agent assistance** for personalized household advice,
 - **n8n Automation Workflow**: Automatically triggers weekly insight reports by processing household data into analytics graphs, generating PDFs, backing them up to Google Drive for recovery, emailing them to households, and scheduling calendar reminders to review their insights.
 
 <br><br>
+
+<img src="./readme/cards/title5.svg"/>
+
+
+
+### User Screens
+
+| Login | Register & Household Setup |
+|-------|----------------------------|
+| ![Login](./readme/demo/login.png) | ![Register Flow](./readme/demo/register-flow.gif) |
