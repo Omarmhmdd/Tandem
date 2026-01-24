@@ -79,3 +79,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | Pantry | Recipes |
 |--------|---------|
 | ![Pantry](./readme/demo/pantry.png) | ![Recipes](./readme/demo/recipesview.png) |
+
+| Meal Planner | Goals |
+|--------------|-------|
+| ![Meal Planner](./readme/demo/mealPlanner.png) | ![Goals](./readme/demo/goals.png) |
