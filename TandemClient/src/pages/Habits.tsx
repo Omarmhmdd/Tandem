@@ -16,7 +16,7 @@ import type { Habit, HabitFormData } from '../types/habit.types';
 import { calculateStreak, getMonthlyCompletions } from '../utils/habitHelpers';
 
 export const Habits: React.FC = () => {
-    const {habits,saveHabit,deleteHabit,toggleCompletion,isCompletedToday,} = useHabits();
+    const {habits,saveHabit,deleteHabit,toggleCompletion,isCompletedToday,isLoading,} = useHabits();
 
     const modal = useModal();
     const deleteConfirm = useConfirmDialog();
@@ -53,6 +53,28 @@ export const Habits: React.FC = () => {
       deleteHabit(id);
     });
   };
+  if (isLoading) {
+      return (
+        <div className="space-y-6">
+          <Breadcrumbs items={[{ label: 'Habits' }]} />
+          <PageHeader
+            title="Habits"
+            description="Track daily activities and build consistency. Click the circle to mark habits as complete!"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i}>
+                <CardContent className="p-5 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                  <div className="h-20 bg-gray-100 rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      );
+    }
 
   return (
     <div className="space-y-6">

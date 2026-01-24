@@ -29,12 +29,7 @@ class RecipesController extends Controller
 
     public function store(CreateRecipeRequest $request): JsonResponse
     {
-        $recipe = $this->recipesService->create(
-            $request->getRecipeData(),
-            $request->getIngredientsData(),
-            $request->getInstructionsData(),
-            $request->getTagsData()
-        );
+        $recipe = $this->recipesService->create($request->getRecipeData(),$request->getIngredientsData(),$request->getInstructionsData(),$request->getTagsData());
 
         return $this->created([
             'recipe' => new RecipeResource($recipe),

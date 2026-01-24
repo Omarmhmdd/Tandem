@@ -28,6 +28,7 @@ export const Recipes: React.FC = () => {
     setSelectedRecipe,
     saveRecipe,
     deleteRecipe,
+    isLoading,
   } = useRecipesPage();
 
   const modal = useModal();
@@ -49,6 +50,47 @@ export const Recipes: React.FC = () => {
   const [ingredientInput, setIngredientInput] = useState('');
   const [instructionInput, setInstructionInput] = useState('');
   const [tagInput, setTagInput] = useState('');
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Breadcrumbs items={[{ label: 'Recipes' }]} />
+        <PageHeader
+          title="Recipes"
+          description="Manage your recipe collection"
+        />
+        <Card className="shadow-sm">
+          <CardContent className="p-5 animate-pulse">
+            <div className="h-10 bg-gray-200 rounded w-full" />
+          </CardContent>
+        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i}>
+                  <CardContent className="p-6 animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Card>
+              <CardContent className="p-8 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/2 mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleOpenAdd = () => {
     setEditingRecipe(null);
