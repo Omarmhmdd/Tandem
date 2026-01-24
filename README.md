@@ -139,3 +139,28 @@ The platform features **AI agent assistance** for personalized household advice,
 ![Postman](./readme/demo/postman.png)
 
 <br><br>
+
+<img src="./readme/cards/title7.svg"/>
+
+### CI/CD Pipeline
+
+**GitHub Actions:**
+- **CI Backend:** Runs PHPUnit (Laravel) tests on `TandemServer` changes using PHP 8.2 & MySQL 5.7.
+- **CI Frontend:** Runs Build and Dependency checks on `TandemClient` changes using Node 20.
+- **CD Production:** Automatically deploys `main` branch to AWS EC2.
+
+**Deployment Strategy:**
+
+> [!NOTE]
+> I originally planned to use Docker for deployment, but due to hardware limitations with local virtualization, we switched to a direct server setup instead.
+
+- Automated `git pull` from origin main.
+- **Backend:**
+  - Dependency updates (`composer install --no-dev`)
+  - Database migrations (`php artisan migrate --force`)
+  - Cache optimization (`config:cache`, `route:cache`, `view:cache`)
+  - Service restart (`php8.2-fpm`)
+- **Frontend:**
+  - Dependency updates (`npm install`)
+  - Production build (`npm run build`)
+  - Server reload (`nginx`)
