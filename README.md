@@ -129,3 +129,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | ![Services](./readme/demo/service-example.png) | ![Validation](./readme/demo/validator-example.png) | ![Controllers](./readme/demo/controller-example.png) |
 
 ### CI/CD
+
+| CI/CD Workflow | CI/CD Tests |
+|----------------|-------------|
+| ![CI/CD Workflow](./readme/demo/cicdworkflow.png) | ![CI/CD Tests](./readme/demo/cicdtest.png) |
