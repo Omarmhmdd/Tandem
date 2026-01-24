@@ -99,3 +99,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | AI Agent Coach |
 |----------------|
 | ![AI Agent Coach](./readme/demo/aiagent%20(3).gif) |
+
+| AI Date Night |
+|---------------|
+| ![AI Date Night](./readme/demo/dateNight-flow.gif) |
