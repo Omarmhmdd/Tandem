@@ -121,3 +121,11 @@ The platform features **AI agent assistance** for personalized household advice,
 | ![Calendar Event](./readme/demo/calendar.png) | ![Google Drive PDF](./readme/demo/googledrive.png) |
 
 <br><br>
+
+<img src="./readme/cards/title6.svg"/>
+
+| Services | Validation | Controllers |
+|----------|------------|-------------|
+| ![Services](./readme/demo/service-example.png) | ![Validation](./readme/demo/validator-example.png) | ![Controllers](./readme/demo/controller-example.png) |
+
+### CI/CD
