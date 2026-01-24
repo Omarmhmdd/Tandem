@@ -23,6 +23,7 @@ export const Budget: React.FC = () => {
     saveBudget,
     getCategoryColor,
     monthlyBudget,
+    isLoading,
   } = useBudgetPage();
 
   const modal = useModal();
@@ -131,6 +132,42 @@ export const Budget: React.FC = () => {
     const percentage = (summary.spent / monthlyBudget) * 100;
     return `${Math.min(percentage, 100).toFixed(0)}%`;
   }, [monthlyBudget, summary.spent]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Breadcrumbs items={[{ label: 'Budget' }]} />
+        <PageHeader
+          title="Budget & Expenses"
+          description="Track spending with automatic category tagging"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                <div className="h-8 bg-gray-200 rounded w-1/2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-1/3" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

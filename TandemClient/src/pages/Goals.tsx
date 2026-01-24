@@ -16,7 +16,7 @@ import { useCreateMilestone, useUpdateMilestone, useDeleteMilestone } from '../a
 import { getCategoryColor } from '../utils/goalHelpers';
 
 export const Goals: React.FC = () => {
-  const {goals,budgetSummary,getGoalCompletionStatus,saveGoal,deleteGoal,updateProgress,quickAdd,getQuickAddSuggestions,} = useGoalsPage();
+  const {goals,budgetSummary,getGoalCompletionStatus,saveGoal,deleteGoal,updateProgress,quickAdd,getQuickAddSuggestions,isLoading} = useGoalsPage();
 
   const modal = useModal();
   const deleteConfirm = useConfirmDialog();
@@ -48,6 +48,8 @@ export const Goals: React.FC = () => {
     goalsRef.current = goals;
     return goals.map(g => `${g.id}:${g.current}:${g.target}`).sort().join('|');
   }, [goals]);
+    
+
 
   const handleOpenAdd = () => {
     setEditingGoal(null);
@@ -303,6 +305,30 @@ export const Goals: React.FC = () => {
       ),
     });
   };
+
+   if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Breadcrumbs items={[{ label: 'Goals' }]} />
+        <PageHeader
+          title="Shared Goals"
+          description="Set targets, track progress, and celebrate milestones together"
+        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[1, 2].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-6 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+                <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-2/3 mb-4" />
+                <div className="h-3 bg-gray-200 rounded w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
