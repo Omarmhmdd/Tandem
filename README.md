@@ -75,3 +75,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | Dashboard | Habits |
 |-----------|--------|
 | ![Dashboard](./readme/demo/dashboard.png) | ![Habits](./readme/demo/habits.png) |
+
+| Pantry | Recipes |
+|--------|---------|
+| ![Pantry](./readme/demo/pantry.png) | ![Recipes](./readme/demo/recipesview.png) |
