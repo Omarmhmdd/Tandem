@@ -1,0 +1,436 @@
+// Tandem ER Diagram - dbdiagram.io syntax
+// Copy this entire code and paste into https://dbdiagram.io/
+
+Project Tandem {
+  database_type: 'MySQL'
+  Note: 'AI-Powered Household Wellness Platform'
+}
+
+// ============================================
+// CORE USER & HOUSEHOLD MANAGEMENT
+// ============================================
+Table users {
+  id int [pk, increment]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  first_name varchar
+  last_name varchar
+  timezone varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'User accounts'
+}
+
+Table households {
+  id int [pk, increment]
+  name varchar [not null]
+  invite_code varchar [unique, not null]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Household groups'
+}
+
+Table household_members {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  user_id int [ref: > users.id]
+  role enum('primary', 'member')
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'User-Household relationships'
+}
+
+// ============================================
+// FINANCIAL MANAGEMENT
+// ============================================
+Table budgets {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  category enum
+  amount decimal(10,2)
+  month date
+  created_by_user_id int [ref: > users.id]
+  updated_by_user_id int [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Monthly budgets by category'
+}
+
+Table expenses {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  user_id int [ref: > users.id]
+  date date
+  amount decimal(10,2)
+  description varchar
+  category enum
+  auto_tagged boolean
+  created_by_user_id int [ref: > users.id]
+  updated_by_user_id int [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Expense tracking'
+}
+
+// ============================================
+// GOALS & WELLNESS
+// ============================================
+Table goals {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  user_id int [ref: > users.id]
+  title varchar
+  category enum
+  target decimal(10,2)
+  current decimal(10,2)
+  progress_percentage decimal(5,2)
+  unit varchar
+  deadline date
+  completed_at timestamp
+  created_by_user_id int [ref: > users.id]
+  updated_by_user_id int [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Goal tracking'
+}
+
+Table goal_milestones {
+  id int [pk, increment]
+  goal_id int [ref: > goals.id]
+  title varchar
+  target_value decimal(10,2)
+  is_completed boolean
+  completed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Goal milestones'
+}
+
+Table mood_entries {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  date date
+  time time
+  mood enum
+  notes text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Mood tracking'
+}
+
+Table mood_annotations {
+  id int [pk, increment]
+  mood_entry_id int [ref: > mood_entries.id]
+  annotation text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'AI-generated mood insights'
+}
+
+// ============================================
+// HEALTH & HABITS
+// ============================================
+Table health_logs {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  date date
+  weight decimal(5,2)
+  sleep_hours decimal(4,2)
+  exercise_minutes int
+  water_intake decimal(5,2)
+  notes text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Health metrics'
+}
+
+Table habits {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  name varchar
+  frequency enum
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Habit tracking'
+}
+
+Table habit_completions {
+  id int [pk, increment]
+  habit_id int [ref: > habits.id]
+  date date
+  completed boolean
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Daily habit completions'
+}
+
+Table nutrition_targets {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  calories int
+  protein int
+  carbs int
+  fats int
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Nutrition goals'
+}
+
+// ============================================
+// MEAL PLANNING & RECIPES
+// ============================================
+Table recipes {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  name varchar
+  description text
+  prep_time int
+  cook_time int
+  servings int
+  calories int
+  protein int
+  carbs int
+  fats int
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Recipe library'
+}
+
+Table recipe_ingredients {
+  id int [pk, increment]
+  recipe_id int [ref: > recipes.id]
+  name varchar
+  quantity varchar
+  unit varchar
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Recipe ingredients'
+}
+
+Table recipe_instructions {
+  id int [pk, increment]
+  recipe_id int [ref: > recipes.id]
+  step_number int
+  instruction text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Cooking steps'
+}
+
+Table recipe_tags {
+  id int [pk, increment]
+  recipe_id int [ref: > recipes.id]
+  tag varchar
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Recipe tags'
+}
+
+Table pantry_items {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  name varchar
+  quantity decimal(10,2)
+  unit varchar
+  expiry_date date
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Pantry inventory'
+}
+
+Table recipe_ingredient_pantry_links {
+  id int [pk, increment]
+  recipe_ingredient_id int [ref: > recipe_ingredients.id]
+  pantry_item_id int [ref: > pantry_items.id]
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Recipe-Pantry links'
+}
+
+Table meal_plans {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  name varchar
+  date date
+  meal_type enum
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Meal planning'
+}
+
+Table match_meals {
+  id int [pk, increment]
+  meal_plan_id int [ref: > meal_plans.id]
+  recipe_id int [ref: > recipes.id]
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Planned meals'
+}
+
+Table shopping_lists {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  name varchar
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Shopping lists'
+}
+
+Table shopping_list_items {
+  id int [pk, increment]
+  shopping_list_id int [ref: > shopping_lists.id]
+  name varchar
+  quantity decimal(10,2)
+  unit varchar
+  is_purchased boolean
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Shopping items'
+}
+
+// ============================================
+// AI & AUTOMATION
+// ============================================
+Table ai_coach_conversations {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  message text
+  response text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'RAG AI Agent conversations'
+}
+
+Table weekly_summaries {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  week_start_date date
+  summary text
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'AI-generated weekly summaries'
+}
+
+Table date_night_suggestions {
+  id int [pk, increment]
+  household_id int [ref: > households.id]
+  suggestion text
+  status enum
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'Date night ideas'
+}
+
+Table notifications {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  type varchar
+  title varchar
+  message text
+  data json
+  read_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  Note: 'User notifications'
+}
+
+// ============================================
+// SYSTEM TABLES
+// ============================================
+Table password_reset_tokens {
+  email varchar [pk]
+  token varchar
+  created_at timestamp
+  
+  Note: 'Password reset tokens'
+}
+
+Table cache {
+  key varchar [pk]
+  value text
+  expiration int
+  
+  Note: 'Application cache'
+}
+
+Table cache_locks {
+  key varchar [pk]
+  owner varchar
+  expiration int
+  
+  Note: 'Cache locks'
+}
+
+Table jobs {
+  id int [pk, increment]
+  queue varchar
+  payload text
+  attempts int
+  reserved_at int
+  available_at int
+  created_at int
+  
+  Note: 'Queue jobs'
+}
+
+Table job_batches {
+  id varchar [pk]
+  name varchar
+  total_jobs int
+  pending_jobs int
+  failed_jobs int
+  failed_job_ids text
+  options text
+  cancelled_at int
+  created_at int
+  finished_at int
+  
+  Note: 'Job batches'
+}
+
+Table failed_jobs {
+  id int [pk, increment]
+  uuid varchar [unique]
+  connection text
+  queue text
+  payload text
+  exception text
+  failed_at timestamp
+  
+  Note: 'Failed jobs'
+}
