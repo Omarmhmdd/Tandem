@@ -93,3 +93,9 @@ The platform features **AI agent assistance** for personalized household advice,
 | ![Analytics](./readme/demo/Analytics.png) |
 
 <br><br>
+
+### Sexy Features
+
+| AI Agent Coach |
+|----------------|
+| ![AI Agent Coach](./readme/demo/aiagent%20(3).gif) |
