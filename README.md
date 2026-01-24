@@ -107,3 +107,7 @@ The platform features **AI agent assistance** for personalized household advice,
 | AI Health Logger | Auto Order Shopping List |
 |------------------|--------------------------|
 | ![AI Health Logger](./readme/demo/Healthlogger%20(2).gif) | ![Auto Order Shopping List](./readme/demo/autoorder.gif) |
+
+| AI Weekly Summary & Nutrition Coach | AI Mood Annotations |
+|-------------------------------------|---------------------|
+| ![AI Nutrition Coach & Summary](./readme/demo/nutrtioncoahc-summary.png) | ![AI Mood Annotations](./readme/demo/moodannotations.png) |
