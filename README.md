@@ -33,3 +33,31 @@ The platform features **AI agent assistance** for personalized household advice,
 *Click image above to view full size, or use the dbdiagram.io link for the interactive version*
 
 <br><br>
+
+
+<img src="./readme/cards/title4.svg"/>
+
+
+
+### Project Highlights
+<p align="center">
+  <img src="./readme/diagrams/project_highlights.png" alt="Project Highlights" width="100%"/>
+</p>
+
+### Sexy Features
+
+- **AI Agent Coach**: A RAG-powered assistant that uses your household's historical data to provide personalized advice and goal coaching.
+
+- **AI Date Night**: Generates personalized date ideas (Activity + Meal) based on budget, partner moods, and available pantry items.
+
+- **AI Health Logger**: Converts natural language text (e.g., "I ran 5km") into structured health metrics and mood entries automatically.
+
+- **Auto Order Shopping List**: Intelligently parses your shopping list, identifies needed items, and "orders" them (restocks) directly into your pantry inventory.
+
+- **AI Weekly Summary & Nutrition Coach**: Provides AI-generated weekly insights on household activity and personalized nutrition advice based on your logs.
+
+- **AI Mood Annotations**: Automatically analyzes journal entries to generate emotional insights and pattern recognition.
+
+- **n8n Automation Workflow**: Automatically triggers weekly insight reports by processing household data into analytics graphs, generating PDFs, backing them up to Google Drive for recovery, emailing them to households, and scheduling calendar reminders to review their insights.
+
+<br><br>
