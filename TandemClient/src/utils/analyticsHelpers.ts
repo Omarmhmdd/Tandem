@@ -4,7 +4,8 @@ import type { WeeklyChartData, BudgetCategory, DateRange } from '../types/analyt
 export const calculateAnalyticsDateRange = (): DateRange => {
   const now = new Date();
   const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
+  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+ //eekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6); // Sunday
 

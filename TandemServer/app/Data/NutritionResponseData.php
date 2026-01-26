@@ -177,6 +177,20 @@ class NutritionResponseData
                         );
                     }
                 }
+                  // Fix direction word (below/above)
+                if (preg_match('/(below|above|under|over)(\s+your\s+\d+\s*g\s+target)/i', $fixed, $matches)) {
+                    $currentDirection = strtolower($matches[1]);
+                    // If direction is wrong, replace it
+                    if (($currentDirection === 'below' && $carbsDirection === 'above') ||
+                        ($currentDirection === 'above' && $carbsDirection === 'below')) {
+                        $fixed = preg_replace(
+                            '/(below|above|under|over)(\s+your\s+\d+\s*g\s+target)/i',
+                            $carbsDirection . '$2',
+                            $fixed,
+                            1
+                        );
+                    }
+                }
             }
 
             // Fix fat recommendation - only if numbers are clearly wrong
