@@ -62,7 +62,7 @@ export const MoodTimeline: React.FC = () => {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
+            <LineChart data={chartData} key={`${timeRange}-${chartData.length}`} >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="date" 
