@@ -41,10 +41,10 @@ The platform features **AI agent assistance** for personalized household advice,
 
 ### Project Highlights
 <p align="center">
-  <img src="./readme/diagrams/project_highlights.png" alt="Project Highlights" width="100%"/>
+  <img src="./readme/diagrams/project_highlights.png" alt="Project Highlights" width="70%"/>
 </p>
 
-### Sexy Features
+### Main Features
 
 - **AI Agent Coach**: A RAG-powered assistant that uses your household's historical data to provide personalized advice and goal coaching.
 
@@ -128,6 +128,13 @@ The platform features **AI agent assistance** for personalized household advice,
 |----------|------------|-------------|
 | ![Services](./readme/demo/service-example.png) | ![Validation](./readme/demo/validator-example.png) | ![Controllers](./readme/demo/controller-example.png) |
 
+
+## Tests
+
+| Tests | Test Results |
+|-------|--------------|
+| ![Tests](./readme/demo/testcase.png) | ![Test Results](./readme/demo/resulttest.png) |
+
 ### CI/CD
 
 | CI/CD Workflow | CI/CD Tests |
@@ -164,3 +171,4 @@ The platform features **AI agent assistance** for personalized household advice,
   - Dependency updates (`npm install`)
   - Production build (`npm run build`)
   - Server reload (`nginx`)
+<br>
