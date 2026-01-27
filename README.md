@@ -34,17 +34,15 @@ The platform features **AI agent assistance** for personalized household advice,
 
 <br><br>
 
-
 <img src="./readme/cards/title4.svg"/>
 
 
-
-### Project Highlights
+<br>
 <p align="center">
   <img src="./readme/diagrams/project_highlights.png" alt="Project Highlights" width="70%"/>
 </p>
 
-### Main Features
+### Main features
 
 - **AI Agent Coach**: A RAG-powered assistant that uses your household's historical data to provide personalized advice and goal coaching.
 
@@ -68,82 +66,190 @@ The platform features **AI agent assistance** for personalized household advice,
 
 ### User Screens
 
-| Login | Register & Household Setup |
-|-------|----------------------------|
-| ![Login](./readme/demo/login.png) | ![Register Flow](./readme/demo/register-flow.gif) |
+<table width="100%">
+  <tr>
+    <th width="50%">Login</th>
+    <th width="50%">Register & Household Setup</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/login.png" width="100%" alt="Login"/></td>
+    <td><img src="./readme/demo/register-flow.gif" width="100%" alt="Register"/></td>
+  </tr>
+</table>
 
-| Dashboard | Habits |
-|-----------|--------|
-| ![Dashboard](./readme/demo/dashboard.png) | ![Habits](./readme/demo/habits.png) |
+<table width="100%">
+  <tr>
+    <th width="50%">Dashboard</th>
+    <th width="50%">Goals</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/dashboard.png" width="100%" alt="Dashboard"/></td>
+    <td><img src="./readme/demo/goals.png" width="100%" alt="Goals"/></td>
+  </tr>
+</table>
 
-| Pantry | Recipes |
-|--------|---------|
-| ![Pantry](./readme/demo/pantry.png) | ![Recipes](./readme/demo/recipesview.png) |
+<table width="100%">
+  <tr>
+    <th width="50%">Pantry</th>
+    <th width="50%">Meal Planner</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/pantry.png" width="100%" alt="Pantry"/></td>
+    <td><img src="./readme/demo/mealPlanner.png" width="100%" alt="Meal Planner"/></td>
+  </tr>
+</table>
 
-| Meal Planner | Goals |
-|--------------|-------|
-| ![Meal Planner](./readme/demo/mealPlanner.png) | ![Goals](./readme/demo/goals.png) |
+<table width="100%">
+  <tr>
+    <th width="50%">Recipes</th>
+    <th width="50%">Habits</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/recipesview.png" width="100%" alt="Recipes"/></td>
+    <td><img src="./readme/demo/habits.png" width="100%" alt="Habits"/></td>
+  </tr>
+</table>
 
-| Budget | Mood Timeline |
-|--------|---------------|
-| ![Budget](./readme/demo/budget.png) | ![Mood Timeline](./readme/demo/mood.png) |
+<table width="100%">
+  <tr>
+    <th width="50%">Budget</th>
+    <th width="50%">Mood Timeline</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/budget.png" width="100%" alt="Budget"/></td>
+    <td><img src="./readme/demo/mood.png" width="100%" alt="Mood Timeline"/></td>
+  </tr>
+</table>
 
-| Analytics |
-|-----------|
-| ![Analytics](./readme/demo/Analytics.png) |
+<table width="100%">
+  <tr>
+    <th width="100%">Analytics</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/Analytics.png" width="100%" alt="Analytics"/></td>
+  </tr>
+</table>
+
 
 <br><br>
 
 ### Sexy Features
 
-| AI Agent Coach |
-|----------------|
-| ![AI Agent Coach](./readme/demo/aiagent%20(3).gif) |
+<table width="100%">
+  <tr>
+    <th width="100%">AI Agent Coach</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/aiagent%20(3).gif" width="100%" alt="AI Agent Coach"/></td>
+  </tr>
+</table>
 
-| AI Date Night |
-|---------------|
-| ![AI Date Night](./readme/demo/dateNight-flow.gif) |
+<table width="100%">
+  <tr>
+    <th width="100%">AI Date Night</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/dateNight-flow.gif" width="100%" alt="AI Date Night"/></td>
+  </tr>
+</table>
 
-| AI Health Logger | Auto Order Shopping List |
-|------------------|--------------------------|
-| ![AI Health Logger](./readme/demo/Healthlogger%20(2).gif) | ![Auto Order Shopping List](./readme/demo/autoorder.gif) |
+<table width="100%">
+  <tr>
+    <th width="50%">AI Health Logger</th>
+    <th width="50%">Auto Order Shopping List</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/Healthlogger%20(2).gif" width="100%" alt="Health Logger"/></td>
+    <td><img src="./readme/demo/autoorder.gif" width="100%" alt="Auto Order"/></td>
+  </tr>
+</table>
 
-| AI Weekly Summary & Nutrition Coach | AI Mood Annotations |
-|-------------------------------------|---------------------|
-| ![AI Nutrition Coach & Summary](./readme/demo/nutrtioncoahc-summary.png) | ![AI Mood Annotations](./readme/demo/moodannotations.png) |
+<table width="100%">
+  <tr>
+    <th width="100%">AI Weekly Summary & Nutrition Coach</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/nutrtioncoahc-summary.png" width="100%" alt="Nutrition Coach"/></td>
+  </tr>
+</table>
 
-| n8n Automation Workflow | Email Notification Result |
-|-------------------------|---------------------------|
-| ![n8n Workflow](./readme/demo/n8n.png) | ![Email Sent](./readme/demo/email.png) |
+<table width="100%">
+  <tr>
+    <th width="100%">AI Mood Annotations</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/moodannotations.png" width="100%" alt="Mood Annotations"/></td>
+  </tr>
+</table>
 
-| Calendar Event Result | Google Drive PDF Result |
-|-----------------------|-------------------------|
-| ![Calendar Event](./readme/demo/calendar.png) | ![Google Drive PDF](./readme/demo/googledrive.png) |
+<table width="100%">
+  <tr>
+    <th width="50%">n8n Workflow</th>
+    <th width="50%">Email Notification Result</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/n8n.png" width="100%" alt="n8n"/></td>
+    <td><img src="./readme/demo/email.png" width="100%" alt="Email"/></td>
+  </tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <th width="50%">Calendar Event Result</th>
+    <th width="50%">Google Drive PDF Result</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/calendar_cropped.png" width="100%" alt="Calendar"/></td>
+    <td><img src="./readme/demo/googledrive.png" width="100%" alt="Drive"/></td>
+  </tr>
+</table>
 
 <br><br>
 
 <img src="./readme/cards/title6.svg"/>
 
-| Services | Validation | Controllers |
-|----------|------------|-------------|
-| ![Services](./readme/demo/service-example.png) | ![Validation](./readme/demo/validator-example.png) | ![Controllers](./readme/demo/controller-example.png) |
+<table width="100%">
+  <tr>
+    <th width="33%">Services</th>
+    <th width="33%">Validation</th>
+    <th width="33%">Controllers</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/service-example_uniform.png" width="100%" alt="Services"/></td>
+    <td><img src="./readme/demo/validator-example_uniform.png" width="100%" alt="Validation"/></td>
+    <td><img src="./readme/demo/controller-example_uniform.png" width="100%" alt="Controllers"/></td>
+  </tr>
+</table>
 
+<table width="100%">
+  <tr>
+    <th width="100%">Tests</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/testcase.png" width="100%" alt="Tests"/></td>
+  </tr>
+</table>
 
-## Tests
-
-| Tests | Test Results |
-|-------|--------------|
-| ![Tests](./readme/demo/testcase.png) | ![Test Results](./readme/demo/resulttest.png) |
+<table width="100%">
+  <tr>
+    <th width="100%">Test Results</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/resulttest.png" width="100%" alt="Results"/></td>
+  </tr>
+</table>
 
 ### CI/CD
 
-| CI/CD Workflow | CI/CD Tests |
-|----------------|-------------|
-| ![CI/CD Workflow](./readme/demo/cicdworkflow.png) | ![CI/CD Tests](./readme/demo/cicdtest.png) |
+<table width="100%">
+  <tr>
+    <th width="100%">CI/CD Workflow</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/cicdworkflow.png" width="100%" alt="Workflow"/></td>
+  </tr>
+</table>
 
-### Postman
-
-![Postman](./readme/demo/postman.png)
 
 <br><br>
 
@@ -155,6 +261,17 @@ The platform features **AI agent assistance** for personalized household advice,
 - **CI Backend:** Runs PHPUnit (Laravel) tests on `TandemServer` changes using PHP 8.2 & MySQL 5.7.
 - **CI Frontend:** Runs Build and Dependency checks on `TandemClient` changes using Node 20.
 - **CD Production:** Automatically deploys `main` branch to AWS EC2.
+
+<table width="100%">
+  <tr>
+    <th width="50%">Postman API Validation</th>
+    <th width="50%">CI/CD Pipeline Results</th>
+  </tr>
+  <tr>
+    <td><img src="./readme/demo/apipostman.png" width="100%" alt="Postman API Validation"/></td>
+    <td><img src="./readme/demo/cicdtest.png" width="100%" alt="CI/CD Pipeline Results"/></td>
+  </tr>
+</table>
 
 **Deployment Strategy:**
 
@@ -171,4 +288,3 @@ The platform features **AI agent assistance** for personalized household advice,
   - Dependency updates (`npm install`)
   - Production build (`npm run build`)
   - Server reload (`nginx`)
-<br>
